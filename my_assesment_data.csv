@@ -1,0 +1,157 @@
+module_code,title,type,weight,due_date,status,grade,effort_estimate
+INF 164,"Practical Class Test 1 (INF154 Revision Practical)",Practical,7.00,"2025-07-22",graded,100,6
+STC 122,"Study Theme 1 Pre-Quiz",Quiz,1.00,"2025-07-23",graded,80,3
+INF 171,"Quiz 4",Quiz,2.00,"2025-07-25",graded,95,7
+EKN 120,"Smartbook: Ch 11",Homework,2.50,"2025-07-25",missed,0,8
+INF 112,"Pre-class activity 1",Homework,2.50,"2025-07-25",graded,75,
+INF 164,"Introductory Quiz",Quiz,1.00,"2025-07-27",graded,87,1
+INF 164,"Practical 1",Practical,2.00,"2025-07-28",missed,0,5
+INF 171,"Tutorial 3",Tutorial,2.00,"2025-07-28",missed,0,9
+OBS 124,"LearnSmart (CH 10)",Homework,0.36,"2025-07-28",missed,0,9
+EKN 120,"Smartbook: CH 12",Homework,2.50,"2025-07-29",missed,0,9
+INF 112,"Pre-class activity 2",Homework,2.50,"2025-07-30",missed,0,
+EKN 120,"Connect Exercises: Ch 11",Homework,0.63,"2025-08-01",missed,0,9
+OBS 124,"Unit Activity (CH 10)",Homework,0.63,"2025-08-01",missed,0,9
+STC 122,"Assignment 0",Assignment,1.00,"2025-08-01",graded,100,7
+INF 112,"Quiz 1",Quiz,1.50,"2025-08-01",graded,85,
+INF 164,"Practical 2",Practical,2.00,"2025-08-04",pending re,,6
+OBS 124,"Quiz (CH 10)",Quiz,1.07,"2025-08-04",missed,0,7
+OBS 124,"LearnSmart (CH 11)",Homework,0.36,"2025-08-04",missed,0,9
+STC 122,"Study Theme 2 Pre-Quiz",Quiz,1.00,"2025-08-04",pending re,,
+INF 171,"Group Assignment 1",Assignment,7.00,"2025-08-07",upcoming,,9
+EKN 120,"Online ""Class"" Test 1",Quiz,6.67,"2025-08-08",upcoming,,8
+EKN 120,"Smartbook: Ch 13",Homework,2.50,"2025-08-08",upcoming,,9
+OBS 124,"Unit Activity (CH 11)",Homework,0.63,"2025-08-08",upcoming,,4
+INF 112,"Quiz 2",Quiz,1.50,"2025-08-08",upcoming,,
+INF 164,"Practical 3",Practical,2.00,"2025-08-11",upcoming,,6
+OBS 124,"LearnSmart (CH 7)",Homework,0.36,"2025-08-11",upcoming,,9
+OBS 124,"Quiz (CH 11)",Quiz,1.07,"2025-08-11",upcoming,,
+EKN 120,"Connect Exercises: Ch 12",Homework,2.50,"2025-08-12",upcoming,,9
+ALL 121,"Literacy Narrative Video",Assignment,20.00,"2025-08-13",upcoming,,3
+INF 112,"Pre-class activity 3",Homework,2.50,"2025-08-13",upcoming,,
+INF 171,"Quiz 5",Quiz,2.00,"2025-08-15",upcoming,,9
+OBS 124,"Unit Activity (CH 7)",Homework,0.63,"2025-08-15",upcoming,,
+INF 112,"Quiz 3",Quiz,1.50,"2025-08-15",upcoming,,
+STC 122,"Assignment 1",Assignment,1.00,"2025-08-15",upcoming,,
+INF 164,"Practical 4",Practical,2.00,"2025-08-18",upcoming,,6
+INF 171,"Tutorial 4",Tutorial,2.00,"2025-08-18",upcoming,,7
+OBS 124,"Quiz (CH 7)",Quiz,1.07,"2025-08-18",upcoming,,9
+STC 122,"Study Theme 3 Pre-Quiz",Quiz,1.00,"2025-08-18",upcoming,,
+INF 171,"Class test 2",Semester Test,7.50,"2025-08-19",upcoming,,10
+EKN 120,"Smartbook: Ch 14",Homework,2.50,"2025-08-19",upcoming,,9
+EKN 120,"Online ""Class"" Test 2",Quiz,6.67,"2025-08-22",upcoming,,9
+EKN 120,"Connect Exercises: Ch 13",Homework,2.50,"2025-08-22",upcoming,,9
+INF 112,"Quiz 4",Quiz,1.50,"2025-08-22",upcoming,,
+EKN 120,"Semester Test 1",Semester Test,25.00,"2025-08-23",upcoming,,9
+INF 164,"Semester Test",Semester Test,35.00,"2025-08-25",upcoming,,10
+INF 171,"Test 2",Semester Test,20.00,"2025-08-25",upcoming,,10
+STC 122,"Semester Test 1",Semester Test,35,"2025-08-28",upcoming,,10
+STC 122,"Assignment 2",Assignment,1.00,"2025-08-29",upcoming,,
+INF 112,"Semester Test",Semester Test,25.00,"2025-08-30",upcoming,,
+INF 164,"Practical 5",Practical,2.00,"2025-09-01",upcoming,,6
+OBS 124,"LearnSmart (CH 13)",Homework,0.36,"2025-09-01",upcoming,,9
+STC 122,"Study Theme 4 Pre-Quiz",Quiz,1.00,"2025-09-01",upcoming,,
+AIM 121,"Assignment 2 (ClickUP)",Assignment,8.00,"2025-09-05",upcoming,,5
+AIM 121,"Semester Test 1 (Compulsory)",Semester Test,26.00,"2025-09-05",upcoming,,10
+OBS 124,"Unit Activity (CH 13)",Homework,0.63,"2025-09-05",upcoming,,9
+INF 112,"Quiz 5",Quiz,1.50,"2025-09-05",upcoming,,
+INF 164,"Practical 6",Practical,2.00,"2025-09-08",upcoming,,6
+EKN 120,"Smartbook: Ch 15",Homework,2.50,"2025-09-08",upcoming,,9
+EKN 120,"Connect Exercises: Ch 14",Homework,2.50,"2025-09-08",upcoming,,9
+OBS 124,"Quiz (CH 13)",Quiz,1.07,"2025-09-08",upcoming,,9
+EKN 120,"Connect Exercises: Ch 15",Homework,2.50,"2025-09-09",upcoming,,9
+INF 112,"Quiz 6",Quiz,1.50,"2025-09-12",upcoming,,
+STC 122,"Assignment 3",Assignment,1.00,"2025-09-12",upcoming,,
+STC 122,"Study Theme 5 Pre-Quiz",Quiz,1.00,"2025-09-15",upcoming,,
+OBS 124,"LearnSmart (CH 14)",Homework,0.36,"2025-09-22",upcoming,,9
+INF 112,"Pre-class activity 4",Homework,2.50,"2025-09-24",upcoming,,
+AIM 121,"Assignment 1 (SAM)",Assignment,8.00,"2025-09-26",upcoming,,5
+AIM 121,"Assignment 3 (SAM)",Assignment,5.00,"2025-09-26",upcoming,,7
+OBS 124,"Unit Activity (CH 14)",Homework,0.63,"2025-09-26",upcoming,,9
+STC 122,"Assignment 4",Assignment,1.00,"2025-09-26",upcoming,,
+INF 164,"Practical 7",Practical,2.00,"2025-09-29",upcoming,,8
+OBS 124,"LearnSmart (CH 15)",Homework,0.36,"2025-09-29",upcoming,,9
+OBS 124,"Quiz (CH 14)",Quiz,1.07,"2025-09-29",upcoming,,
+STC 122,"Study Theme 6 Pre-Quiz",Quiz,1.00,"2025-09-29",upcoming,,
+EKN 120,"Smartbook: Ch 16",Homework,2.50,"2025-09-30",upcoming,,9
+AIM 121,"Assignment 4 (SAM)",Assignment,5.00,"2025-10-03",upcoming,,7
+INF 171,"Group Assignment 2",Assignment,5.00,"2025-10-03",upcoming,,8
+EKN 120,"Online ""Class"" Test 3",Quiz,6.67,"2025-10-03",upcoming,,9
+OBS 124,"Unit Activity (CH 15)",Homework,0.63,"2025-10-03",upcoming,,9
+INF 112,"Quiz 7",Quiz,1.50,"2025-10-03",upcoming,,
+INF 164,"Practical 8",Practical,2.00,"2025-10-06",upcoming,,7
+EKN 120,"Smartbook: Ch 17",Homework,2.50,"2025-10-07",upcoming,,9
+OBS 124,"Quiz (CH 15)",Quiz,1.07,"2025-10-07",upcoming,,
+AIM 121,"Assignment 5 (SAM)",Assignment,5.00,"2025-10-10",upcoming,,7
+ALL 121,"Argumentative Essay",Assignment,30.00,"2025-10-10",upcoming,,10
+EKN 120,"Smartbook: Ch 18",Homework,2.50,"2025-10-10",upcoming,,9
+INF 112,"Quiz 8",Quiz,1.50,"2025-10-10",upcoming,,
+STC 122,"Assignment 5",Assignment,1.00,"2025-10-10",upcoming,,
+INF 164,"Practical Class Test 2",Practical,20.00,"2025-10-13",upcoming,,10
+EKN 120,"Semester Test 2",Semester Test,25.00,"2025-10-13",upcoming,,10
+STC 122,"Study Theme 7 Pre-Quiz",Quiz,1.00,"2025-10-13",upcoming,,
+INF 112,"Quiz 9",Quiz,1.50,"2025-10-17",upcoming,,
+EKN 120,"Connect Exercises: Ch 16",Homework,2.50,"2025-10-18",upcoming,,9
+OBS 124,"LearnSmart (CH 12)",Homework,0.36,"2025-10-20",upcoming,,9
+EKN 120,"Smartbook: Ch 19",Homework,2.50,"2025-10-21",upcoming,,9
+EKN 120,"Connect Exercises: Ch 17",Homework,2.50,"2025-10-21",upcoming,,10
+AIM 121,"Semester Test 2 (Excel)",Semester Test,12.00,"2025-10-24",upcoming,,10
+EKN 120,"Connect Exercises: Ch 18",Homework,2.50,"2025-10-24",upcoming,,9
+OBS 124,"Unit Activity (CH 12)",Homework,0.63,"2025-10-24",upcoming,,9
+INF 112,"Quiz 10",Quiz,1.50,"2025-10-24",upcoming,,
+STC 122,"Assignment 6",Assignment,1.00,"2025-10-24",upcoming,,
+STC 122,"Semester Test 2",Semester Test,35,"2025-10-25",upcoming,,10
+EKN 120,"Online ""Class"" Test 4",Quiz,6.67,"2025-10-25",upcoming,,8
+INF 171,"Tutorial 5",Tutorial,2.00,"2025-10-27",upcoming,,4
+OBS 124,"Quiz (CH 12)",Quiz,1.07,"2025-10-27",upcoming,,9
+STC 122,"Study Theme 8 Pre-Quiz",Quiz,1.00,"2025-10-27",upcoming,,
+EKN 120,"Connect Exercises: Ch 19",Homework,2.50,"2025-10-30",upcoming,,9
+AIM 121,"Semester Test 2 (PowerPoint)",Semester Test,12.00,"2025-10-31",upcoming,,10
+AIM 121,"Semester Test 2 (AI Literacy)",Semester Test,5.00,"2025-10-31",upcoming,,10
+INF 171,"Group Assignment 3",Assignment,8.00,"2025-10-31",upcoming,,10
+OBS 124,"Unit Activity (SDGs)",Homework,0.63,"2025-10-31",upcoming,,10
+STC 122,"Assignment 7",Assignment,1.00,"2025-11-07",upcoming,,
+EKN 120,"Final Exam",Exam,50.00,"2025-11-08",upcoming,,10
+INF 164,"Final Exam",Exam,50.00,"2025-11-10",upcoming,,10
+STC 122,"Study Theme 9 Pre-Quiz",Quiz,1.00,"2025-11-10",upcoming,,
+STC 122,"Assignment 8",Assignment,1.00,"2025-11-21",upcoming,,
+STC 122,"Study Theme 10 Pre-Quiz",Quiz,1.00,"2025-11-24",upcoming,,
+STC 122,"Assignment 9",Assignment,1.00,"2025-12-05",upcoming,,
+STC 122,"Practical Test",Practical,10.00,"",upcoming,,
+STC 122,"Practical assignments",Assignment,10.00,"",upcoming,,
+STC 122,"Study Theme 1 Post-Quiz",Quiz,1.00,"",upcoming,,
+STC 122,"Study Theme 2 Post-Quiz",Quiz,1.00,"",upcoming,,
+STC 122,"Study Theme 3 Post-Quiz",Quiz,1.00,"",upcoming,,
+STC 122,"Study Theme 4 Post-Quiz",Quiz,1.00,"",upcoming,,
+STC 122,"Study Theme 5 Post-Quiz",Quiz,1.00,"",upcoming,,
+STC 122,"Study Theme 6 Post-Quiz",Quiz,1.00,"",upcoming,,
+STC 122,"Study Theme 7 Post-Quiz",Quiz,1.00,"",upcoming,,
+STC 122,"Study Theme 8 Post-Quiz",Quiz,1.00,"",upcoming,,
+STC 122,"Study Theme 9 Post-Quiz",Quiz,1.00,"",upcoming,,
+OBS 124,"Exam",Exam,50.00,"",upcoming,,
+INF 164,"Revision Test 1",Quiz,1.00,"",upcoming,,
+INF 164,"Revision Test 2",Quiz,1.00,"",upcoming,,
+INF 164,"Revision Test 3",Quiz,1.00,"",upcoming,,
+INF 164,"Revision Test 4",Quiz,1.00,"",upcoming,,
+INF 164,"Revision Test 5",Quiz,1.00,"",upcoming,,
+INF 164,"Revision Test 6",Quiz,1.00,"",upcoming,,
+INF 164,"Revision Test 7",Quiz,1.00,"",upcoming,,
+INF 164,"Revision Test 8",Quiz,1.00,"",upcoming,,
+INF 164,"Revision Test 9",Quiz,1.00,"",upcoming,,
+INF 164,"Homework Assignment 1",Homework,4.00,"",upcoming,,
+INF 164,"Homework Assignment 2",Homework,4.00,"",upcoming,,
+INF 164,"Homework Assignment 3",Homework,4.00,"",upcoming,,
+AIM 121,"In Class Test 1 (MS Excel)",Assignment,2.33,"",upcoming,,
+AIM 121,"In Class Test 2 (NIL)",Assignment,2.33,"",upcoming,,
+AIM 121,"In Class Test 3 (AI Literacy)",Assignment,2.33,"",upcoming,,
+AIM 121,"In Class Test 4 (MS Excel)",Assignment,2.33,"",upcoming,,
+AIM 121,"In Class Test 5 (AI Literacy)",Assignment,2.33,"",upcoming,,
+AIM 121,"In Class Test 6 (MS PowerPoint)",Assignment,2.35,"",upcoming,,
+ALL 121,"Reading Comprehension Quiz",Quiz,30.00,"",upcoming,,
+ALL 121,"Business Proposal Presentation",Evaluation,20.00,"",upcoming,,
+INF 171,"Class / Post class activities (Multiple)",Evaluation,5.00,"",upcoming,,
+EKN 120,"Aegrotat Test",Semester Test,25.00,"",upcoming,,
+OBS 124,"Semester Test 1 (CH 10, 11, 7)",Semester Test,17.50,"",upcoming,,
+OBS 124,"Semester Test 2 (CH 13, 14)",Semester Test,17.50,"",upcoming,,
+OBS 124,"Sick Test",Semester Test,17.50,"",upcoming,,
+INF 112,"Examination",Exam,50.00,"",upcoming,,

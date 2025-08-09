@@ -1,0 +1,25 @@
+version: '3.9'
+
+# services: define all containers used by the app
+services:
+  # postgres: the PostgreSQL database service used by Prisma
+  db:
+    # image: which container image and version to run
+    image: postgres:15
+    restart: unless-stopped
+    # environment: database credentials and default DB name
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: academic_os
+    # ports: expose container port 5432 on host 5432 for local connections
+    ports:
+      - '5432:5432'
+    # volumes: persist Postgres data between container restarts
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+# named volumes used by services above
+volumes:
+  pgdata: {}
+

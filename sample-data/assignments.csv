@@ -1,0 +1,5 @@
+Module Code,Assignment Title,Weight,Due Date,Status,Type,Score,Max Score,Description,Effort Minutes,Component
+STK110,Mini Quiz,5,2025-03-15,GRADED,QUIZ,9,10,Short quiz,30,Continuous assessments
+INF171,Practice Test,10,2025-04-02,GRADED,CLASS_TEST,85,100,Practice paper,120,Class tests
+BAD999,Should Fail,5,2025-05-05,PENDING,TEST,,,Will fail because module missing,60,Module Tests
+

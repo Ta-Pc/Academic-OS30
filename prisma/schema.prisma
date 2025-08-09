@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  createdAt     DateTime       @default(now())
+  degreeId      String?
+  academicYears AcademicYear[]
+  modules       Module[]
+  studyLogs     StudyLog[]
+  ownedTerms    Term[]
+  degree        Degree?        @relation(fields: [degreeId], references: [id])
+}
+
+model Degree {
+  id    String @id @default(cuid())
+  title String
+  terms Term[]
+  users User[]
+}
+
+model Term {
+  id             String        @id @default(cuid())
+  title          String
+  startDate      DateTime
+  endDate        DateTime
+  degreeId       String
+  academicYearId String?
+  ownerId        String?
+  type           TermType      @default(SEMESTER)
+  modules        Module[]
+  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id])
+  degree         Degree        @relation(fields: [degreeId], references: [id])
+  owner          User?         @relation(fields: [ownerId], references: [id])
+}
+
+model Module {
+  id            String                @id @default(cuid())
+  code          String
+  title         String
+  creditHours   Int
+  termId        String?
+  ownerId       String
+  createdAt     DateTime              @default(now())
+  targetMark    Float?
+  department    String?
+  faculty       String?
+  personnel     Json?
+  prerequisites String?
+  status        ModuleStatus          @default(ACTIVE)
+  endDate       DateTime?
+  startDate     DateTime?
+  components    AssessmentComponent[]
+  assignments   Assignment[]
+  owner         User                  @relation(fields: [ownerId], references: [id])
+  term          Term?                 @relation(fields: [termId], references: [id])
+  studyLogs     StudyLog[]
+  tasks         TacticalTask[]
+
+  @@index([startDate, endDate])
+}
+
+model AssessmentComponent {
+  id          String       @id @default(cuid())
+  name        String
+  moduleId    String
+  module      Module       @relation(fields: [moduleId], references: [id])
+  assignments Assignment[]
+}
+
+model Assignment {
+  id          String               @id @default(cuid())
+  title       String
+  dueDate     DateTime?
+  maxScore    Float?
+  score       Float?
+  moduleId    String
+  componentId String?
+  createdAt   DateTime             @default(now())
+  weight      Float
+  description String?
+  status      AssignmentStatus     @default(PENDING)
+  type        AssignmentType       @default(OTHER)
+  component   AssessmentComponent? @relation(fields: [componentId], references: [id])
+  module      Module               @relation(fields: [moduleId], references: [id])
+
+  @@index([dueDate])
+}
+
+model TacticalTask {
+  id        String             @id @default(cuid())
+  title     String
+  status    TacticalTaskStatus @default(PENDING)
+  type      TacticalTaskType
+  dueDate   DateTime
+  moduleId  String
+  source    String?
+  links     Json?
+  createdAt DateTime           @default(now())
+  module    Module             @relation(fields: [moduleId], references: [id])
+
+  @@index([dueDate])
+}
+
+model StudyLog {
+  id          String   @id @default(cuid())
+  userId      String
+  moduleId    String?
+  durationMin Int
+  loggedAt    DateTime @default(now())
+  module      Module?  @relation(fields: [moduleId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model AcademicYear {
+  id        String   @id @default(cuid())
+  title     String
+  startDate DateTime
+  endDate   DateTime
+  ownerId   String
+  createdAt DateTime @default(now())
+  owner     User     @relation(fields: [ownerId], references: [id])
+  terms     Term[]
+}
+
+enum AssignmentStatus {
+  PENDING
+  GRADED
+  DUE
+  LATE
+}
+
+enum AssignmentType {
+  QUIZ
+  TEST
+  PRACTICAL
+  GROUP
+  CLASS_TEST
+  OTHER
+}
+
+enum ModuleStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+  INACTIVE
+}
+
+enum TermType {
+  SEMESTER
+  TRIMESTER
+  QUARTER
+}
+
+enum TacticalTaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TacticalTaskType {
+  READ
+  STUDY
+  PRACTICE
+  REVIEW
+  ADMIN
+}

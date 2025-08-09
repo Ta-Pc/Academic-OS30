@@ -1,0 +1,162 @@
+[
+  {
+    "componentName": "default",
+    "filePath": "src/app/layout.tsx",
+    "defaultExportName": "default",
+    "propsType": "{ children: React.ReactNode; }",
+    "usedByPages": [],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "ModuleDetail.container",
+    "filePath": "src/app/modules/[moduleId]/ModuleDetail.container.tsx",
+    "defaultExportName": null,
+    "propsType": "{ moduleId: string; initial: any; }",
+    "usedByPages": [],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "default",
+    "filePath": "src/app/modules/[moduleId]/ui-client-analytics.tsx",
+    "defaultExportName": "default",
+    "propsType": "{ moduleId: string; initial: AnalyticsData; }",
+    "usedByPages": [
+      "src/app/modules/[moduleId]/page.tsx"
+    ],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "user-boot",
+    "filePath": "src/app/user-boot.tsx",
+    "defaultExportName": null,
+    "propsType": null,
+    "usedByPages": [
+      "src/app/layout.tsx"
+    ],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "task-group-list",
+    "filePath": "src/app/week-view/task-group-list.tsx",
+    "defaultExportName": null,
+    "propsType": "{ tasks: TaskLite[]; }",
+    "usedByPages": [
+      "src/app/week-view/page.tsx",
+      "src/app/week-view/WeekView.container.tsx",
+      "src/app/week-view/WeekView.view.tsx"
+    ],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "WeekView.container",
+    "filePath": "src/app/week-view/WeekView.container.tsx",
+    "defaultExportName": null,
+    "propsType": "{ userId?: string | undefined; date?: string | undefined; }",
+    "usedByPages": [],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "WeekView.view",
+    "filePath": "src/app/week-view/WeekView.view.tsx",
+    "defaultExportName": null,
+    "propsType": "{ start: string | Date; end: string | Date; tasks: any[]; }",
+    "usedByPages": [],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "default",
+    "filePath": "src/components/AddModuleForm.tsx",
+    "defaultExportName": "default",
+    "propsType": "Props",
+    "usedByPages": [
+      "src/app/import/page.tsx"
+    ],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "default",
+    "filePath": "src/components/AssignmentRow.tsx",
+    "defaultExportName": "default",
+    "propsType": "import(\"C:/Users/TaPhysics/Downloads/Academic-OS30/src/components/AssignmentRow\").AssignmentRowProps",
+    "usedByPages": [],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "default",
+    "filePath": "src/components/AssignmentsTable.tsx",
+    "defaultExportName": "default",
+    "propsType": "{ assignments: import(\"C:/Users/TaPhysics/Downloads/Academic-OS30/src/components/AssignmentsTable\").AssignmentForTable[]; moduleId: string; onAfterSave?: (() => void | Promise<void>) | undefined; }",
+    "usedByPages": [
+      "src/app/modules/[moduleId]/ModuleDetail.container.tsx",
+      "src/app/modules/[moduleId]/ui-client-analytics.tsx"
+    ],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "default",
+    "filePath": "src/components/ModuleCard.tsx",
+    "defaultExportName": "default",
+    "propsType": "import(\"C:/Users/TaPhysics/Downloads/Academic-OS30/src/components/ModuleCard\").ModuleCardProps",
+    "usedByPages": [
+      "src/app/dashboard/page.tsx"
+    ],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": true,
+    "visualVariants": []
+  },
+  {
+    "componentName": "default",
+    "filePath": "src/components/PerformanceGauge.tsx",
+    "defaultExportName": "default",
+    "propsType": "{ minutes: number; }",
+    "usedByPages": [
+      "src/app/week-view/page.tsx"
+    ],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  },
+  {
+    "componentName": "default",
+    "filePath": "src/components/WeeklyTimelineItem.tsx",
+    "defaultExportName": "default",
+    "propsType": "import(\"C:/Users/TaPhysics/Downloads/Academic-OS30/src/components/WeeklyTimelineItem\").WeeklyTimelineItemProps",
+    "usedByPages": [],
+    "usedByComponents": [],
+    "cssFiles": [],
+    "storyExists": false,
+    "visualVariants": []
+  }
+]
