@@ -34,7 +34,7 @@ async function fetchWeekView(userId: string, date?: string): Promise<WeekViewRes
   return res.json();
 }
 
-export default async function WeekViewPage({ searchParams }: { searchParams?: { date?: string } }) {
+export default async function WeekViewPage({ searchParams }: { searchParams?: { date?: string; ui?: string } }) {
   let userId = '';
   let offline = false;
   try {
@@ -75,6 +75,8 @@ export default async function WeekViewPage({ searchParams }: { searchParams?: { 
     ];
   }
 
+  const featureUIFlag = process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true' || searchParams?.ui === '1';
+
   return (
     <main className="container mx-auto py-8">
       <h1 className="text-3xl font-semibold">Weekly Mission Brief</h1>
@@ -85,7 +87,7 @@ export default async function WeekViewPage({ searchParams }: { searchParams?: { 
       </p>
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true' ? (
+          {featureUIFlag ? (
             <ClientWeekView userId={userId} date={searchParams?.date} />
           ) : (
             <TaskGroupList tasks={tasks as TaskListItem[]} />
