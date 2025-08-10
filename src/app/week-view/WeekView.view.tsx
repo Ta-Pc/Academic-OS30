@@ -1,6 +1,6 @@
 import React from 'react';
 import { WeekHeaderView } from 'packages/ui/week/WeekHeader.view';
-import { WeeklyMissionItemView } from 'packages/ui/week/WeeklyMissionItem.view';
+import { WeeklyMissionListView } from 'packages/ui/week/WeeklyMissionList.view';
 import { SemesterSnapshotView } from 'packages/ui/semester/SemesterSnapshot.view';
 import { ModuleQuickView } from 'packages/ui/modules/ModuleQuickView.view';
 
@@ -29,15 +29,7 @@ export function WeekView(props: WeekViewProps) {
                 <div className="text-xs text-slate-500">{priorities.length} items</div>
               </div>
               <div className="card-body p-0">
-                {priorities.length === 0 ? (
-                  <div className="p-4 text-sm text-slate-500">No high-priority items this week.</div>
-                ) : (
-                  <ul className="divide-y divide-slate-200">
-                    {priorities.map(p => (
-                      <WeeklyMissionItemView key={p.id} title={p.title} moduleCode={p.moduleCode} dueDate={p.dueDate} status={undefined} />
-                    ))}
-                  </ul>
-                )}
+                <WeeklyMissionListView items={priorities.map(p => ({ id: p.id, title: p.title, moduleCode: p.moduleCode, dueDate: p.dueDate }))} emptyLabel="No high-priority items this week." />
               </div>
             </section>
             <section className="card">
