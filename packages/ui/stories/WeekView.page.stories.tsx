@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { WeekView, WeekViewProps } from '../../../src/app/week-view/WeekView.view';
+import { WeekViewPageView, WeekViewPageProps } from '@ui';
 
 // Helper to generate mock module summaries
 const makeModule = (i: number) => ({
@@ -13,16 +13,16 @@ const makeModule = (i: number) => ({
 
 const baseWeek = { start: new Date().toISOString(), end: new Date(Date.now() + 6 * 86400000).toISOString() };
 
-const meta: Meta<typeof WeekView> = {
+const meta: Meta<typeof WeekViewPageView> = {
   title: 'Page/WeekView',
-  component: WeekView,
+  component: WeekViewPageView,
   parameters: { layout: 'fullscreen' },
 };
 export default meta;
 
-type Story = StoryObj<typeof WeekView>;
+type Story = StoryObj<typeof WeekViewPageView>;
 
-const baseProps: WeekViewProps = {
+const baseProps: WeekViewPageProps = {
   week: baseWeek,
   priorities: Array.from({ length: 8 }, (_, i) => ({
     id: `p-${i}`,
@@ -40,13 +40,13 @@ const baseProps: WeekViewProps = {
 };
 
 export const Normal: Story = {
-  render: () => <div className="p-6 bg-slate-50 min-h-screen"><WeekView {...baseProps} /></div>,
+  render: () => <div className="p-6 bg-slate-50 min-h-screen"><WeekViewPageView {...baseProps} /></div>,
 };
 
 export const LowData: Story = {
   render: () => (
     <div className="p-6 bg-slate-50 min-h-screen">
-      <WeekView {...baseProps} priorities={[]} moduleSummaries={baseProps.moduleSummaries.slice(0,2)} taskStats={{ completed: 1, pending: 1 }} />
+  <WeekViewPageView {...baseProps} priorities={[]} moduleSummaries={baseProps.moduleSummaries.slice(0,2)} taskStats={{ completed: 1, pending: 1 }} />
     </div>
   ),
 };
@@ -54,7 +54,7 @@ export const LowData: Story = {
 export const ProgressionWarning: Story = {
   render: () => (
     <div className="p-6 bg-slate-50 min-h-screen">
-      <WeekView {...baseProps} overallWeightedAverage={42.3} />
+  <WeekViewPageView {...baseProps} overallWeightedAverage={42.3} />
     </div>
   ),
 };
