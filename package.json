@@ -24,6 +24,7 @@
     "generate:tailwind": "tsx scripts/generate-tailwind-from-tokens.ts",
     "codemod:imports": "node scripts/codemods/replace-imports.js --dry-run",
     "codemod:tokens": "node scripts/codemods/replace-tokens.js"
+  ,"seed:bit": "tsx prisma/seed-bit-dsm.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",

@@ -58,6 +58,10 @@ model Module {
   status        ModuleStatus          @default(ACTIVE)
   endDate       DateTime?
   startDate     DateTime?
+  // New curriculum metadata
+  electiveGroup String?
+  isCore        Boolean               @default(true)
+  span          ModuleSpan            @default(SEMESTER)
   components    AssessmentComponent[]
   assignments   Assignment[]
   owner         User                  @relation(fields: [ownerId], references: [id])
@@ -172,4 +176,10 @@ enum TacticalTaskType {
   PRACTICE
   REVIEW
   ADMIN
+}
+
+enum ModuleSpan {
+  SEMESTER
+  YEAR
+  QUARTER
 }

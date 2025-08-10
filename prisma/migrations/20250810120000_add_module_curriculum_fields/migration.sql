@@ -1,0 +1,2 @@
+-- No-op: fields added in previous migration (20250810030657_add_module_curriculum_fields).
+-- Retained only to preserve migration history consistency.
