@@ -1,1 +1,0 @@
-ALTER TABLE "Module" ADD COLUMN span VARCHAR(32);

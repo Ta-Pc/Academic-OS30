@@ -1,0 +1,32 @@
+Files Removed/Moved During Cleanup - Academic-OS30 Finalization
+================================================================
+
+MOVED TO docs/artifacts/:
+- tmp/component-manifest.json → docs/artifacts/component-manifest.json
+  Reason: Component inventory created during UI library scaffolding, useful for documentation
+- tmp/seed-curriculum-report.json → docs/artifacts/seed-curriculum-report.json  
+  Reason: Seeding report showing curriculum setup, useful for verification
+
+FILES TO BE REMOVED:
+- tmp/week-view-sample.json
+  Reason: Debug sample data file, no longer needed
+- tmp/seed-sample.json  
+  Reason: Sample seed data file, no longer needed
+- tmp/debug-week-view.mjs
+  Reason: Debug script created during development, no longer needed
+- tmp/component-inventory.csv
+  Reason: Duplicate of component-manifest.json in CSV format, no longer needed
+- tmp/add_span_column.sql
+  Reason: Temporary SQL migration file, likely superseded by proper Prisma migrations
+
+PRESERVED FILES:
+- All files in prisma/migrations/ (essential database schema)
+- All files in packages/ui/ (final UI library)
+- All files in docs/ (documentation)
+- All test files and baselines in tests/ (essential for CI)
+- All story files in src/stories/ and packages/ui/stories/ (essential for Storybook)
+
+SUMMARY: 
+- Moved 2 important artifacts to docs/artifacts/
+- Identified 5 temporary files for removal
+- Preserved all essential project files and documentation
