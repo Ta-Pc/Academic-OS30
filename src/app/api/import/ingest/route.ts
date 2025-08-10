@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseCsv, toDate, toNumber, normalizeStatus, normalizeType } from '@/lib/csv';
 import { prisma } from '@/lib/prisma';
+import { $Enums } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,12 +11,13 @@ export async function POST(req: NextRequest) {
       userId = (await prisma.user.findFirst({ select: { id: true } }))?.id;
     }
     if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 });
-    const { rows } = parseCsv(raw);
-    const failures: Array<{ row: any; reason: string }> = [];
+  const { rows } = parseCsv(raw);
+  type CsvRow = Record<string, string | undefined>;
+  const failures: Array<{ row: CsvRow; reason: string }> = [];
     let successCount = 0;
 
     if (importType === 'modules') {
-      for (const r of rows) {
+  for (const r of rows as CsvRow[]) {
         try {
           const code = r[mapping['code']]?.trim();
           const title = r[mapping['title']]?.trim();
@@ -25,16 +27,19 @@ export async function POST(req: NextRequest) {
           const department = r[mapping['department']]?.trim();
           const faculty = r[mapping['faculty']]?.trim();
           const prerequisites = r[mapping['prerequisites']]?.trim();
-          const description = r[mapping['description']]?.trim();
+          // description ignored for module import
           if (!code || !title || creditHours == null) throw new Error('code, title, credits required');
-          await prisma.module.create({ data: { code, title, creditHours, targetMark: targetMark ?? null, status: (status as any) ?? undefined, department, faculty, prerequisites, owner: { connect: { id: userId } } } });
+          const rawStatus: $Enums.ModuleStatus | undefined = status && ['ACTIVE','PLANNED','ARCHIVED'].includes(status as string)
+            ? (status as $Enums.ModuleStatus)
+            : undefined;
+          await prisma.module.create({ data: { code, title, creditHours, targetMark: targetMark ?? null, status: rawStatus, department, faculty, prerequisites, owner: { connect: { id: userId } } } });
           successCount++;
-        } catch (e: any) {
-          failures.push({ row: r, reason: e.message || 'failed' });
+        } catch (e) {
+          failures.push({ row: r, reason: (e as Error).message || 'failed' });
         }
       }
     } else {
-      for (const r of rows) {
+      for (const r of rows as CsvRow[]) {
         try {
           const moduleCode = r[mapping['moduleCode']]?.trim();
           const title = r[mapping['title']]?.trim();
@@ -44,8 +49,8 @@ export async function POST(req: NextRequest) {
           const type = normalizeType(r[mapping['type']]);
           // score is a percentage (0-100). Ignore maxScore entirely
           const score = toNumber(r[mapping['score']]);
-          const description = r[mapping['description']]?.trim();
-          const effortEstimateMinutes = toNumber(r[mapping['effortEstimateMinutes']]);
+          const description = r[mapping['description']]?.trim(); // used in assignment create
+          // effortEstimateMinutes currently unused in data model
           const componentName = r[mapping['component']]?.trim();
           if (!moduleCode || !title || weight == null) throw new Error('moduleCode, title, weight required');
           const mod = await prisma.module.findFirst({ where: { code: moduleCode, ownerId: userId } });
@@ -57,15 +62,15 @@ export async function POST(req: NextRequest) {
           }
           await prisma.assignment.create({ data: { title, weight: weight ?? 0, dueDate: dueDate ?? undefined, status, type, score: score ?? undefined, description: description ?? undefined, moduleId: mod.id, componentId } });
           successCount++;
-        } catch (e: any) {
-          failures.push({ row: r, reason: e.message || 'failed' });
+        } catch (e) {
+          failures.push({ row: r, reason: (e as Error).message || 'failed' });
         }
       }
     }
 
     return NextResponse.json({ total: rows.length, successCount, failures });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || 'ingest failed' }, { status: 400 });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message || 'ingest failed' }, { status: 400 });
   }
 }
 

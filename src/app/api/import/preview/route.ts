@@ -4,13 +4,14 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
   try {
-    const { importType, raw, mapping, userId: bodyUserId } = await req.json();
-    const { headers, rows } = parseCsv(raw);
-    const out: any[] = [];
-    const errors: any[] = [];
+  const { importType, raw, mapping, userId: bodyUserId } = await req.json();
+  const { rows } = parseCsv(raw);
+  type CsvRow = Record<string, string | undefined>;
+  const out: Array<Record<string, unknown>> = [];
+  const errors: Array<{ row: CsvRow; reason: string }> = [];
 
     const missingSet = new Set<string>();
-    for (const r of rows) {
+  for (const r of rows as CsvRow[]) {
       if (importType === 'modules') {
         const code = r[mapping['code']]?.trim();
         const title = r[mapping['title']]?.trim();
@@ -54,8 +55,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ preview: { valid: out, errors, missingModules: Array.from(missingSet) } });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || 'preview failed' }, { status: 400 });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message || 'preview failed' }, { status: 400 });
   }
 }
 
