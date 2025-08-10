@@ -1,4 +1,5 @@
 /** @type {import('jest').Config} */
+// eslint-disable-next-line no-undef
 module.exports = {
   testEnvironment: 'jsdom',
   transform: {
@@ -7,6 +8,7 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  testPathIgnorePatterns: ['<rootDir>/tests/e2e/', '<rootDir>/tests/visual/'],
 };
 
 
