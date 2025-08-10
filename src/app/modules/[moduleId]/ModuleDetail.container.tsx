@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useState } from 'react';
-import AssignmentsTable from '@/components/AssignmentsTable';
+import { AssignmentsTable } from '@/components/AssignmentsTable';
 import type { AssignmentForTable } from '@/components/AssignmentsTable';
 import { useWeekStore } from '@/lib/week-store';
 import { ModuleDetailView } from '@ui';
@@ -39,7 +39,7 @@ export function ModuleDetailContainer({ moduleId, initial }: { moduleId: string;
         remainingWeight: a.remainingWeight,
         predictedSemesterMark: a.currentPredictedSemesterMark,
       }}
-      assignmentsSection={<AssignmentsTable assignments={a.assignments as AssignmentForTable[]} moduleId={moduleId} onAfterSave={refresh} />}
+      assignmentsSection={<AssignmentsTable assignments={a.assignments as AssignmentForTable[]} onAfterUpdate={refresh} />}
       onBackToWeek={goBackToWeek}
       hasLastViewedWeek={!!lastViewedWeek}
     />

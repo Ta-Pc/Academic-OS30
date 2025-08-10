@@ -87,13 +87,15 @@ function main() {
     const defSym = source.getDefaultExportSymbol();
     const defaultExport = defSym ? (defSym.getName ? defSym.getName() : defSym.getEscapedName?.()) ?? null : null;
     const componentName: string = defaultExport || path.basename(filePath, path.extname(filePath));
+    let propsType: string | null = null;
     if (!/^[A-Z]/.test(componentName)) {
-      // likely not a presentational component; mark for manual migration
+      // non-PascalCase: still attempt to detect props type for completeness
+      propsType = detectPropsType(source);
       records.push({
         componentName,
         filePath: rel,
         defaultExportName: defaultExport,
-        propsType: propsType,
+        propsType,
         usedByPages: [],
         usedByComponents: [],
         cssFiles: [],
@@ -103,9 +105,9 @@ function main() {
         reason: 'Non-PascalCase export or not a typical component file',
       });
       continue;
+    } else {
+      propsType = detectPropsType(source);
     }
-
-    const propsType = detectPropsType(source);
 
     // naive usage scan
     const usedByPages = new Set<string>();

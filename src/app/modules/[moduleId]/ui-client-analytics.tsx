@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { WhatIfDialogView } from '@ui/modals/WhatIfDialog.view';
 import { useWhatIf } from '@/hooks/useWhatIf';
 import { pushModal, closeModal, listenModal } from '@/lib/modal-history';
-import AssignmentsTable from '@/components/AssignmentsTable';
+import { AssignmentsTable } from '@/components/AssignmentsTable';
 import { getBaseUrl } from '@/lib/base-url';
 
 type AnalyticsData = {
@@ -129,8 +129,7 @@ export default function ClientAnalytics({ moduleId, initial }: { moduleId: strin
           <div className="card-body p-0">
             <AssignmentsTable
               assignments={data.assignments}
-              moduleId={moduleId}
-              onAfterSave={refetch}
+              onAfterUpdate={refetch}
             />
           </div>
         </div>

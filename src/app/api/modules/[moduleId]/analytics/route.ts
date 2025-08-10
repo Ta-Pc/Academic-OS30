@@ -7,8 +7,13 @@ export async function GET(
 ) {
   try {
     const { moduleId } = params;
-    const module = await prisma.module.findUnique({
-      where: { id: moduleId },
+    
+    // Support lookup by both id (UUID) and code (like STK110)
+    const isUuid = /^[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}$/i.test(moduleId);
+    const whereClause = isUuid ? { id: moduleId } : { code: moduleId };
+    
+    const module = await prisma.module.findFirst({
+      where: whereClause,
       include: {
         components: true,
         assignments: true,
