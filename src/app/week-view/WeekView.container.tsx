@@ -52,11 +52,17 @@ export function WeekViewContainer({ userId, date }: { userId?: string; date?: st
   }, []);
 
   const closeModuleViaHistory = useCallback(() => {
+    // Prefer history back so the previously pushed state (without module param) is restored
+    if (openModuleId) {
+      window.history.back();
+      return;
+    }
+    // Fallback: if no module open just ensure param cleared
     const url = new URL(window.location.toString());
     url.searchParams.delete('module');
-    window.history.pushState({}, '', url.toString());
+    window.history.replaceState({}, '', url.toString());
     setOpenModuleId(null);
-  }, []);
+  }, [openModuleId]);
 
   useEffect(() => {
     if (!userId) return; // wait for server provided user id
