@@ -12,6 +12,7 @@
     "build-storybook": "storybook build",
     "test": "jest",
     "test:visual": "playwright test tests/visual",
+  "test:visual:prod": "npm run build && cross-env NEXT_PUBLIC_FEATURE_UI_LIBRARY=true CI=1 playwright test tests/visual",
     "prepare": "husky install",
     "verify:api": "node scripts/verify-api.mjs",
     "audit": "node scripts/full-audit.mjs",
