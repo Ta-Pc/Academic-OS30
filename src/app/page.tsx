@@ -5,9 +5,9 @@ export default function Home() {
   const featureUILibrary = process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true';
   const isProd = process.env.NODE_ENV === 'production';
   
-  // If UI library feature is enabled, redirect to week-view
+  // If UI library feature is enabled, redirect to Academic OS
   if (featureUILibrary) {
-    redirect('/week-view');
+    redirect('/dashboard');
   }
 
   if (isProd) {
@@ -26,18 +26,21 @@ export default function Home() {
       <div className="max-w-md text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Academic OS</h1>
         <p className="text-gray-600 mb-8">
-          Your personalized academic planning and tracking system. 
-          View your weekly schedule, assignments, and module progress all in one place.
+          Your complete academic management system with weekly planning, 
+          strategic analytics, and module tracking all integrated into one experience.
         </p>
         <Link 
-          href="/week-view" 
+          href="/dashboard" 
           className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
-          Open Weekly View
+          Launch Academic OS
         </Link>
-        <div className="mt-6">
-          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 underline text-sm">
-            View Strategic Dashboard
+        <div className="mt-6 space-x-4">
+          <Link href="/week-view" className="text-blue-600 hover:text-blue-700 underline text-sm">
+            Weekly View
+          </Link>
+          <Link href="/modules" className="text-blue-600 hover:text-blue-700 underline text-sm">
+            Modules
           </Link>
         </div>
       </div>
