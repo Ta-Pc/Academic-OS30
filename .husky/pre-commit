@@ -1,6 +1,16 @@
 #!/bin/sh
-# Temporary bypass of lint & tests to permit committing DB migration changes.
-echo "[husky] skipping lint/tests for migration commit"
+. "$(dirname "$0")/_/husky.sh"
+
+echo "[husky] pre-commit: running ESLint on staged files"
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' || true)
+
+if [ -n "$STAGED_FILES" ]; then
+	echo "$STAGED_FILES" | xargs npx eslint
+else
+	echo "[husky] pre-commit: no JS/TS files staged"
+fi
+
+echo "[husky] pre-commit: done"
+
 exit 0
-
-
