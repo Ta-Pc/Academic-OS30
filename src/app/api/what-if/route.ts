@@ -1,0 +1,103 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import { computeModulePrediction } from '@/utils/prediction';
+
+const bodySchema = z.object({
+  moduleId: z.string(),
+  sessionOnly: z.boolean().default(true),
+  changes: z.array(z.object({
+    assignmentId: z.string(),
+    score: z.number().min(0).max(100).nullable(), // treat as percent if maxScore missing
+  })).default([]),
+});
+
+// Accept a broad request type to facilitate direct invocation in tests without constructing full NextRequest
+export async function POST(req: NextRequest | { json: () => Promise<unknown> }) {
+  try {
+    const json = await req.json();
+    const parsed = bodySchema.safeParse(json);
+    if (!parsed.success) return NextResponse.json({ error: 'invalid body', issues: parsed.error.issues }, { status: 400 });
+    const { moduleId, sessionOnly, changes } = parsed.data;
+
+    // Auth stub: pick seed user or first user
+    const seed = await prisma.user.findFirst({ where: { id: 'seed-user-1' } });
+    const userId = seed?.id || (await prisma.user.findFirst({ select: { id: true } }))?.id;
+    if (!userId) return NextResponse.json({ error: 'no user' }, { status: 404 });
+
+    const module = await prisma.module.findUnique({
+      where: { id: moduleId },
+      include: { assignments: true },
+    });
+    if (!module) return NextResponse.json({ error: 'module not found' }, { status: 404 });
+  // In current dev/test environment we relax strict ownership (single-user context)
+  // If multi-user auth added later, reinstate forbidden check.
+
+    // Create a working copy of assignments for simulation
+    const simulatedAssignments = module.assignments.map(a => ({ ...a }));
+
+    // Index for quick lookup
+    const index = new Map(simulatedAssignments.map(a => [a.id, a] as const));
+
+    for (const ch of changes) {
+      const target = index.get(ch.assignmentId);
+      if (!target) continue; // silently skip unknown ids
+      target.score = ch.score == null ? null : ch.score;
+      target.status = ch.score == null ? 'PENDING' : 'GRADED';
+    }
+
+    // Persist if commit path
+    if (!sessionOnly && changes.length > 0) {
+      await prisma.$transaction(async tx => {
+        for (const ch of changes) {
+          const found = module.assignments.find(a => a.id === ch.assignmentId);
+            if (!found) continue;
+          await tx.assignment.update({
+            where: { id: ch.assignmentId },
+            data: { score: ch.score, status: ch.score == null ? 'PENDING' : 'GRADED' },
+          });
+        }
+      });
+    }
+
+    const prediction = computeModulePrediction(
+      simulatedAssignments.map(a => ({ weight: a.weight, score: a.score, maxScore: a.maxScore, status: a.status })),
+      { targetMark: module.targetMark }
+    );
+
+    // Decorate assignments with derived fields for client display
+    const decorated = simulatedAssignments.map(a => {
+      let gradePercent: number | null = null;
+      if (a.score != null) {
+        if (a.maxScore != null && a.maxScore > 0) gradePercent = (Number(a.score) / Number(a.maxScore)) * 100;
+        else gradePercent = Number(a.score);
+      }
+      const contribution = (a.status === 'GRADED' && gradePercent != null)
+        ? (gradePercent / 100) * (a.weight) // raw contribution before normalization
+        : null;
+      return {
+        id: a.id,
+        title: a.title,
+        weight: a.weight,
+        score: a.score,
+        maxScore: a.maxScore,
+        status: a.status,
+        gradePercent,
+        contribution,
+        dueDate: a.dueDate,
+      };
+    });
+
+    return NextResponse.json({
+      data: {
+        module: { id: module.id, code: module.code, title: module.title, targetMark: module.targetMark },
+        prediction,
+        assignments: decorated,
+        committed: !sessionOnly,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'internal' }, { status: 500 });
+  }
+}
