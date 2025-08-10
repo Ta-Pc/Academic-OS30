@@ -12,34 +12,53 @@ interface AnalyticsData {
   remainingWeight: number;
   currentPredictedSemesterMark: number;
 }
+
 export function ModuleDetailContainer({ moduleId, initial }: { moduleId: string; initial: AnalyticsData }) {
   const [analytics, setAnalytics] = useState<AnalyticsData>(initial);
   const lastViewedWeek = useWeekStore(s => s.lastViewedWeek);
+  
   const refresh = useCallback(async () => {
-    const res = await fetch(`/api/modules/${moduleId}/analytics`, { cache: 'no-store' });
-    if (res.ok) {
-  const j: { data: AnalyticsData } = await res.json();
-  setAnalytics(j.data);
+    try {
+      const res = await fetch(`/api/modules/${moduleId}/analytics`, { cache: 'no-store' });
+      if (res.ok) {
+        const j: { data: AnalyticsData } = await res.json();
+        setAnalytics(j.data);
+      }
+    } catch (error) {
+      console.error('Failed to refresh analytics:', error);
     }
   }, [moduleId]);
 
   function goBackToWeek() {
     if (typeof window === 'undefined') return;
     const url = new URL('/week-view', window.location.origin);
-    if (lastViewedWeek) url.searchParams.set('date', lastViewedWeek);
+    if (lastViewedWeek) {
+      url.searchParams.set('date', lastViewedWeek);
+    }
     window.location.href = url.toString();
   }
 
   const a = analytics;
+  
   return (
     <ModuleDetailView
-      header={{ code: a.module.code, title: a.module.title, credits: a.module.creditHours ?? 0 }}
+      header={{ 
+        code: a.module.code, 
+        title: a.module.title, 
+        credits: a.module.creditHours ?? 0 
+      }}
       stats={{
         currentObtained: a.currentObtainedMark,
         remainingWeight: a.remainingWeight,
         predictedSemesterMark: a.currentPredictedSemesterMark,
+        targetMark: a.module.targetMark,
       }}
-      assignmentsSection={<AssignmentsTable assignments={a.assignments as AssignmentForTable[]} onAfterUpdate={refresh} />}
+      assignmentsSection={
+        <AssignmentsTable 
+          assignments={a.assignments as AssignmentForTable[]} 
+          onAfterUpdate={refresh} 
+        />
+      }
       onBackToWeek={goBackToWeek}
       hasLastViewedWeek={!!lastViewedWeek}
     />

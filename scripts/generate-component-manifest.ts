@@ -37,15 +37,25 @@ function listFiles(dir: string): string[] {
 
 function detectPropsType(source: import('ts-morph').SourceFile): string | null {
   const exports = source.getExportedDeclarations();
-  for (const [name, decls] of exports) {
+  for (const [, decls] of exports) {
     for (const d of decls) {
-      if (Node.isFunctionDeclaration(d) || Node.isVariableDeclaration(d)) {
-        const typeParams = (d as any).getTypeParameters?.();
-        const params = (d as any).getParameters?.();
-      if (params && params.length > 0) {
+      if (Node.isFunctionDeclaration(d)) {
+        const params = d.getParameters();
+        if (params && params.length > 0) {
           const p = params[0];
           const t = p.getType().getText();
           if (t && t !== 'any') return t;
+        }
+      } else if (Node.isVariableDeclaration(d)) {
+        // For arrow functions in variable declarations, try to get the type annotation
+        const initializer = d.getInitializer();
+        if (initializer && Node.isArrowFunction(initializer)) {
+          const params = initializer.getParameters();
+          if (params && params.length > 0) {
+            const p = params[0];
+            const t = p.getType().getText();
+            if (t && t !== 'any') return t;
+          }
         }
       }
     }
@@ -54,10 +64,12 @@ function detectPropsType(source: import('ts-morph').SourceFile): string | null {
   if (def) {
     const d = def.getDeclarations()?.[0];
     if (d && (Node.isFunctionDeclaration(d) || Node.isVariableDeclaration(d))) {
-      const params = (d as any).getParameters?.();
-      if (params && params.length > 0) {
-        const t = params[0].getType().getText();
-        if (t && t !== 'any') return t;
+      if (Node.isFunctionDeclaration(d)) {
+        const params = d.getParameters();
+        if (params && params.length > 0) {
+          const t = params[0].getType().getText();
+          if (t && t !== 'any') return t;
+        }
       }
     }
   }
@@ -118,11 +130,12 @@ function main() {
       if (!sf) continue;
       const imports = sf.getImportDeclarations();
       for (const imp of imports) {
-        const spec = imp.getModuleSpecifierValue();
         let resolved = '';
         try {
           resolved = imp.getModuleSpecifierSourceFile()?.getFilePath() ?? '';
-        } catch {}
+        } catch {
+          // Ignore resolution errors
+        }
         if (resolved && resolved.replace(/\\/g, '/') === filePath) {
           const relf = path.relative(repoRoot, f).replace(/\\/g, '/');
           if (relf.includes('/app/') && relf.endsWith('.tsx')) usedByPages.add(relf);
