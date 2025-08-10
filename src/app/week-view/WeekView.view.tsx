@@ -1,8 +1,9 @@
+"use client";
 import React from 'react';
-import { WeekHeaderView } from 'packages/ui/week/WeekHeader.view';
-import { WeeklyMissionListView } from 'packages/ui/week/WeeklyMissionList.view';
-import { SemesterSnapshotView } from 'packages/ui/semester/SemesterSnapshot.view';
-import { ModuleQuickView } from 'packages/ui/modules/ModuleQuickView.view';
+import { WeekHeaderView } from '@ui/week/WeekHeader.view';
+import { WeeklyMissionListView } from '@ui/week/WeeklyMissionList.view';
+import { SemesterSnapshotView } from '@ui/semester/SemesterSnapshot.view';
+import { ModuleQuickView } from '@ui/modules/ModuleQuickView.view';
 
 export type WeekViewProps = {
   week: { start: string | Date; end: string | Date };

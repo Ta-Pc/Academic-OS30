@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useUserStore } from '@/lib/user-store';
 import { ImporterShell } from 'packages/ui/import/ImporterShell.view';
 import AddModuleForm from '@/components/AddModuleForm';
@@ -13,9 +13,8 @@ export function ImporterContainer() {
   const [importType, setImportType] = useState<ImportType>('assignments');
   const [raw, setRaw] = useState<string>('');
   const [headers, setHeaders] = useState<string[]>([]);
-  const [rows, setRows] = useState<Record<string, string>[]>([]);
   const [mapping, setMapping] = useState<Record<string, string>>({});
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<unknown>(null);
   const [missingModules, setMissingModules] = useState<string[]>([]);
 
   async function handleParse(file: File) {
@@ -23,7 +22,7 @@ export function ImporterContainer() {
     const res = await fetch('/api/import/parse', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) });
     const data = await res.json();
     setHeaders(data.headers);
-    setRows(data.rows);
+  // rows not needed beyond header inference currently
     setRaw(text);
     setStep(2);
   }

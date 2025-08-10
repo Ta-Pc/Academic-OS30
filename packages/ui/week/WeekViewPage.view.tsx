@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { WeekHeaderView } from './WeekHeader.view';
 import { WeeklyMissionListView } from './WeeklyMissionList.view';
