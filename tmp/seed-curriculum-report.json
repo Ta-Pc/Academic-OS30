@@ -3,16 +3,10 @@
   "offline": false,
   "totalModulesDefined": 26,
   "operationsPlanned": 26,
-  "createPlanned": 5,
+  "createPlanned": 0,
   "updatePlanned": 0,
-  "noop": 21,
-  "created": [
-    "INF171",
-    "JCP202",
-    "INF271",
-    "INF272",
-    "INF370"
-  ],
+  "noop": 26,
+  "created": [],
   "updated": [],
   "coreCount": 23,
   "electiveCount": 3,
@@ -29,5 +23,5 @@
     "JCP202"
   ],
   "missingPrerequisites": [],
-  "timestamp": "2025-08-10T05:02:15.667Z"
+  "timestamp": "2025-08-10T05:28:30.912Z"
 }

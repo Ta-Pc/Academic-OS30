@@ -1,5 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from 'react';
+import { WhatIfDialogView } from '@ui/modals/WhatIfDialog.view';
+import { useWhatIf } from '@/hooks/useWhatIf';
+import { pushModal, closeModal, listenModal } from '@/lib/modal-history';
 import AssignmentsTable from '@/components/AssignmentsTable';
 import { getBaseUrl } from '@/lib/base-url';
 
@@ -26,6 +29,7 @@ export default function ClientAnalytics({ moduleId, initial }: { moduleId: strin
   const [data, setData] = useState<AnalyticsData>(initial);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showWhatIf, setShowWhatIf] = useState(false);
 
   const baseUrl = useMemo(() => getBaseUrl(), []);
 
@@ -37,8 +41,9 @@ export default function ClientAnalytics({ moduleId, initial }: { moduleId: strin
       if (!resp.ok) throw new Error(await resp.text());
       const json = await resp.json();
       setData(json.data);
-    } catch (e: any) {
-      setError(e?.message || 'Failed to refresh');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to refresh';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -47,8 +52,35 @@ export default function ClientAnalytics({ moduleId, initial }: { moduleId: strin
   useEffect(() => {
     // Invalidate on mount just in case SSR cache interfered
     refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moduleId]);
+
+  // What-If hook (lazy when shown)
+  const whatIf = useWhatIf(showWhatIf ? moduleId : null);
+
+  // History integration for modal
+  useEffect(() => {
+    const unsub = listenModal(st => {
+      if (!st) setShowWhatIf(false); else if (st.modal === 'whatif' && st.id === moduleId) setShowWhatIf(true);
+    });
+    // On mount, check if URL already has modal
+    const url = new URL(window.location.toString());
+    if (url.searchParams.get('modal') === 'whatif' && url.searchParams.get('id') === moduleId) setShowWhatIf(true);
+    return () => unsub();
+  }, [moduleId]);
+
+  function openWhatIf() {
+    pushModal('whatif', moduleId);
+    setShowWhatIf(true);
+  }
+  function closeWhatIf() {
+    closeModal(); // triggers popstate -> sets showWhatIf false
+  }
+
+  async function onCommitWhatIf() {
+    await whatIf.commit();
+    await refetch();
+    closeWhatIf();
+  }
 
   return (
     <>
@@ -90,6 +122,9 @@ export default function ClientAnalytics({ moduleId, initial }: { moduleId: strin
           <h2 className="text-xl font-semibold">Assignments</h2>
           <div className="text-sm text-slate-500">{loading ? 'Refreshing…' : error ? <span className="text-danger-600">{error}</span> : null}</div>
         </div>
+        <div>
+          <button type="button" className="btn btn-primary btn-sm" onClick={openWhatIf} data-testid="open-whatif">What If</button>
+        </div>
         <div className="card">
           <div className="card-body p-0">
             <AssignmentsTable
@@ -100,6 +135,21 @@ export default function ClientAnalytics({ moduleId, initial }: { moduleId: strin
           </div>
         </div>
       </section>
+      <WhatIfDialogView
+        open={showWhatIf}
+        module={whatIf.module || { id: moduleId, code: data.module.code, title: data.module.title, targetMark: data.module.targetMark }}
+        assignments={whatIf.assignments}
+        workingChanges={whatIf.working}
+        prediction={whatIf.prediction || undefined}
+        loading={whatIf.loading}
+        committing={whatIf.committing}
+        error={whatIf.error}
+        onChange={whatIf.updateLocal}
+        onSimulate={whatIf.simulate}
+        onCommit={onCommitWhatIf}
+        onClose={closeWhatIf}
+        onReset={whatIf.reset}
+      />
     </>
   );
 }
