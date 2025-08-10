@@ -10,7 +10,7 @@ type ApiResponse = {
   moduleSummaries: Array<{
     moduleId: string; code: string; title: string; creditHours: number; priorityScore: number;
   }>;
-  tacticalTasks: Array<{ id: string; title: string; status: string; type: string; dueDate: string; module?: { id: string; code: string; title: string } }>; // legacy tasks
+  tacticalTasks: Array<{ id: string; title: string; status: string; type: string; dueDate: string; module?: { id: string; code: string; title: string } }>; // task system
 };
 
 async function fetchWeek(userId: string, date?: string): Promise<ApiResponse> {

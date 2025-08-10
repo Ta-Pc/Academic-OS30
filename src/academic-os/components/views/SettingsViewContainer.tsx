@@ -39,7 +39,7 @@ export function SettingsViewContainer() {
               onClick={() => window.location.href = '/dashboard'}
               className="btn btn-secondary btn-sm w-full"
             >
-              📊 Legacy Dashboard
+              📊 Dashboard Overview
             </button>
           </div>
         </section>

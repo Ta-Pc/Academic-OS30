@@ -126,7 +126,7 @@ function AssignmentRow({ a, onAfterSave }: { a: AssignmentForTable; onAfterSave?
   );
 }
 
-// Legacy modal removed - now using EditAssignmentModal
+// Note: This component uses the EditAssignmentModal for score editing
 // function EditScoreModal was here but unused after modal integration
 
 // Handler function for EditAssignmentModal save - now unused

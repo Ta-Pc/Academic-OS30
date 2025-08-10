@@ -1,0 +1,197 @@
+{
+  "weekRange": {
+    "start": "2025-08-03T22:00:00.000Z",
+    "end": "2025-08-10T21:59:59.999Z"
+  },
+  "assignments": [],
+  "tacticalTasks": [],
+  "moduleSummaries": [
+    {
+      "moduleId": "cme5nrsmc000eucuox7se429g",
+      "code": "WTW124",
+      "title": "Mathematics 124",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 16,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 27
+    },
+    {
+      "moduleId": "cme5nrsmi000gucuoxslchecu",
+      "code": "COS212",
+      "title": "Data Structures & Algorithms",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 16,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 27
+    },
+    {
+      "moduleId": "cme5nrsmn000iucuotszq3yom",
+      "code": "INF114",
+      "title": "Informatics Foundations",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 6,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 21
+    },
+    {
+      "moduleId": "cme5nrsmt000kucuowqewpqbn",
+      "code": "STK120",
+      "title": "Statistics 120",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 12,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 24
+    },
+    {
+      "moduleId": "cme5nrsmy000mucuof93nmco2",
+      "code": "INF171",
+      "title": "Information Systems Analysis and Design",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 12,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 24
+    },
+    {
+      "moduleId": "cme5nrsnq000wucuo73u6omtn",
+      "code": "COS284",
+      "title": "Database Systems",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 16,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 27
+    },
+    {
+      "moduleId": "cme5nrsnv000yucuo5ycs7a8v",
+      "code": "COS256",
+      "title": "Operating Systems",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 16,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 27
+    },
+    {
+      "moduleId": "cme5nrso10010ucuo6wcyxum3",
+      "code": "WTW218",
+      "title": "Calculus 2",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 12,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 24
+    },
+    {
+      "moduleId": "cme5nrso60012ucuo42uakhoh",
+      "code": "STK220",
+      "title": "Statistical Inference",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 20,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 29
+    },
+    {
+      "moduleId": "cme5nrsob0014ucuop4t6k90b",
+      "code": "INF271",
+      "title": "Information Systems Design & Development I",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 24,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 32
+    },
+    {
+      "moduleId": "cme5nrsog0016ucuopgqyj8sf",
+      "code": "INF272",
+      "title": "Information Systems Design & Development II",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 24,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 32
+    },
+    {
+      "moduleId": "cme5nrsp1001eucuol6bls9mh",
+      "code": "STK320",
+      "title": "Multivariate Analysis",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 20,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 29
+    },
+    {
+      "moduleId": "cme5nrsp6001gucuomzotd3as",
+      "code": "COS344",
+      "title": "Computer Graphics",
+      "isCore": false,
+      "electiveGroup": "DSM",
+      "creditHours": 18,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 28
+    },
+    {
+      "moduleId": "cme5nrspc001iucuopxm2k217",
+      "code": "COS333",
+      "title": "Programming Languages",
+      "isCore": false,
+      "electiveGroup": "DSM",
+      "creditHours": 18,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 28
+    },
+    {
+      "moduleId": "cme5nrsph001kucuok6l7uiw8",
+      "code": "INF370",
+      "title": "Information Systems Project",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 32,
+      "daysUntilNextDue": null,
+      "assignmentCount": 0,
+      "taskCount": 0,
+      "priorityScore": 36
+    }
+  ],
+  "weeklyPriorities": [],
+  "data": {
+    "start": "2025-08-03T22:00:00.000Z",
+    "end": "2025-08-10T21:59:59.999Z",
+    "tasks": [],
+    "totalStudyMinutes": 0
+  }
+}
