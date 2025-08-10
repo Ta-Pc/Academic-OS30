@@ -1,12 +1,18 @@
 {
-  "dryRun": true,
-  "offline": true,
+  "dryRun": false,
+  "offline": false,
   "totalModulesDefined": 26,
   "operationsPlanned": 26,
-  "createPlanned": 26,
+  "createPlanned": 5,
   "updatePlanned": 0,
-  "noop": 0,
-  "created": [],
+  "noop": 21,
+  "created": [
+    "INF171",
+    "JCP202",
+    "INF271",
+    "INF272",
+    "INF370"
+  ],
   "updated": [],
   "coreCount": 23,
   "electiveCount": 3,
@@ -23,5 +29,5 @@
     "JCP202"
   ],
   "missingPrerequisites": [],
-  "timestamp": "2025-08-10T04:37:06.270Z"
+  "timestamp": "2025-08-10T05:02:15.667Z"
 }
