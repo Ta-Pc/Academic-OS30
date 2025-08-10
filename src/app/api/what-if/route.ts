@@ -12,8 +12,7 @@ const bodySchema = z.object({
   })).default([]),
 });
 
-// Accept a broad request type to facilitate direct invocation in tests without constructing full NextRequest
-export async function POST(req: NextRequest | { json: () => Promise<unknown> }) {
+export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
     const parsed = bodySchema.safeParse(json);

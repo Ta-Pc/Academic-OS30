@@ -25,8 +25,9 @@ export default function AssignmentRow({ assignment }: AssignmentRowProps) {
         throw new Error(text);
       }
       setOpen(false);
-    } catch (e: any) {
-      setError(e.message || 'Failed to update');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to update';
+      setError(msg);
     } finally {
       setSaving(false);
     }

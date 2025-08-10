@@ -70,7 +70,9 @@ export default async function DashboardPage() {
   if (userId) {
     try {
       resp = await fetchDashboard(userId);
-    } catch {}
+    } catch (e) {
+      console.warn('Dashboard fetch failed', e);
+    }
   }
 
   const modules = resp?.data ?? [];

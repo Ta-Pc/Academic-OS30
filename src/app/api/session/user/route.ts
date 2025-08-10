@@ -9,8 +9,9 @@ export async function GET() {
       user = await prisma.user.create({ data: { email: 'default@example.com', name: 'Default User' } });
     }
     return NextResponse.json({ user });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'failed' }, { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'failed';
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 

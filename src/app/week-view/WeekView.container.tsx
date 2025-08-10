@@ -1,5 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { rememberWeek } from '@/lib/week-store';
 import { WeekView } from './WeekView.view';
 
 // Shape returned from /api/week-view (subset used here)
@@ -75,6 +76,11 @@ export function WeekViewContainer({ userId, date }: { userId?: string; date?: st
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, [userId, date]);
+
+  // Persist last viewed week for back-navigation from module detail page
+  useEffect(() => {
+    rememberWeek(date);
+  }, [date]);
 
   const overallWeightedAverage = useMemo(() => {
     // Placeholder heuristic: normalize priorityScore (0-100) average -> acts as an engagement proxy

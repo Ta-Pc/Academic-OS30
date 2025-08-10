@@ -3,23 +3,23 @@ import Papa from 'papaparse';
 export type ParsedCSV = { headers: string[]; rows: Record<string, string>[] };
 
 export function parseCsv(text: string): ParsedCSV {
-  const parsed = (Papa as any).parse(text, { header: true, skipEmptyLines: true });
+  const parsed = (Papa as unknown as { parse: (t: string, opts: Record<string, unknown>) => { data: unknown[]; errors: Array<{ message: string }>; meta: { fields?: string[] } } }).parse(text, { header: true, skipEmptyLines: true });
   if (parsed.errors.length) {
-    throw new Error((parsed.errors as any[]).map((e: any) => e.message).join('; '));
+    throw new Error((parsed.errors as Array<{ message: string }>).map((e) => e.message).join('; '));
   }
-  const records = (parsed.data as any[]).filter(Boolean);
+  const records = (parsed.data as Record<string, unknown>[]).filter(Boolean);
   if (records.length === 0) return { headers: [], rows: [] };
-  const headers = (parsed.meta?.fields || Object.keys(records[0] || {})).map((h: string) => String(h).trim());
+  const headers = (parsed.meta?.fields || Object.keys(records[0] || {})).map((h: unknown) => String(h).trim());
   const rows = records.map((r) => {
     const obj: Record<string, string> = {};
-    headers.forEach((h) => (obj[h] = String(r[h] ?? '').trim()));
+    headers.forEach((h: string) => (obj[h] = String((r as Record<string, unknown>)[h] ?? '').trim()));
     return obj;
   });
   return { headers, rows };
 }
 
 export function suggestModuleMapping(headers: string[]) {
-  const lower = headers.map((h: string) => h.toLowerCase());
+  const lower = headers.map((h) => h.toLowerCase());
   const find = (...cands: string[]) => {
     for (const c of cands) {
       const idx = lower.findIndex((h) => h.includes(c));
@@ -36,7 +36,7 @@ export function suggestModuleMapping(headers: string[]) {
 }
 
 export function suggestAssignmentMapping(headers: string[]) {
-  const lower = headers.map((h: string) => h.toLowerCase());
+  const lower = headers.map((h) => h.toLowerCase());
   const find = (...cands: string[]) => {
     for (const c of cands) {
       const idx = lower.findIndex((h) => h.includes(c));

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseCsv, toDate, toNumber, normalizeStatus, normalizeType } from '@/lib/csv';
 import { prisma } from '@/lib/prisma';
-import { $Enums } from '@prisma/client';
+import { $Enums, type Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
-    const { importType, raw, mapping, userId: bodyUserId } = await req.json();
+  const { importType, raw, mapping, userId: bodyUserId, termId } = await req.json();
     let userId = bodyUserId as string | undefined;
     if (!userId) {
       userId = (await prisma.user.findFirst({ select: { id: true } }))?.id;
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   type CsvRow = Record<string, string | undefined>;
   const failures: Array<{ row: CsvRow; reason: string }> = [];
     let successCount = 0;
+    const processed: string[] = [];
 
     if (importType === 'modules') {
   for (const r of rows as CsvRow[]) {
@@ -28,11 +29,68 @@ export async function POST(req: NextRequest) {
           const faculty = r[mapping['faculty']]?.trim();
           const prerequisites = r[mapping['prerequisites']]?.trim();
           // description ignored for module import
-          if (!code || !title || creditHours == null) throw new Error('code, title, credits required');
+          if (!code || !title || creditHours == null) {
+            throw new Error(`validation failed: code='${code}', title='${title}', creditHours='${creditHours}' (parsed from '${r[mapping['creditHours']]}')`);
+          }
           const rawStatus: $Enums.ModuleStatus | undefined = status && ['ACTIVE','PLANNED','ARCHIVED'].includes(status as string)
             ? (status as $Enums.ModuleStatus)
             : undefined;
-          await prisma.module.create({ data: { code, title, creditHours, targetMark: targetMark ?? null, status: rawStatus, department, faculty, prerequisites, owner: { connect: { id: userId } } } });
+          let startDate: Date | undefined = undefined;
+          let endDate: Date | undefined = undefined;
+          if (termId) {
+            const term = await prisma.term.findUnique({ where: { id: termId } });
+            if (term) { startDate = term.startDate; endDate = term.endDate; }
+          }
+          const existing = await prisma.module.findFirst({ where: { code, ownerId: userId } });
+          if (existing) {
+            const updateData: Prisma.ModuleUpdateInput = {
+              title,
+              creditHours,
+              targetMark: targetMark ?? null,
+              status: rawStatus,
+              department,
+              faculty,
+              prerequisites,
+              startDate: startDate ?? existing.startDate,
+              endDate: endDate ?? existing.endDate
+            };
+
+            // Add term relation if termId provided
+            if (termId) {
+              updateData.term = { connect: { id: termId } };
+            } else if (existing.termId) {
+              updateData.term = { connect: { id: existing.termId } };
+            }
+
+            await prisma.module.update({
+              where: { id: existing.id },
+              data: updateData
+            });
+          } else {
+            const moduleData: Prisma.ModuleCreateInput = {
+              code,
+              title,
+              creditHours,
+              targetMark: targetMark ?? null,
+              status: rawStatus,
+              department,
+              faculty,
+              prerequisites,
+              owner: { connect: { id: userId } },
+              startDate,
+              endDate
+            };
+
+            // Add term relation if termId provided
+            if (termId) {
+              moduleData.term = { connect: { id: termId } };
+            }
+
+            await prisma.module.create({
+              data: moduleData
+            });
+          }
+          processed.push(code);
           successCount++;
         } catch (e) {
           failures.push({ row: r, reason: (e as Error).message || 'failed' });
@@ -61,6 +119,7 @@ export async function POST(req: NextRequest) {
             if (comp) componentId = comp.id;
           }
           await prisma.assignment.create({ data: { title, weight: weight ?? 0, dueDate: dueDate ?? undefined, status, type, score: score ?? undefined, description: description ?? undefined, moduleId: mod.id, componentId } });
+          processed.push(moduleCode);
           successCount++;
         } catch (e) {
           failures.push({ row: r, reason: (e as Error).message || 'failed' });
@@ -68,7 +127,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ total: rows.length, successCount, failures });
+  return NextResponse.json({ total: rows.length, successCount, failures, processed_codes: processed, mapping_received: mapping, importType, termId });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message || 'ingest failed' }, { status: 400 });
   }

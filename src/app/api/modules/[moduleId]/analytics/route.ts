@@ -19,8 +19,8 @@ export async function GET(
     const target = typeof module.targetMark === 'number' ? module.targetMark : 0; // percent target on 0-100
 
     // Compute using score/maxScore when available, falling back to score as percentage (0-100)
-    const graded = module.assignments.filter((a: any) => a.score != null && a.status === 'GRADED');
-    const toPercent = (a: any): number => {
+  const graded = module.assignments.filter((a) => a.score != null && a.status === 'GRADED');
+  const toPercent = (a: { score: number | null; maxScore: number | null }): number => {
       const score = Number(a.score);
       const max = a.maxScore != null ? Number(a.maxScore) : null;
       if (max && Number.isFinite(max) && max > 0) return (score / max) * 100;
@@ -28,16 +28,16 @@ export async function GET(
     };
 
     // Σ contribution where contribution = gradePercent * weight
-    const currentObtainedMark = graded.reduce((sum: number, a: any) => {
+  const currentObtainedMark = graded.reduce((sum: number, a) => {
       const pct = toPercent(a) / 100;
       const weight = Number(a.weight) || 0;
       const contribution = pct * weight;
       return sum + contribution;
     }, 0);
 
-    const totalWeightAssessed = graded.reduce((sum: number, a: any) => sum + (Number(a.weight) || 0), 0);
+    const totalWeightAssessed = graded.reduce((sum: number, a) => sum + (Number(a.weight) || 0), 0);
     const avgPercent = graded.length > 0
-      ? graded.reduce((s: number, a: any) => s + toPercent(a), 0) / graded.length
+      ? graded.reduce((s: number, a) => s + toPercent(a), 0) / graded.length
       : 0;
 
     const remainingWeight = Math.max(0, 100 - totalWeightAssessed);
@@ -48,7 +48,7 @@ export async function GET(
     const currentPredictedSemesterMark = currentObtainedMark + remainingWeight * (avgPercent / 100);
 
     // Enrich assignments with derived gradePercent and contribution for UI table
-    const assignments = (module.assignments || []).map((a: any) => {
+  const assignments = (module.assignments || []).map((a) => {
       const hasScore = a?.score != null;
       const scoreNum = hasScore ? Number(a.score) : null;
       const maxNum = a?.maxScore != null ? Number(a.maxScore) : null;

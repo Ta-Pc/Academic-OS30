@@ -40,7 +40,7 @@ async function fetchAnalytics(moduleId: string): Promise<AnalyticsResponse> {
 export default async function ModuleDetailPage({ params }: { params: { moduleId: string } }) {
   const { moduleId } = params;
   // Guard: ensure module belongs to current mock user for SSR fetches reliant on DB
-  const mod = await prismaClient.module.findUnique({ where: { id: moduleId }, select: { id: true } });
+  await prismaClient.module.findUnique({ where: { id: moduleId }, select: { id: true } });
   const [analytics] = await Promise.all([
     fetchAnalytics(moduleId),
   ]);
@@ -57,7 +57,6 @@ export default async function ModuleDetailPage({ params }: { params: { moduleId:
       </div>
 
       {process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true' ? (
-        // @ts-expect-error client boundary
         <ClientModuleDetail moduleId={moduleId} initial={a} />
       ) : (
         <ClientAnalytics moduleId={moduleId} initial={a} />

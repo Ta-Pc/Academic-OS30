@@ -21,8 +21,9 @@ export async function POST(req: NextRequest) {
       }
     }
     return NextResponse.json({ created });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || 'failed' }, { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'failed';
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 

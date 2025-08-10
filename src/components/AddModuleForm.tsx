@@ -2,9 +2,8 @@
 import React, { useState } from "react";
 import { useUserStore } from "@/lib/user-store";
 
-type Props = {
-  onCreated?: (created: any) => void;
-};
+type CreatedModule = { id: string; code: string; title: string; creditHours: number };
+type Props = { onCreated?: (created: CreatedModule) => void };
 
 export default function AddModuleForm({ onCreated }: Props) {
   const currentUser = useUserStore((s) => s.currentUser);
@@ -30,8 +29,9 @@ export default function AddModuleForm({ onCreated }: Props) {
       setTitle("");
       setCredits(12);
       onCreated?.(data.data);
-    } catch (e: any) {
-      setError(e.message || "failed");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'failed';
+      setError(msg);
     } finally {
       setBusy(false);
     }

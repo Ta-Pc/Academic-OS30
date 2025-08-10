@@ -36,7 +36,7 @@ export default function AssignmentsTable({ assignments, moduleId, onAfterSave }:
   );
 }
 
-function AssignmentRow({ a, moduleId, onAfterSave }: { a: AssignmentForTable; moduleId: string; onAfterSave?: () => Promise<void> | void }) {
+function AssignmentRow({ a, onAfterSave }: { a: AssignmentForTable; moduleId: string; onAfterSave?: () => Promise<void> | void }) {
   const [open, setOpen] = useState(false);
   return (
     <tr className="hover:bg-slate-50 transition-colors">
@@ -50,13 +50,13 @@ function AssignmentRow({ a, moduleId, onAfterSave }: { a: AssignmentForTable; mo
       <td className="text-right">{a.contribution == null ? '—' : `${round2(a.contribution)}%`}</td>
       <td className="text-center">
         <button className="btn btn-secondary" data-testid={`edit-assignment-${a.id}`} onClick={() => setOpen(true)}>Edit</button>
-        {open && <EditScoreModal assignmentId={a.id} moduleId={moduleId} initialScore={a.score} onClose={() => setOpen(false)} onAfterSave={onAfterSave} />}
+  {open && <EditScoreModal assignmentId={a.id} initialScore={a.score} onClose={() => setOpen(false)} onAfterSave={onAfterSave} />}
       </td>
     </tr>
   );
 }
 
-function EditScoreModal({ assignmentId, moduleId, initialScore, onClose, onAfterSave }: { assignmentId: string; moduleId: string; initialScore: number | null; onClose: () => void; onAfterSave?: () => Promise<void> | void }) {
+function EditScoreModal({ assignmentId, initialScore, onClose, onAfterSave }: { assignmentId: string; initialScore: number | null; onClose: () => void; onAfterSave?: () => Promise<void> | void }) {
   const [value, setValue] = useState<string>(initialScore == null ? '' : String(initialScore));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,28 +66,25 @@ function EditScoreModal({ assignmentId, moduleId, initialScore, onClose, onAfter
     setSaving(true);
     setError(null);
     try {
-      let effectiveUserId = currentUser?.id;
+  let effectiveUserId = currentUser?.id;
       if (!effectiveUserId) {
         try {
           const ses = await fetch('/api/session/user', { cache: 'no-store' });
           const j = ses.ok ? await ses.json() : null;
           effectiveUserId = j?.user?.id;
-        } catch {}
+  } catch { /* ignore session fetch error */ }
       }
       const res = await fetch(`/api/assignments/${assignmentId}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ score: value === '' ? null : Number(value), userId: effectiveUserId }),
       });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text);
-      }
+  if (!res.ok) throw new Error(await res.text());
       onClose();
       // Actively re-fetch analytics to ensure UI reflects latest DB state
       if (onAfterSave) await onAfterSave();
-    } catch (e: any) {
-      setError(e?.message || 'Failed to update');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to update');
     } finally {
       setSaving(false);
     }

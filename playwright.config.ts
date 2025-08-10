@@ -10,7 +10,11 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: process.env.CI ? 'npm run start' : 'npm run dev',
+    // Ensure feature flag for new UI library is enabled during tests + run DB migrations/seed first
+    // Use cross-env for cross-platform env var setting
+    command: process.env.CI
+      ? 'npm run pretest:e2e && cross-env NEXT_PUBLIC_FEATURE_UI_LIBRARY=true npm run start'
+      : 'npm run pretest:e2e && cross-env NEXT_PUBLIC_FEATURE_UI_LIBRARY=true npm run dev',
     url: process.env.BASE_URL || 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

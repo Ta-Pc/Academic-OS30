@@ -27,9 +27,10 @@ export function useWeekView(userId: string | undefined, date?: string) {
           tasks: j.data.tasks,
           totalStudyMinutes: j.data.totalStudyMinutes,
         });
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!alive) return;
-        setError(e?.message || 'Failed to load');
+        const msg = e instanceof Error ? e.message : 'Failed to load';
+        setError(msg);
       } finally {
         if (alive) setLoading(false);
       }

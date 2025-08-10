@@ -6,6 +6,7 @@ export { WeekViewPageView } from './week/WeekViewPage.view';
 export type { WeekViewPageProps } from './week/WeekViewPage.view';
 export { ModuleCardView } from './modules/ModuleCard.view';
 export { ModuleQuickView } from './modules/ModuleQuickView.view';
+export { ModuleDetailView } from './modules/ModuleDetail.view';
 export { SemesterSnapshotView } from './semester/SemesterSnapshot.view';
 
 

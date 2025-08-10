@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { prisma } from '@/lib/prisma';
 // Minimal shapes (avoid Prisma types during build lint stage)
 type Assignment = { id: string; title: string; dueDate: Date | null; status: string; score: number | null; maxScore: number | null; weight: number | null };

@@ -18,11 +18,11 @@ const TYPE_LABELS: Record<TacticalTaskType, string> = {
   ADMIN: 'Admin',
 };
 
-function groupByType(tasks: TaskLite[]) {
+function groupByType(tasks: TaskLite[]): Record<TacticalTaskType, TaskLite[]> {
   return tasks.reduce<Record<TacticalTaskType, TaskLite[]>>((acc, t) => {
     (acc[t.type] ||= []).push(t);
     return acc;
-  }, {} as any);
+  }, { READ: [], STUDY: [], PRACTICE: [], REVIEW: [], ADMIN: [] });
 }
 
 async function toggleTask(taskId: string, nextStatus: TacticalTaskStatus, userId?: string) {
@@ -37,7 +37,7 @@ async function toggleTask(taskId: string, nextStatus: TacticalTaskStatus, userId
 
 export function TaskGroupList({ tasks }: { tasks: TaskLite[] }) {
   const [local, setLocal] = useState<TaskLite[]>(tasks);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const currentUser = useUserStore((s) => s.currentUser);
 
   const grouped = useMemo(() => groupByType(local), [local]);
