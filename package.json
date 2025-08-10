@@ -21,6 +21,7 @@
     "test:import:my": "node scripts/test-import-my.mjs",
     "pretest:e2e": "docker compose up -d db && cross-env DATABASE_URL=postgresql://postgres:postgres@localhost:5432/academic_os?schema=public NEXT_PUBLIC_BASE_URL=http://localhost:3000 npx prisma migrate deploy && cross-env DATABASE_URL=postgresql://postgres:postgres@localhost:5432/academic_os?schema=public NEXT_PUBLIC_BASE_URL=http://localhost:3000 npx prisma db seed",
   "test:e2e": "playwright install && cross-env NEXT_PUBLIC_FEATURE_UI_LIBRARY=true playwright test",
+    "test:e2e:week-first": "cross-env NEXT_PUBLIC_FEATURE_UI_LIBRARY=true playwright test tests/e2e/week-first.spec.ts",
     "generate:components": "tsx scripts/generate-component-manifest.ts",
     "generate:tailwind": "tsx scripts/generate-tailwind-from-tokens.ts",
     "codemod:imports": "node scripts/codemods/replace-imports.js --dry-run",

@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: './tests',
   timeout: 60_000,
   retries: 0,
+  globalSetup: './tests/fixtures/global-setup.ts',
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
