@@ -1,0 +1,27 @@
+{
+  "dryRun": true,
+  "offline": true,
+  "totalModulesDefined": 26,
+  "operationsPlanned": 26,
+  "createPlanned": 26,
+  "updatePlanned": 0,
+  "noop": 0,
+  "created": [],
+  "updated": [],
+  "coreCount": 23,
+  "electiveCount": 3,
+  "dsmElectiveRequiredCredits": 36,
+  "dsmElectiveSeededCredits": 54,
+  "dsmElectiveCreditGap": -18,
+  "yearModules": [
+    "INF171",
+    "INF271",
+    "INF272",
+    "INF370"
+  ],
+  "jcpKickoffAdjusted": [
+    "JCP202"
+  ],
+  "missingPrerequisites": [],
+  "timestamp": "2025-08-10T04:37:06.270Z"
+}
