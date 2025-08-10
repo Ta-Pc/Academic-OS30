@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { WeekViewPageView, WeekViewPageProps } from '@ui';
+import { WeekViewPageView, WeekViewPageProps } from '../week/WeekViewPage.view';
 
 // Helper to generate mock module summaries
 const makeModule = (i: number) => ({
