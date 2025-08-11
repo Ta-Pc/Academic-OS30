@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 import { prisma } from '@/lib/prisma';
 
@@ -17,7 +17,7 @@ type ModuleSummary = {
   currentAverageMark: number;
 };
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     // Remove user dependency - get all modules and data
     const [modules, lateAssignments, upcomingAssignments, tasksAll] = await Promise.all<[

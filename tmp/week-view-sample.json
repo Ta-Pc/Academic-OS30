@@ -1,0 +1,628 @@
+{
+  "weekStart": "2025-08-11",
+  "weekEnd": "2025-08-17",
+  "weekRange": {
+    "start": "2025-08-10T22:00:00.000Z",
+    "end": "2025-08-17T21:59:59.999Z"
+  },
+  "assignments": [
+    {
+      "id": "cme6g8i0o001huc8osq5zqkpd",
+      "title": "Upcoming Short Quiz",
+      "dueDate": "2025-08-13T01:43:50.326Z",
+      "weight": 5,
+      "status": "PENDING",
+      "module": {
+        "id": "cme6g8hzv0019uc8of4bql8h1",
+        "code": "EKN120",
+        "title": "Economics 120",
+        "isCore": true
+      }
+    }
+  ],
+  "tacticalTasks": [
+    {
+      "id": "cme6g8i12001puc8on3v783nx",
+      "title": "Review last week material",
+      "dueDate": "2025-08-11T16:00:00.000Z",
+      "status": "COMPLETED",
+      "type": "REVIEW",
+      "module": {
+        "id": "cme6g8hz9000wuc8on2q663ch",
+        "code": "INF171",
+        "title": "Information Systems Analysis and Design",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8i12001muc8o48crsahg",
+      "title": "Read Chapter 5: Integration",
+      "dueDate": "2025-08-12T07:00:00.000Z",
+      "status": "PENDING",
+      "type": "READ",
+      "module": {
+        "id": "cme6g8hy3000duc8ojdylyiro",
+        "code": "STK110",
+        "title": "Statistics 110",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8hxu0009uc8o8y4j455d",
+      "title": "Read Chapter 8: Hypothesis Testing",
+      "dueDate": "2025-08-12T07:00:00.000Z",
+      "status": "PENDING",
+      "type": "READ",
+      "module": {
+        "id": "cme6g8hxa0004uc8ojag10nw2",
+        "code": "STK120",
+        "title": "Statistics 120",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8i0v001kuc8owv59jvw4",
+      "title": "Study: Elasticity problem set",
+      "dueDate": "2025-08-12T18:00:00.000Z",
+      "status": "PENDING",
+      "type": "STUDY",
+      "module": {
+        "id": "cme6g8hzv0019uc8of4bql8h1",
+        "code": "EKN120",
+        "title": "Economics 120",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8i12001nuc8oy7jocozw",
+      "title": "Complete Practice Set 3",
+      "dueDate": "2025-08-13T15:00:00.000Z",
+      "status": "PENDING",
+      "type": "PRACTICE",
+      "module": {
+        "id": "cme6g8hy3000duc8ojdylyiro",
+        "code": "STK110",
+        "title": "Statistics 110",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8hxu000auc8ooupvn7b6",
+      "title": "Complete Tutorial 8",
+      "dueDate": "2025-08-13T15:00:00.000Z",
+      "status": "PENDING",
+      "type": "PRACTICE",
+      "module": {
+        "id": "cme6g8hxa0004uc8ojag10nw2",
+        "code": "STK120",
+        "title": "Statistics 120",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8i12001ouc8o3zx1t211",
+      "title": "Study for upcoming test",
+      "dueDate": "2025-08-14T18:00:00.000Z",
+      "status": "PENDING",
+      "type": "STUDY",
+      "module": {
+        "id": "cme6g8hy3000duc8ojdylyiro",
+        "code": "STK110",
+        "title": "Statistics 110",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8hxu000buc8oogq9d9fl",
+      "title": "Study for Test 2",
+      "dueDate": "2025-08-14T18:00:00.000Z",
+      "status": "PENDING",
+      "type": "STUDY",
+      "module": {
+        "id": "cme6g8hxa0004uc8ojag10nw2",
+        "code": "STK120",
+        "title": "Statistics 120",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8i12001quc8ounpmleh8",
+      "title": "Submit assignment online",
+      "dueDate": "2025-08-15T21:59:00.000Z",
+      "status": "PENDING",
+      "type": "ADMIN",
+      "module": {
+        "id": "cme6g8hz9000wuc8on2q663ch",
+        "code": "INF171",
+        "title": "Information Systems Analysis and Design",
+        "isCore": true
+      }
+    },
+    {
+      "id": "cme6g8i12001ruc8olgkgkghh",
+      "title": "Read Economics Chapter 11",
+      "dueDate": "2025-08-16T08:00:00.000Z",
+      "status": "PENDING",
+      "type": "READ",
+      "module": {
+        "id": "cme6g8hzv0019uc8of4bql8h1",
+        "code": "EKN120",
+        "title": "Economics 120",
+        "isCore": true
+      }
+    }
+  ],
+  "moduleSummaries": [
+    {
+      "moduleId": "cme6g8hxa0004uc8ojag10nw2",
+      "code": "STK120",
+      "title": "Statistics 120",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 12,
+      "nextDueDate": "2025-08-12T07:00:00.000Z",
+      "daysUntilNextDue": 1,
+      "assignmentCount": 0,
+      "taskCount": 3,
+      "priorityScore": 32
+    },
+    {
+      "moduleId": "cme6g8hy3000duc8ojdylyiro",
+      "code": "STK110",
+      "title": "Statistics 110",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 12,
+      "nextDueDate": "2025-08-12T07:00:00.000Z",
+      "daysUntilNextDue": 1,
+      "assignmentCount": 0,
+      "taskCount": 3,
+      "priorityScore": 32
+    },
+    {
+      "moduleId": "cme6g8hz9000wuc8on2q663ch",
+      "code": "INF171",
+      "title": "Information Systems Analysis and Design",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 12,
+      "nextDueDate": "2025-08-11T16:00:00.000Z",
+      "daysUntilNextDue": 0,
+      "assignmentCount": 0,
+      "taskCount": 2,
+      "priorityScore": 36
+    },
+    {
+      "moduleId": "cme6g8hzv0019uc8of4bql8h1",
+      "code": "EKN120",
+      "title": "Economics 120",
+      "isCore": true,
+      "electiveGroup": null,
+      "creditHours": 12,
+      "nextDueDate": "2025-08-12T18:00:00.000Z",
+      "daysUntilNextDue": 1,
+      "assignmentCount": 1,
+      "taskCount": 2,
+      "priorityScore": 34
+    }
+  ],
+  "weeklyPriorities": [
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8i12001puc8on3v783nx",
+      "title": "Review last week material",
+      "moduleCode": "INF171",
+      "dueDate": "2025-08-11T16:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 36
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8i12001muc8o48crsahg",
+      "title": "Read Chapter 5: Integration",
+      "moduleCode": "STK110",
+      "dueDate": "2025-08-12T07:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 32
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8hxu0009uc8o8y4j455d",
+      "title": "Read Chapter 8: Hypothesis Testing",
+      "moduleCode": "STK120",
+      "dueDate": "2025-08-12T07:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 32
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8i0v001kuc8owv59jvw4",
+      "title": "Study: Elasticity problem set",
+      "moduleCode": "EKN120",
+      "dueDate": "2025-08-12T18:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 32
+    },
+    {
+      "type": "ASSIGNMENT",
+      "id": "cme6g8i0o001huc8osq5zqkpd",
+      "title": "Upcoming Short Quiz",
+      "moduleCode": "EKN120",
+      "dueDate": "2025-08-13T01:43:50.326Z",
+      "weight": 5,
+      "priorityScore": 30
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8i12001nuc8oy7jocozw",
+      "title": "Complete Practice Set 3",
+      "moduleCode": "STK110",
+      "dueDate": "2025-08-13T15:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 29
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8hxu000auc8ooupvn7b6",
+      "title": "Complete Tutorial 8",
+      "moduleCode": "STK120",
+      "dueDate": "2025-08-13T15:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 29
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8i12001ouc8o3zx1t211",
+      "title": "Study for upcoming test",
+      "moduleCode": "STK110",
+      "dueDate": "2025-08-14T18:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 24
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8hxu000buc8oogq9d9fl",
+      "title": "Study for Test 2",
+      "moduleCode": "STK120",
+      "dueDate": "2025-08-14T18:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 24
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8i12001quc8ounpmleh8",
+      "title": "Submit assignment online",
+      "moduleCode": "INF171",
+      "dueDate": "2025-08-15T21:59:00.000Z",
+      "weight": 0,
+      "priorityScore": 20
+    },
+    {
+      "type": "TACTICAL_TASK",
+      "id": "cme6g8i12001ruc8olgkgkghh",
+      "title": "Read Economics Chapter 11",
+      "moduleCode": "EKN120",
+      "dueDate": "2025-08-16T08:00:00.000Z",
+      "weight": 0,
+      "priorityScore": 17
+    }
+  ],
+  "totalStudyMinutes": 0,
+  "data": {
+    "start": "2025-08-10T22:00:00.000Z",
+    "end": "2025-08-17T21:59:59.999Z",
+    "tasks": {
+      "read": [
+        {
+          "id": "cme6g8i12001muc8o48crsahg",
+          "title": "Read Chapter 5: Integration",
+          "status": "PENDING",
+          "type": "READ",
+          "dueDate": "2025-08-12T07:00:00.000Z",
+          "moduleId": "cme6g8hy3000duc8ojdylyiro",
+          "source": "Textbook",
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.342Z",
+          "module": {
+            "id": "cme6g8hy3000duc8ojdylyiro",
+            "code": "STK110",
+            "title": "Statistics 110",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.235Z",
+            "targetMark": 75,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        },
+        {
+          "id": "cme6g8hxu0009uc8o8y4j455d",
+          "title": "Read Chapter 8: Hypothesis Testing",
+          "status": "PENDING",
+          "type": "READ",
+          "dueDate": "2025-08-12T07:00:00.000Z",
+          "moduleId": "cme6g8hxa0004uc8ojag10nw2",
+          "source": "Textbook",
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.226Z",
+          "module": {
+            "id": "cme6g8hxa0004uc8ojag10nw2",
+            "code": "STK120",
+            "title": "Statistics 120",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.207Z",
+            "targetMark": 75,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        },
+        {
+          "id": "cme6g8i12001ruc8olgkgkghh",
+          "title": "Read Economics Chapter 11",
+          "status": "PENDING",
+          "type": "READ",
+          "dueDate": "2025-08-16T08:00:00.000Z",
+          "moduleId": "cme6g8hzv0019uc8of4bql8h1",
+          "source": null,
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.342Z",
+          "module": {
+            "id": "cme6g8hzv0019uc8of4bql8h1",
+            "code": "EKN120",
+            "title": "Economics 120",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.300Z",
+            "targetMark": 65,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        }
+      ],
+      "study": [
+        {
+          "id": "cme6g8i0v001kuc8owv59jvw4",
+          "title": "Study: Elasticity problem set",
+          "status": "PENDING",
+          "type": "STUDY",
+          "dueDate": "2025-08-12T18:00:00.000Z",
+          "moduleId": "cme6g8hzv0019uc8of4bql8h1",
+          "source": null,
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.336Z",
+          "module": {
+            "id": "cme6g8hzv0019uc8of4bql8h1",
+            "code": "EKN120",
+            "title": "Economics 120",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.300Z",
+            "targetMark": 65,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        },
+        {
+          "id": "cme6g8i12001ouc8o3zx1t211",
+          "title": "Study for upcoming test",
+          "status": "PENDING",
+          "type": "STUDY",
+          "dueDate": "2025-08-14T18:00:00.000Z",
+          "moduleId": "cme6g8hy3000duc8ojdylyiro",
+          "source": null,
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.342Z",
+          "module": {
+            "id": "cme6g8hy3000duc8ojdylyiro",
+            "code": "STK110",
+            "title": "Statistics 110",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.235Z",
+            "targetMark": 75,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        },
+        {
+          "id": "cme6g8hxu000buc8oogq9d9fl",
+          "title": "Study for Test 2",
+          "status": "PENDING",
+          "type": "STUDY",
+          "dueDate": "2025-08-14T18:00:00.000Z",
+          "moduleId": "cme6g8hxa0004uc8ojag10nw2",
+          "source": null,
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.226Z",
+          "module": {
+            "id": "cme6g8hxa0004uc8ojag10nw2",
+            "code": "STK120",
+            "title": "Statistics 120",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.207Z",
+            "targetMark": 75,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        }
+      ],
+      "practice": [
+        {
+          "id": "cme6g8i12001nuc8oy7jocozw",
+          "title": "Complete Practice Set 3",
+          "status": "PENDING",
+          "type": "PRACTICE",
+          "dueDate": "2025-08-13T15:00:00.000Z",
+          "moduleId": "cme6g8hy3000duc8ojdylyiro",
+          "source": "Tutorial",
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.342Z",
+          "module": {
+            "id": "cme6g8hy3000duc8ojdylyiro",
+            "code": "STK110",
+            "title": "Statistics 110",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.235Z",
+            "targetMark": 75,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        },
+        {
+          "id": "cme6g8hxu000auc8ooupvn7b6",
+          "title": "Complete Tutorial 8",
+          "status": "PENDING",
+          "type": "PRACTICE",
+          "dueDate": "2025-08-13T15:00:00.000Z",
+          "moduleId": "cme6g8hxa0004uc8ojag10nw2",
+          "source": "Tutorial",
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.226Z",
+          "module": {
+            "id": "cme6g8hxa0004uc8ojag10nw2",
+            "code": "STK120",
+            "title": "Statistics 120",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.207Z",
+            "targetMark": 75,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        }
+      ],
+      "review": [
+        {
+          "id": "cme6g8i12001puc8on3v783nx",
+          "title": "Review last week material",
+          "status": "COMPLETED",
+          "type": "REVIEW",
+          "dueDate": "2025-08-11T16:00:00.000Z",
+          "moduleId": "cme6g8hz9000wuc8on2q663ch",
+          "source": null,
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.342Z",
+          "module": {
+            "id": "cme6g8hz9000wuc8on2q663ch",
+            "code": "INF171",
+            "title": "Information Systems Analysis and Design",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.277Z",
+            "targetMark": 80,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        }
+      ],
+      "admin": [
+        {
+          "id": "cme6g8i12001quc8ounpmleh8",
+          "title": "Submit assignment online",
+          "status": "PENDING",
+          "type": "ADMIN",
+          "dueDate": "2025-08-15T21:59:00.000Z",
+          "moduleId": "cme6g8hz9000wuc8on2q663ch",
+          "source": null,
+          "links": null,
+          "createdAt": "2025-08-11T01:43:50.342Z",
+          "module": {
+            "id": "cme6g8hz9000wuc8on2q663ch",
+            "code": "INF171",
+            "title": "Information Systems Analysis and Design",
+            "creditHours": 12,
+            "termId": "cme6g8hx30002uc8oybcm7upk",
+            "createdAt": "2025-08-11T01:43:50.277Z",
+            "targetMark": 80,
+            "department": null,
+            "faculty": null,
+            "personnel": null,
+            "prerequisites": null,
+            "status": "ACTIVE",
+            "endDate": null,
+            "startDate": null,
+            "electiveGroup": null,
+            "isCore": true,
+            "span": "SEMESTER"
+          }
+        }
+      ]
+    },
+    "totalStudyMinutes": 0
+  }
+}

@@ -1,39 +1,16 @@
 import React from 'react';
 import PerformanceGauge from '@/components/PerformanceGauge';
 type Module = { id: string; code: string; title: string };
-type StudyLog = { id: string; durationMin: number; loggedAt: Date };
 type TacticalTaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
 type TacticalTaskType = 'READ' | 'STUDY' | 'PRACTICE' | 'REVIEW' | 'ADMIN';
 type TacticalTask = { id: string; title: string; status: TacticalTaskStatus; type: TacticalTaskType; dueDate: Date };
-import { getBaseUrl } from '@/lib/base-url';
 import Link from 'next/link';
 import { TaskGroupList } from './task-group-list';
-import NextDynamic from 'next/dynamic';
-
-type WeekViewResponse = {
-  data: {
-    start: string | Date;
-    end: string | Date;
-  tasks: Array<Pick<TacticalTask, 'id' | 'title' | 'status' | 'type' | 'dueDate'> & { module?: Pick<Module, 'id' | 'code' | 'title'> | null }>;
-    studyLogs: Array<Pick<StudyLog, 'id' | 'durationMin' | 'loggedAt'>>;
-    totalStudyMinutes: number;
-  };
-};
-
-type TaskListItem = Pick<TacticalTask, 'id' | 'title' | 'status' | 'type' | 'dueDate'> & { module?: Pick<Module, 'id' | 'code' | 'title'> | null };
-
-async function fetchWeekView(date?: string): Promise<WeekViewResponse> {
-  const base = getBaseUrl();
-  const url = new URL(`${base}/api/week-view`);
-  if (date) url.searchParams.set('date', date);
-  const res = await fetch(url.toString(), { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch');
-  return res.json();
-}
+import NextDynamic from 'next/dynamic';type TaskListItem = Pick<TacticalTask, 'id' | 'title' | 'status' | 'type' | 'dueDate'> & { module?: Pick<Module, 'id' | 'code' | 'title'> | null };
 
 export default async function WeekViewPage({ searchParams }: { searchParams?: { date?: string; ui?: string } }) {
-  let tasks: TaskListItem[] = [];
-  let totalStudyMinutes = 0;
+  const tasks: TaskListItem[] = [];
+  const totalStudyMinutes = 0;
 
   const featureUIFlag = process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true' || searchParams?.ui === '1';
 

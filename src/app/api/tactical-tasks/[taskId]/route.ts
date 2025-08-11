@@ -10,7 +10,6 @@ export async function PATCH(
     const { taskId } = params;
     const body = await req.json();
     const status = body?.status as TacticalTaskStatus | undefined;
-    const userId = body?.userId as string | undefined;
 
     const existing = await prisma.tacticalTask.findUnique({ where: { id: taskId }, include: { module: true } });
     if (!existing) return NextResponse.json({ error: 'not found' }, { status: 404 });

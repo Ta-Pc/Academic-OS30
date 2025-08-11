@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
   try {
-  const { importType, raw, mapping, userId: bodyUserId } = await req.json();
+  const { importType, raw, mapping } = await req.json();
   const { rows } = parseCsv(raw);
   type CsvRow = Record<string, string | undefined>;
   const out: Array<Record<string, unknown>> = [];

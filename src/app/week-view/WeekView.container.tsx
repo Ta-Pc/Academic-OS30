@@ -22,7 +22,7 @@ async function fetchWeek(date?: string): Promise<ApiResponse> {
   return res.json();
 }
 
-export function WeekViewContainer({ userId, date }: { userId?: string; date?: string }) {
+export function WeekViewContainer({ date }: { date?: string }) {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

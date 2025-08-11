@@ -4,7 +4,11 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Reset minimal tables to avoid duplicates (dev-only convenience)
-  try { await prisma.tacticalTask.deleteMany(); } catch {}
+  try { 
+    await prisma.tacticalTask.deleteMany(); 
+  } catch {
+    // Ignore errors during cleanup
+  }
   await prisma.assignment.deleteMany();
   await prisma.assessmentComponent.deleteMany();
   await prisma.module.deleteMany();
@@ -178,8 +182,6 @@ async function main() {
   });
 
   // Add some tactical tasks for the current week to test week-view
-  const weekStart = new Date('2025-08-11T00:00:00+02:00'); // Current week
-  const weekEnd = new Date('2025-08-17T23:59:59+02:00');
   
   await prisma.tacticalTask.createMany({
     data: [
