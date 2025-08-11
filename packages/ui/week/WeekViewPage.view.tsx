@@ -14,72 +14,153 @@ export interface WeekViewPageProps {
   openModule?: { moduleId: string; code: string; title: string; creditHours: number } | undefined;
   onOpenModule?: (moduleId: string) => void;
   onCloseModule?: () => void;
+  onPrevWeek?: () => void;
+  onNextWeek?: () => void;
+  onToday?: () => void;
 }
 
 /**
  * Standalone WeekView page-level component for Storybook usage (no Next.js dependencies).
  */
 export function WeekViewPageView(props: WeekViewPageProps) {
-  const { week, priorities, moduleSummaries, overallWeightedAverage, taskStats, openModule, onOpenModule, onCloseModule } = props;
+  const { week, priorities, moduleSummaries, overallWeightedAverage, taskStats, openModule, onOpenModule, onCloseModule, onPrevWeek, onNextWeek, onToday } = props;
   return (
-    <div className="relative">
-      <div className="space-y-6">
-        <WeekHeaderView start={week.start} end={week.end} />
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
-          <div className="xl:col-span-3 space-y-6">
-            <section className="card">
-              <div className="card-header">
-                <h3 className="text-sm font-semibold tracking-wide uppercase text-slate-700">Top Priorities</h3>
-                <div className="text-xs text-slate-500">{priorities.length} items</div>
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
+        <WeekHeaderView 
+          start={week.start} 
+          end={week.end}
+          onPrev={onPrevWeek}
+          onNext={onNextWeek}
+          onToday={onToday}
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8 items-start">
+          <div className="lg:col-span-2 xl:col-span-3 space-y-6 lg:space-y-8">
+            {/* Priority Section */}
+            <section className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+              <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-4 sm:px-6 py-4 border-b border-primary-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-primary-200 rounded-lg">
+                      <span className="text-xl sm:text-2xl">🎯</span>
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-primary-900">Top Priorities</h3>
+                      <p className="text-xs sm:text-sm text-primary-700">Focus on these critical items</p>
+                    </div>
+                  </div>
+                  <div className="bg-primary-200 text-primary-800 px-3 py-1 rounded-full text-sm font-medium self-start">
+                    {priorities.length} items
+                  </div>
+                </div>
               </div>
-              <div className="card-body p-0">
-                <WeeklyMissionListView items={priorities.map(p => ({ id: p.id, title: p.title, moduleCode: p.moduleCode, dueDate: p.dueDate }))} emptyLabel="No high-priority items this week." />
+              <div className="p-4 sm:p-6">
+                <WeeklyMissionListView 
+                  items={priorities.map(p => ({ 
+                    id: p.id, 
+                    title: p.title, 
+                    moduleCode: p.moduleCode, 
+                    dueDate: p.dueDate,
+                    priorityScore: p.priorityScore,
+                    type: p.type
+                  }))} 
+                  emptyLabel="No high-priority items this week. Great job!" 
+                  maxItems={8}
+                />
               </div>
             </section>
-            <section className="card">
-              <div className="card-header">
-                <h3 className="text-sm font-semibold tracking-wide uppercase text-slate-700">Modules</h3>
-                <div className="text-xs text-slate-500">{moduleSummaries.length} active</div>
+
+            {/* Modules Section */}
+            <section className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 sm:px-6 py-4 border-b border-blue-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-200 rounded-lg">
+                      <span className="text-xl sm:text-2xl">📚</span>
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-blue-900">Active Modules</h3>
+                      <p className="text-xs sm:text-sm text-blue-700">Your current courses and progress</p>
+                    </div>
+                  </div>
+                  <div className="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm font-medium self-start">
+                    {moduleSummaries.length} active
+                  </div>
+                </div>
               </div>
-              <div className="card-body">
-                <div className="grid md:grid-cols-2 2xl:grid-cols-3 gap-4">
-                  {moduleSummaries.map(m => (
-                    <button
-                      key={m.moduleId}
-                      type="button"
-                      onClick={() => onOpenModule?.(m.moduleId)}
-                      className="text-left"
-                    >
-                      <div className="card ring-1 ring-slate-200 hover:ring-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <div className="card-body">
-                          <div className="text-xs text-slate-500">{m.code}</div>
-                          <div className="text-sm font-medium text-slate-900 truncate">{m.title}</div>
-                          <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-                            <span>{m.creditHours} credits</span>
-                            <span className="font-medium">PS {Math.round(m.priorityScore)}</span>
+              <div className="p-4 sm:p-6">
+                {moduleSummaries.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {moduleSummaries.map(m => (
+                      <button
+                        key={m.moduleId}
+                        type="button"
+                        onClick={() => onOpenModule?.(m.moduleId)}
+                        className="text-left group"
+                      >
+                        <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-lg hover:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 group-hover:scale-[1.02]">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="text-xs font-semibold text-primary-600 bg-primary-100 px-2 py-1 rounded-full">
+                              {m.code}
+                            </div>
+                            <div className="text-right">
+                              <div className="text-xs text-slate-500">Priority Score</div>
+                              <div className="text-lg font-bold text-slate-900">{Math.round(m.priorityScore)}</div>
+                            </div>
+                          </div>
+                          <h4 className="text-sm font-semibold text-slate-900 mb-2 line-clamp-2 group-hover:text-primary-700 transition-colors">
+                            {m.title}
+                          </h4>
+                          <div className="flex items-center justify-between text-xs text-slate-500">
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                              {m.creditHours} credits
+                            </span>
+                            <span className="text-primary-600 font-medium group-hover:text-primary-700">
+                              View details →
+                            </span>
                           </div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="text-6xl mb-4">📚</div>
+                    <div className="text-lg font-medium text-slate-700 mb-2">No modules found</div>
+                    <div className="text-sm text-slate-500">Add some modules to get started with your academic journey!</div>
+                  </div>
+                )}
               </div>
             </section>
           </div>
-          <aside className="space-y-4">
+          
+          <aside className="lg:col-span-1 xl:col-span-2 space-y-6">
             <SemesterSnapshotView overallWeightedAverage={overallWeightedAverage} tasks={taskStats} />
           </aside>
         </div>
       </div>
+      
       {openModule && (
-        <div className="fixed inset-0 z-40 flex" role="dialog" aria-modal="true">
-          <div className="fixed inset-0 bg-slate-900/40" onClick={onCloseModule} />
-          <div className="relative ml-auto h-full w-full max-w-md bg-white shadow-xl flex flex-col">
-            <div className="p-4 flex items-center justify-between border-b border-slate-200">
-              <div className="text-sm font-medium">Module Quick View</div>
-              <button onClick={onCloseModule} className="btn btn-secondary btn-sm">Close</button>
+        <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={onCloseModule} />
+          <div className="relative ml-auto h-full w-full max-w-lg bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="p-6 flex items-center justify-between border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white">
+              <div>
+                <div className="text-lg font-bold text-slate-900">Module Quick View</div>
+                <div className="text-sm text-slate-600">{openModule.code}</div>
+              </div>
+              <button 
+                onClick={onCloseModule} 
+                className="flex items-center justify-center w-8 h-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                title="Close"
+                aria-label="Close module details"
+              >
+                ✕
+              </button>
             </div>
-            <div className="overflow-y-auto p-4 flex-1">
+            <div className="overflow-y-auto p-6 flex-1 bg-gradient-to-b from-white to-slate-50 scroll-smooth">
               <ModuleQuickView title={openModule.title} code={openModule.code} stats={{ creditHours: openModule.creditHours }} />
             </div>
           </div>

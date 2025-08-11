@@ -8,7 +8,12 @@ export type WeekViewProps = {
   moduleSummaries: Array<{ moduleId: string; code: string; title: string; creditHours: number; priorityScore: number }>;
   overallWeightedAverage: number;
   taskStats: { completed: number; pending: number };
-  onOpenWhatIf?: () => void;
+  openModule?: { moduleId: string; code: string; title: string; creditHours: number } | undefined;
+  onOpenModule?: (moduleId: string) => void;
+  onCloseModule?: () => void;
+  onPrevWeek?: () => void;
+  onNextWeek?: () => void;
+  onToday?: () => void;
 };
 
 export function WeekView({
@@ -17,22 +22,28 @@ export function WeekView({
   moduleSummaries,
   overallWeightedAverage,
   taskStats,
+  openModule,
+  onOpenModule,
+  onCloseModule,
+  onPrevWeek,
+  onNextWeek,
+  onToday,
 }: WeekViewProps) {
-  // Use the modern UI component from the packages/ui library with proper heading structure
+  // Use the modern UI component from the packages/ui library 
   return (
-    <div className="space-y-6">
-      {/* Main heading that tests expect */}
-      <h1 className="text-2xl font-bold text-gray-900">Weekly Mission Brief</h1>
-      
-      {/* Modern UI component */}
-      <WeekViewPageView
-        week={week}
-        priorities={priorities}
-        moduleSummaries={moduleSummaries}
-        overallWeightedAverage={overallWeightedAverage}
-        taskStats={taskStats}
-      />
-    </div>
+    <WeekViewPageView
+      week={week}
+      priorities={priorities}
+      moduleSummaries={moduleSummaries}
+      overallWeightedAverage={overallWeightedAverage}
+      taskStats={taskStats}
+      openModule={openModule}
+      onOpenModule={onOpenModule}
+      onCloseModule={onCloseModule}
+      onPrevWeek={onPrevWeek}
+      onNextWeek={onNextWeek}
+      onToday={onToday}
+    />
   );
 }
 

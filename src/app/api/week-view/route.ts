@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
         const pr = getPriorityScore({ weightPercent: 0, moduleCredits: t.module.creditHours, dueDate });
         return { type: 'TACTICAL_TASK', id: t.id, title: t.title, moduleCode: t.module.code, dueDate, weight: 0, priorityScore: pr.score } as PriorityItem;
       }),
-    ].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 15);
+    ].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 25); // Increased from 15 to 25 for better UX
 
     // Group tasks by type for week view UI
     const tasksByType = {

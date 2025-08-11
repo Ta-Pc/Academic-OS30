@@ -1,4 +1,5 @@
 import React from 'react';
+import { Clock, Target, CheckCircle, Circle, AlertCircle } from 'lucide-react';
 
 /**
  * Format date and time consistently
@@ -8,13 +9,34 @@ function formatDateTime(date: string | Date): string {
   return d.toLocaleString('en-US', {
     timeZone: 'UTC',
     year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+    month: 'short',
+    day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
     hour12: true,
   });
+}
+
+/**
+ * Get relative time display
+ */
+function getRelativeTime(date: string | Date): { text: string; isUrgent: boolean } {
+  const d = new Date(date);
+  const now = new Date();
+  const diffMs = d.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) {
+    return { text: `${Math.abs(diffDays)} days overdue`, isUrgent: true };
+  } else if (diffDays === 0) {
+    return { text: 'Due today', isUrgent: true };
+  } else if (diffDays === 1) {
+    return { text: 'Due tomorrow', isUrgent: true };
+  } else if (diffDays <= 7) {
+    return { text: `Due in ${diffDays} days`, isUrgent: diffDays <= 3 };
+  } else {
+    return { text: formatDateTime(date), isUrgent: false };
+  }
 }
 
 export type WeeklyMissionItemViewProps = {
@@ -23,24 +45,91 @@ export type WeeklyMissionItemViewProps = {
   moduleCode?: string | null;
   status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
   onToggle?: () => void;
+  priorityScore?: number;
+  type?: string;
 };
 
-export function WeeklyMissionItemView({ title, dueDate, moduleCode, status = 'PENDING', onToggle }: WeeklyMissionItemViewProps) {
+export function WeeklyMissionItemView({ 
+  title, 
+  dueDate, 
+  moduleCode, 
+  status = 'PENDING', 
+  onToggle, 
+  priorityScore,
+  type 
+}: WeeklyMissionItemViewProps) {
   const isDone = status === 'COMPLETED';
+  const inProgress = status === 'IN_PROGRESS';
+  const timeInfo = dueDate ? getRelativeTime(dueDate) : null;
+  
+  const getTypeIcon = () => {
+    switch (type?.toLowerCase()) {
+      case 'read': return '📖';
+      case 'study': return '📚';
+      case 'practice': return '💻';
+      case 'review': return '🔍';
+      case 'admin': return '📋';
+      default: return '📝';
+    }
+  };
+
   return (
-    <li className="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors">
-      <input
-        type="checkbox"
-        checked={isDone}
-        onChange={onToggle}
-        className="h-4 w-4 accent-primary-600"
-      />
+    <li className={`group flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-md ${
+      isDone 
+        ? 'bg-green-50 border-green-200 hover:bg-green-100' 
+        : inProgress
+        ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+        : timeInfo?.isUrgent
+        ? 'bg-red-50 border-red-200 hover:bg-red-100'
+        : 'bg-white border-slate-200 hover:bg-slate-50'
+    }`}>
+      <button
+        onClick={onToggle}
+        className="flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded"
+      >
+        {isDone ? (
+          <CheckCircle className="h-6 w-6 text-green-600" />
+        ) : inProgress ? (
+          <Target className="h-6 w-6 text-blue-600" />
+        ) : (
+          <Circle className="h-6 w-6 text-slate-400 group-hover:text-primary-500" />
+        )}
+      </button>
+
       <div className="flex-1 min-w-0">
-        <div className="font-medium truncate">
-          {title}
-          {dueDate && <span className="ml-2 text-xs text-slate-500">{formatDateTime(dueDate)}</span>}
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-lg">{getTypeIcon()}</span>
+          <span className={`font-medium truncate ${isDone ? 'line-through text-slate-500' : 'text-slate-900'}`}>
+            {title}
+          </span>
+          {priorityScore && (
+            <span className="flex-shrink-0 px-2 py-1 text-xs font-medium bg-primary-100 text-primary-700 rounded-full">
+              PS {Math.round(priorityScore)}
+            </span>
+          )}
         </div>
-        {moduleCode && <div className="text-xs text-slate-600 truncate">{moduleCode}</div>}
+        
+        <div className="flex items-center gap-3 text-sm">
+          {moduleCode && (
+            <span className="flex items-center gap-1 text-slate-600 font-medium">
+              <span className="w-2 h-2 bg-primary-500 rounded-full"></span>
+              {moduleCode}
+            </span>
+          )}
+          
+          {timeInfo && (
+            <span className={`flex items-center gap-1 ${
+              timeInfo.isUrgent ? 'text-red-600 font-medium' : 'text-slate-500'
+            }`}>
+              {timeInfo.isUrgent ? (
+                <AlertCircle className="h-4 w-4" />
+              ) : (
+                <Clock className="h-4 w-4" />
+              )}
+              {timeInfo.text}
+            </span>
+          )}
+        </div>
       </div>
     </li>
   );

@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { rememberWeek } from '@/lib/week-store';
 import { WeekView } from './WeekView.view';
+import { addWeeks, subWeeks, startOfWeek, format } from 'date-fns';
 
 // Shape returned from /api/week-view (subset used here)
 type ApiResponse = {
@@ -27,6 +28,35 @@ export function WeekViewContainer({ date }: { date?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openModuleId, setOpenModuleId] = useState<string | null>(null);
+  const [currentDate, setCurrentDate] = useState<string | undefined>(date);
+
+  // Week navigation functions
+  const navigateToWeek = useCallback((newDate: string) => {
+    setCurrentDate(newDate);
+    const url = new URL(window.location.toString());
+    url.searchParams.set('date', newDate);
+    window.history.pushState({}, '', url.toString());
+  }, []);
+
+  const handlePrevWeek = useCallback(() => {
+    const current = currentDate ? new Date(currentDate) : new Date();
+    const prevWeek = subWeeks(current, 1);
+    const prevWeekDate = format(startOfWeek(prevWeek, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+    navigateToWeek(prevWeekDate);
+  }, [currentDate, navigateToWeek]);
+
+  const handleNextWeek = useCallback(() => {
+    const current = currentDate ? new Date(currentDate) : new Date();
+    const nextWeek = addWeeks(current, 1);
+    const nextWeekDate = format(startOfWeek(nextWeek, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+    navigateToWeek(nextWeekDate);
+  }, [currentDate, navigateToWeek]);
+
+  const handleToday = useCallback(() => {
+    const today = new Date();
+    const thisWeekDate = format(startOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+    navigateToWeek(thisWeekDate);
+  }, [navigateToWeek]);
 
   // Derive history state for slide-over: ?module=ID in query
   useEffect(() => {
@@ -65,21 +95,26 @@ export function WeekViewContainer({ date }: { date?: string }) {
   }, [openModuleId]);
 
   useEffect(() => {
+    // Update currentDate if the prop changes
+    setCurrentDate(date);
+  }, [date]);
+
+  useEffect(() => {
     // No need to wait for userId since we removed user authentication
     let alive = true;
     setLoading(true);
     setError(null);
-    fetchWeek(date)
+    fetchWeek(currentDate)
       .then(j => { if (alive) setData(j); })
       .catch(e => { if (alive) setError(e?.message || 'Failed'); })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
-  }, [date]); // Remove userId dependency
+  }, [currentDate]); // Update dependency to use currentDate
 
   // Persist last viewed week for back-navigation from module detail page
   useEffect(() => {
-    rememberWeek(date);
-  }, [date]);
+    rememberWeek(currentDate);
+  }, [currentDate]);
 
   const overallWeightedAverage = useMemo(() => {
     // Placeholder heuristic: normalize priorityScore (0-100) average -> acts as an engagement proxy
@@ -96,9 +131,41 @@ export function WeekViewContainer({ date }: { date?: string }) {
     return { completed, pending };
   }, [data]);
 
-  if (loading && !data) return <div className="p-4">Loading…</div>;
-  if (error && !data) return <div className="p-4 text-danger-600">{error}</div>;
-  if (!data) return <div className="p-4">No data</div>;
+  if (loading && !data) return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+        <div className="text-lg font-medium text-slate-700">Loading your weekly mission...</div>
+        <div className="text-sm text-slate-500 mt-2">Preparing your priorities and modules</div>
+      </div>
+    </div>
+  );
+  
+  if (error && !data) return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
+      <div className="text-center max-w-md mx-auto px-6">
+        <div className="text-6xl mb-4">⚠️</div>
+        <div className="text-lg font-medium text-slate-700 mb-2">Something went wrong</div>
+        <div className="text-sm text-slate-500 mb-4">{error}</div>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          Reload page
+        </button>
+      </div>
+    </div>
+  );
+  
+  if (!data) return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-6xl mb-4">📋</div>
+        <div className="text-lg font-medium text-slate-700">No data available</div>
+        <div className="text-sm text-slate-500 mt-2">Try refreshing the page</div>
+      </div>
+    </div>
+  );
 
   return (
     <WeekView
@@ -110,6 +177,9 @@ export function WeekViewContainer({ date }: { date?: string }) {
       onOpenModule={openModuleViaHistory}
       openModule={openModule ? { moduleId: openModule.moduleId, code: openModule.code, title: openModule.title, creditHours: openModule.creditHours } : undefined}
       onCloseModule={closeModuleViaHistory}
+      onPrevWeek={handlePrevWeek}
+      onNextWeek={handleNextWeek}
+      onToday={handleToday}
     />
   );
 }

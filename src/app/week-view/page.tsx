@@ -15,20 +15,24 @@ export default async function WeekViewPage({ searchParams }: { searchParams?: { 
   const featureUIFlag = process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true' || searchParams?.ui === '1' || true; // Default to new UI
 
   return (
-    <main className="container mx-auto py-8">
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {featureUIFlag ? (
-            <ClientWeekView />
-          ) : (
-            <TaskGroupList tasks={tasks as TaskListItem[]} />
-          )}
+    <main className="min-h-screen">
+      {featureUIFlag ? (
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <ClientWeekView date={searchParams?.date} />
         </div>
-        <aside className="space-y-3">
-          <PerformanceGauge minutes={totalStudyMinutes} />
-          <Link href="/dashboard" className="btn btn-secondary text-sm w-full justify-center">Back to Dashboard</Link>
-        </aside>
-      </div>
+      ) : (
+        <div className="container mx-auto py-8">
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <TaskGroupList tasks={tasks as TaskListItem[]} />
+            </div>
+            <aside className="space-y-3">
+              <PerformanceGauge minutes={totalStudyMinutes} />
+              <Link href="/dashboard" className="btn btn-secondary text-sm w-full justify-center">Back to Dashboard</Link>
+            </aside>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
