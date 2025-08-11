@@ -66,6 +66,59 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   });
   const [termMode, setTermMode] = useState<'existing' | 'create'>('existing');
 
+  // Available field options for mapping
+  const fieldOptions: SelectOption[] = [
+    { value: '', label: 'Select a field...' },
+    { value: 'module_code', label: 'Module Code' },
+    { value: 'title', label: 'Title/Name' },
+    { value: 'type', label: 'Assignment Type' },
+    { value: 'weight', label: 'Weight/Credits' },
+    { value: 'due_date', label: 'Due Date' },
+    { value: 'status', label: 'Status' },
+    { value: 'grade', label: 'Grade/Mark' },
+    { value: 'effort_estimate', label: 'Effort Estimate (hours)' },
+    { value: 'description', label: 'Description' },
+    { value: 'category', label: 'Category' },
+    { value: 'priority', label: 'Priority' },
+    { value: 'notes', label: 'Notes' },
+    { value: 'ignore', label: '(Ignore this column)' }
+  ];
+
+  // Smart mapping suggestions based on header names
+  const getSmartMapping = (headers: string[]): Record<string, string> => {
+    const smartMap: Record<string, string> = {};
+    
+    headers.forEach(header => {
+      const lowerHeader = header.toLowerCase().replace(/[_\s-]/g, '');
+      
+      if (lowerHeader.includes('module') && lowerHeader.includes('code')) {
+        smartMap[header] = 'module_code';
+      } else if (lowerHeader.includes('title') || lowerHeader.includes('name')) {
+        smartMap[header] = 'title';
+      } else if (lowerHeader.includes('type') || lowerHeader.includes('category')) {
+        smartMap[header] = 'type';
+      } else if (lowerHeader.includes('weight') || lowerHeader.includes('credit')) {
+        smartMap[header] = 'weight';
+      } else if (lowerHeader.includes('due') && lowerHeader.includes('date')) {
+        smartMap[header] = 'due_date';
+      } else if (lowerHeader.includes('status')) {
+        smartMap[header] = 'status';
+      } else if (lowerHeader.includes('grade') || lowerHeader.includes('mark')) {
+        smartMap[header] = 'grade';
+      } else if (lowerHeader.includes('effort') || lowerHeader.includes('estimate')) {
+        smartMap[header] = 'effort_estimate';
+      } else if (lowerHeader.includes('description') || lowerHeader.includes('desc')) {
+        smartMap[header] = 'description';
+      } else if (lowerHeader.includes('priority')) {
+        smartMap[header] = 'priority';
+      } else if (lowerHeader.includes('note')) {
+        smartMap[header] = 'notes';
+      }
+    });
+    
+    return smartMap;
+  };
+
   const stepTitles = {
     1: 'Upload CSV File',
     2: 'Map Columns',
@@ -118,6 +171,11 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
       const data = await res.json();
       setHeaders(data.headers);
       setRaw(text);
+      
+      // Apply smart mapping
+      const smartMapping = getSmartMapping(data.headers);
+      setMapping(smartMapping);
+      
       setStep(2);
     } catch (error) {
       console.error('Failed to parse file:', error);
@@ -369,43 +427,97 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
           )}
 
           {step === 2 && (
-            <Card>
-              <CardHeader>
-                <div>
-                  <h4 className="font-semibold text-slate-900">Column Mapping</h4>
-                  <p className="text-sm text-slate-600">Map your CSV columns to data fields</p>
-                </div>
-              </CardHeader>
-              <CardBody className="p-0">
-                <div className="overflow-auto">
-                  <table className="w-full">
-                    <thead className="bg-slate-50 border-b border-slate-200">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-sm font-medium text-slate-700">CSV Column</th>
-                        <th className="px-6 py-3 text-left text-sm font-medium text-slate-700">Map to Field</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-200">
-                      {headers.map((header) => (
-                        <tr key={header} className="hover:bg-slate-50">
-                          <td className="px-6 py-4 text-sm font-medium text-slate-900">
-                            {header}
-                          </td>
-                          <td className="px-6 py-4">
-                            <Input
-                              value={mapping[header] ?? ''}
-                              onChange={(value: string) => setMapping({ ...mapping, [header]: value })}
-                              placeholder="e.g. code, title, creditHours"
-                              fullWidth
-                            />
-                          </td>
+            <>
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-slate-900">Column Mapping</h4>
+                      <p className="text-sm text-slate-600">Map your CSV columns to data fields</p>
+                    </div>
+                    <Button
+                      onClick={() => setMapping(getSmartMapping(headers))}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      Auto-Map Columns
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardBody className="p-0">
+                  <div className="overflow-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-sm font-medium text-slate-700">CSV Column</th>
+                          <th className="px-6 py-3 text-left text-sm font-medium text-slate-700">Map to Field</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardBody>
-            </Card>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200">
+                        {headers.map((header) => (
+                          <tr key={header} className="hover:bg-slate-50">
+                            <td className="px-6 py-4 text-sm font-medium text-slate-900">
+                              {header}
+                            </td>
+                            <td className="px-6 py-4">
+                              <Select
+                                value={mapping[header] ?? ''}
+                                onChange={(value: string) => setMapping({ ...mapping, [header]: value })}
+                                options={fieldOptions}
+                                fullWidth
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardBody>
+              </Card>
+
+              {/* Mapping Preview */}
+              {headers.length > 0 && (
+                <Card>
+                  <CardHeader gradient="blue">
+                    <div>
+                      <h4 className="font-semibold text-blue-900">Mapping Preview</h4>
+                      <p className="text-sm text-blue-700">Preview how your columns will be mapped</p>
+                    </div>
+                  </CardHeader>
+                  <CardBody>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="font-medium text-slate-900 mb-2">Mapped Fields:</h5>
+                        <div className="space-y-1">
+                          {Object.entries(mapping).filter(([, value]) => value && value !== 'ignore').map(([header, field]) => (
+                            <div key={header} className="flex items-center gap-2 text-sm">
+                              <span className="bg-slate-100 px-2 py-1 rounded text-slate-700">{header}</span>
+                              <ArrowRight className="h-3 w-3 text-slate-400" />
+                              <span className="bg-blue-100 px-2 py-1 rounded text-blue-700">
+                                {fieldOptions.find(opt => opt.value === field)?.label || field}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-slate-900 mb-2">Unmapped Columns:</h5>
+                        <div className="space-y-1">
+                          {headers.filter(header => !mapping[header] || mapping[header] === '').map(header => (
+                            <div key={header} className="text-sm">
+                              <span className="bg-orange-100 px-2 py-1 rounded text-orange-700">{header}</span>
+                            </div>
+                          ))}
+                          {headers.filter(header => !mapping[header] || mapping[header] === '').length === 0 && (
+                            <span className="text-sm text-green-600">All columns mapped!</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              )}
+            </>
           )}
 
           {step === 3 && needsTermMapping && (
