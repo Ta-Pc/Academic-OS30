@@ -150,7 +150,7 @@ test.describe('Week-first UX flows', () => {
     if (assignmentCount === 0) {
       console.log('No assignments found to simulate');
       // Close dialog and skip test
-      const closeButton = whatIfDialog.getByRole('button', { name: /close|cancel/i });
+      const closeButton = whatIfDialog.getByRole('button', { name: /close|cancel/i }).first();
       if (await closeButton.count() > 0) {
         await closeButton.click();
       }

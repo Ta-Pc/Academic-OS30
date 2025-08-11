@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useTransition } from 'react';
-import { useUserStore } from '@/lib/user-store';
+// user store pruned
 type TacticalTask = { id: string; title: string; status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'; type: 'READ' | 'STUDY' | 'PRACTICE' | 'REVIEW' | 'ADMIN'; dueDate: Date };
 type TacticalTaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
 type TacticalTaskType = 'READ' | 'STUDY' | 'PRACTICE' | 'REVIEW' | 'ADMIN';
@@ -38,7 +38,7 @@ async function toggleTask(taskId: string, nextStatus: TacticalTaskStatus, userId
 export function TaskGroupList({ tasks }: { tasks: TaskLite[] }) {
   const [local, setLocal] = useState<TaskLite[]>(tasks);
   const [, startTransition] = useTransition();
-  const currentUser = useUserStore((s) => s.currentUser);
+  // user context removed
 
   const grouped = useMemo(() => groupByType(local), [local]);
 
@@ -48,7 +48,7 @@ export function TaskGroupList({ tasks }: { tasks: TaskLite[] }) {
     setLocal((cur) => cur.map((t) => (t.id === task.id ? { ...t, status: next } : t)));
     startTransition(async () => {
       try {
-        await toggleTask(task.id, next, currentUser?.id);
+  await toggleTask(task.id, next, undefined);
       } catch {
         // revert on failure
         setLocal((cur) => cur.map((t) => (t.id === task.id ? { ...t, status: task.status } : t)));

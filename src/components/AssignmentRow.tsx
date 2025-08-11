@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { formatDateTime } from '@/utils/date-format';
 
 export type AssignmentRowProps = {
   assignment: { id: string; title: string; dueDate: string; score: number | null };
@@ -37,7 +38,7 @@ export default function AssignmentRow({ assignment }: AssignmentRowProps) {
     <div className="flex items-center justify-between border rounded p-3">
       <div>
         <div className="font-medium">{assignment.title}</div>
-        <div className="text-sm text-gray-600">Due {new Date(assignment.dueDate).toLocaleString()}</div>
+        <div className="text-sm text-gray-600">Due {formatDateTime(assignment.dueDate)}</div>
         <div className="text-sm">Score: {assignment.score ?? '—'}%</div>
       </div>
       <div>

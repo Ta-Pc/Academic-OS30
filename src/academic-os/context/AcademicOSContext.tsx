@@ -1,13 +1,13 @@
 'use client';
 // AcademicOS Flow Composition
 import React, { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
-import { useUserStore, type CurrentUser } from '@/lib/user-store';
+import type { CurrentUser } from '@/lib/user-store';
 import { useWeekStore } from '@/lib/week-store';
 
 /**
  * Academic OS view types for navigation.
  */
-export type AcademicOSView = 'weekly' | 'module' | 'strategic' | 'whatif' | 'settings';
+export type AcademicOSView = 'weekly' | 'modules' | 'module' | 'strategic' | 'whatif' | 'settings';
 
 /**
  * Modal state for overlays.
@@ -234,7 +234,7 @@ const AcademicOSContext = createContext<AcademicOSContextType | null>(null);
  */
 export function AcademicOSProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(academicOSReducer, initialState);
-  const currentUser = useUserStore((s) => s.currentUser);
+  const currentUser: CurrentUser = null;
   const { lastViewedWeek } = useWeekStore();
 
   // Initialize week start on mount
@@ -251,7 +251,7 @@ export function AcademicOSProvider({ children }: { children: React.ReactNode }) 
   }, [state.currentWeekStart]);
 
   // Check for first visit (could be enhanced with localStorage)
-  const isFirstVisit = !state.hasSeenOnboarding && currentUser !== null;
+  const isFirstVisit = false;
 
   // Action creators
   const setView = useCallback((view: AcademicOSView) => {

@@ -32,6 +32,7 @@ model Module {
   title         String
   creditHours   Int
   termId        String?
+  ownerId       String? // optional owner for linkage to user
   createdAt     DateTime              @default(now())
   targetMark    Float?
   department    String?
@@ -48,6 +49,7 @@ model Module {
   assignments   Assignment[]
   term          Term?                 @relation(fields: [termId], references: [id])
   tasks         TacticalTask[]
+  studyLogs     StudyLog[]
 
   @@index([startDate, endDate])
 }
@@ -101,6 +103,30 @@ model AcademicYear {
   endDate   DateTime
   createdAt DateTime @default(now())
   terms     Term[]
+  ownerId   String?
+}
+
+// Basic user model (minimal) if not already generated elsewhere
+model User {
+  id        String      @id @default(cuid())
+  email     String?     @unique
+  name      String?
+  degreeId  String?     // simplistic link
+  modules   Module[]    @relation("UserModules")
+  studyLogs StudyLog[]
+  academicYears AcademicYear[]
+  terms     Term[]
+}
+
+model StudyLog {
+  id         String   @id @default(cuid())
+  userId     String
+  moduleId   String?
+  date       DateTime @default(now())
+  durationMin Int
+  user       User     @relation(fields: [userId], references: [id])
+  module     Module?  @relation(fields: [moduleId], references: [id])
+  @@index([date])
 }
 
 enum AssignmentStatus {

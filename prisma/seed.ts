@@ -120,6 +120,9 @@ async function main() {
       { title: 'Semester Test 1', dueDate: new Date('2025-03-29T10:00:00+02:00'), maxScore: 100, score: 78, weight: 20, status: 'GRADED', type: 'TEST', moduleId: inf171.id },
       { title: 'Semester Test 2', dueDate: new Date('2025-08-25T10:00:00+02:00'), maxScore: 100, score: null, weight: 20, status: 'PENDING', type: 'TEST', moduleId: inf171.id },
       { title: 'Class Test 1', dueDate: new Date('2025-04-01T10:00:00+02:00'), maxScore: 100, score: 75, weight: 15, status: 'GRADED', type: 'CLASS_TEST', moduleId: inf171.id },
+      // Add urgent assignments for testing high priority actions
+      { title: 'Urgent Assignment', dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), maxScore: 100, score: null, weight: 10, status: 'PENDING', type: 'OTHER', moduleId: inf171.id },
+      { title: 'Critical Task', dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), maxScore: 100, score: null, weight: 15, status: 'PENDING', type: 'OTHER', moduleId: stk110.id },
     ],
   });
 

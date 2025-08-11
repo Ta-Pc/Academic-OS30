@@ -12,14 +12,10 @@ export default async function WeekViewPage({ searchParams }: { searchParams?: { 
   const tasks: TaskListItem[] = [];
   const totalStudyMinutes = 0;
 
-  const featureUIFlag = process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true' || searchParams?.ui === '1';
+  const featureUIFlag = process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true' || searchParams?.ui === '1' || true; // Default to new UI
 
   return (
     <main className="container mx-auto py-8">
-      <h1 className="text-3xl font-semibold">Weekly Mission Brief</h1>
-      <p className="text-slate-600 mt-1">
-        Scan and action your tasks for the week. Check items off as you complete them.
-      </p>
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {featureUIFlag ? (

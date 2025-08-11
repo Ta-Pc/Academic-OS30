@@ -56,14 +56,14 @@ export function EditAssignmentModalView({ open, title, initialValue, onChange, o
                 min={0}
                 max={100}
                 step="0.01"
-                data-testid="edit-assignment-input"
+                data-testid="score-input"
                 onChange={(e) => { setValue(e.target.value); onChange(e.target.value === '' ? null : Number(e.target.value)); }}
               />
             </label>
             {error && <div className="text-danger-600 text-sm" role="alert">{error}</div>}
             <div className="flex justify-end gap-2">
               <button className="btn btn-ghost" disabled={!!saving} onClick={onCancel}>Cancel</button>
-              <button className="btn btn-primary" data-testid="edit-assignment-save" disabled={!!saving} onClick={onSave}>{saving ? 'Saving…' : 'Save'}</button>
+              <button className="btn btn-primary" data-testid="save-score" disabled={!!saving} onClick={onSave}>{saving ? 'Saving…' : 'Save'}</button>
             </div>
           </div>
         </div>

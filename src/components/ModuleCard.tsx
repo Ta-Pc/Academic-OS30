@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDate } from '@/utils/date-format';
 type Module = { id: string; code: string; title: string; creditHours: number; createdAt: string | Date };
 import Link from 'next/link';
 
@@ -45,7 +46,7 @@ export default function ModuleCard({ module }: ModuleCardProps) {
               </h3>
               <p className="text-sm text-slate-600 mt-0.5">{module.creditHours} credits</p>
             </div>
-            <div className="text-xs text-slate-500 whitespace-nowrap">{new Date(module.createdAt).toLocaleDateString()}</div>
+            <div className="text-xs text-slate-500 whitespace-nowrap">{formatDate(module.createdAt)}</div>
           </div>
 
           <div className="mt-4 space-y-2">

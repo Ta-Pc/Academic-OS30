@@ -14,6 +14,7 @@ export function AcademicOSHeader() {
   const navItems: Array<{ view: AcademicOSView; label: string; testId: string }> = [
     { view: 'weekly', label: 'Weekly', testId: 'academicos-nav-weekly' },
     { view: 'strategic', label: 'Strategic', testId: 'academicos-nav-strategic' },
+    { view: 'modules', label: 'Modules', testId: 'academicos-nav-modules' },
     { view: 'whatif', label: 'What-If', testId: 'academicos-nav-whatif' },
     { view: 'settings', label: 'Settings', testId: 'academicos-nav-settings' },
   ];

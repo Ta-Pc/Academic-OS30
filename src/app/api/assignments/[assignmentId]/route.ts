@@ -9,20 +9,11 @@ export async function PATCH(
     const { assignmentId } = params;
     const body = await req.json();
     const score = body?.score as number | null;
-    let userId = body?.userId as string | undefined;
-    // Dev convenience: fallback to first user if not provided
-    if (!userId) {
-      userId = (await prisma.user.findFirst({ select: { id: true } }))?.id;
-    }
-    if (!userId) {
-      return NextResponse.json({ error: 'unauthorized: userId required' }, { status: 401 });
-    }
+  // User features removed: skip user validation
 
     const existing = await prisma.assignment.findUnique({ where: { id: assignmentId }, include: { module: true } });
     if (!existing) return NextResponse.json({ error: 'not found' }, { status: 404 });
-    if (existing.module?.ownerId && existing.module.ownerId !== userId) {
-      return NextResponse.json({ error: 'forbidden' }, { status: 403 });
-    }
+  // Ownership checks removed
 
     if (score !== null && score !== undefined) {
       if (typeof score !== 'number' || Number.isNaN(score)) {

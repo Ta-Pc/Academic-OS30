@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDateTime } from '@/utils/date-format';
 type Assignment = { id: string; title: string; dueDate: string | Date | null; score: number | null };
 type Module = { code: string; title: string };
 
@@ -14,7 +15,7 @@ export default function WeeklyTimelineItem({ assignment }: WeeklyTimelineItemPro
       <div className="card-body flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="font-medium truncate">{assignment.title}</div>
-          <div className="text-sm text-slate-600">Due: {assignment.dueDate ? new Date(assignment.dueDate).toLocaleString() : '—'}</div>
+          <div className="text-sm text-slate-600">Due: {assignment.dueDate ? formatDateTime(assignment.dueDate) : '—'}</div>
           <div className="text-xs mt-1 text-slate-500">
             Module: {assignment.module?.code ?? assignment.module?.title ?? '—'}
           </div>

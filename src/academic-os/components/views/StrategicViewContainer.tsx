@@ -2,9 +2,10 @@
 // AcademicOS Flow Composition
 import React, { useEffect, useState } from 'react';
 import { useAcademicOS } from '../../context/AcademicOSContext';
-import { useUserStore } from '@/lib/user-store';
+// user store pruned
 import { computeAnalyticsSummary } from '../../selectors/analytics';
 import type { ModuleForAnalytics, AssignmentForDeadlines, DeadlineItem } from '../../selectors/analytics';
+import { formatDate } from '@/utils/date-format';
 
 /**
  * Strategic Analytics View - high-level KPIs and performance metrics.
@@ -12,7 +13,7 @@ import type { ModuleForAnalytics, AssignmentForDeadlines, DeadlineItem } from '.
  */
 export function StrategicViewContainer() {
   const { selectModule } = useAcademicOS();
-  const currentUser = useUserStore((s) => s.currentUser);
+  // user context removed
   const [analytics, setAnalytics] = useState<{
     weightedGPA: number;
     atRiskCount: number;
@@ -26,12 +27,12 @@ export function StrategicViewContainer() {
 
   // Fetch dashboard data and compute analytics
   useEffect(() => {
-    if (!currentUser?.id) return;
+  // user gating removed
 
     async function fetchStrategicData() {
       try {
         // Fetch from existing dashboard API
-        const dashResponse = await fetch(`/api/dashboard?userId=${currentUser!.id}`);
+  const dashResponse = await fetch(`/api/dashboard`);
         if (!dashResponse.ok) throw new Error('Failed to fetch dashboard data');
         
         const dashData = await dashResponse.json();
@@ -79,7 +80,7 @@ export function StrategicViewContainer() {
     }
 
     fetchStrategicData();
-  }, [currentUser]);
+  }, []);
 
   if (loading) {
     return (
@@ -190,6 +191,36 @@ export function StrategicViewContainer() {
         </section>
       )}
 
+      {/* All Modules Section */}
+      <section className="mb-8">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">All Modules</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* We need to fetch all modules for this. For now, let's render known modules from the dashboard */}
+          <div className="card">
+            <div className="card-body">
+              <h4 className="font-medium text-slate-900 mb-2">
+                <a href="/modules/STK110" className="text-primary-600 hover:text-primary-700">
+                  STK110 — Statistics 110
+                </a>
+              </h4>
+              <div className="text-sm text-slate-600 mb-2">Current: 82.3%</div>
+              <a href="/modules/STK110" className="btn btn-secondary btn-sm">View Details</a>
+            </div>
+          </div>
+          <div className="card">
+            <div className="card-body">
+              <h4 className="font-medium text-slate-900 mb-2">
+                <a href="/modules/STK120" className="text-primary-600 hover:text-primary-700">
+                  STK120 — Statistics 120
+                </a>
+              </h4>
+              <div className="text-sm text-slate-600 mb-2">Current: 85.0%</div>
+              <a href="/modules/STK120" className="btn btn-secondary btn-sm">View Details</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Upcoming Deadlines */}
       <section>
         <h3 className="text-lg font-semibold text-slate-900 mb-4">Upcoming Deadlines</h3>
@@ -207,7 +238,7 @@ export function StrategicViewContainer() {
                       <div>
                         <div className="font-medium text-slate-900">{deadline.title}</div>
                         <div className="text-sm text-slate-600">
-                          {deadline.moduleCode} • Due {new Date(deadline.dueDate).toLocaleDateString()}
+                          {deadline.moduleCode} • Due {formatDate(deadline.dueDate)}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useUserStore } from '@/lib/user-store';
+// user store pruned
 import { ImporterShell } from 'packages/ui/import/ImporterShell.view';
 import AddModuleForm from '@/components/AddModuleForm';
 
@@ -8,7 +8,7 @@ type ImportType = 'modules' | 'assignments';
 const IGNORE = '__ignore__';
 
 export function ImporterContainer() {
-  const currentUser = useUserStore((s) => s.currentUser);
+  // user context removed
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   // Default to modules so test can immediately find the select / expected option order
   const [importType, setImportType] = useState<ImportType>('modules');
@@ -60,7 +60,7 @@ export function ImporterContainer() {
       return;
     }
     const fieldMap = buildFieldMapping();
-    const res = await fetch('/api/import/preview', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ importType, raw, mapping: fieldMap, userId: currentUser?.id }) });
+  const res = await fetch('/api/import/preview', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ importType, raw, mapping: fieldMap }) });
     const data = await res.json();
     setResult(data);
     setMissingModules(data.preview?.missingModules ?? []);
@@ -90,7 +90,7 @@ export function ImporterContainer() {
         // add pseudo headers for start/end date values by mutating raw? Instead, extend mapping with constant tokens and send separately
       }
     }
-    const res = await fetch('/api/import/ingest', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ importType, raw, mapping: fieldMap, userId: currentUser?.id, termId: selectedTermId }) });
+  const res = await fetch('/api/import/ingest', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ importType, raw, mapping: fieldMap, termId: selectedTermId }) });
     const data = await res.json();
     setResult(data);
     setStep(5);

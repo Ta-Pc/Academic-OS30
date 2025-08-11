@@ -4,6 +4,7 @@ import React from 'react';
 import { AcademicOSProvider, useAcademicOS } from '../context/AcademicOSContext';
 import { AcademicOSHeader } from './AcademicOSHeader';
 import { WeeklyViewContainer } from '@/academic-os/components/views/WeeklyViewContainer';
+import { ModulesViewContainer } from '@/academic-os/components/views/ModulesViewContainer';
 import { ModuleViewContainer } from '@/academic-os/components/views/ModuleViewContainer';
 import { StrategicViewContainer } from '@/academic-os/components/views/StrategicViewContainer';
 import { WhatIfViewContainer } from '@/academic-os/components/views/WhatIfViewContainer';
@@ -21,6 +22,8 @@ function AcademicOSViews() {
   switch (state.currentView) {
     case 'weekly':
       return <WeeklyViewContainer />;
+    case 'modules':
+      return <ModulesViewContainer />;
     case 'module':
       return <ModuleViewContainer />;
     case 'strategic':

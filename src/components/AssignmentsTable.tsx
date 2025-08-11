@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { useUserStore } from '@/lib/user-store';
+// user store pruned
 import { EditAssignmentModalView } from '@ui/modals/EditAssignmentModal.view';
 import { pushModal, closeModal, listenModal } from '@/lib/modal-history';
+import { formatDateTime } from '@/utils/date-format';
 
 export type AssignmentForTable = {
   id: string;
@@ -46,7 +47,7 @@ function AssignmentRow({ a, onAfterSave }: { a: AssignmentForTable; onAfterSave?
   const [currentValue, setCurrentValue] = useState<number | null>(a.score);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const currentUser = useUserStore((s) => s.currentUser);
+  // user context removed
 
   // History integration for modal
   useEffect(() => {
@@ -75,18 +76,11 @@ function AssignmentRow({ a, onAfterSave }: { a: AssignmentForTable; onAfterSave?
     setSaving(true);
     setError(null);
     try {
-      let effectiveUserId = currentUser?.id;
-      if (!effectiveUserId) {
-        try {
-          const ses = await fetch('/api/session/user', { cache: 'no-store' });
-          const j = ses.ok ? await ses.json() : null;
-          effectiveUserId = j?.user?.id;
-        } catch { /* ignore session fetch error */ }
-      }
+      // user logic removed
       const res = await fetch(`/api/assignments/${a.id}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ score: currentValue, userId: effectiveUserId }),
+        body: JSON.stringify({ score: currentValue }),
       });
       if (!res.ok) throw new Error(await res.text());
       closeEdit();
@@ -103,7 +97,7 @@ function AssignmentRow({ a, onAfterSave }: { a: AssignmentForTable; onAfterSave?
     <tr className="hover:bg-slate-50 transition-colors">
       <td>
         <div className="font-medium">{a.title}</div>
-        {a.dueDate && <div className="text-xs text-slate-500">Due {new Date(a.dueDate).toLocaleString()}</div>}
+        {a.dueDate && <div className="text-xs text-slate-500">Due {formatDateTime(a.dueDate)}</div>}
       </td>
       <td className="text-right">{a.score == null ? '—' : (a.maxScore == null ? `${round1(a.score)}%` : round1(a.score))}</td>
       <td className="text-right">{a.maxScore == null ? '—' : round1(a.maxScore)}</td>

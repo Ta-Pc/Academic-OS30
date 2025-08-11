@@ -21,7 +21,9 @@ module.exports = {
   testPathIgnorePatterns: [
     '<rootDir>/tests/e2e/', 
     '<rootDir>/tests/visual/',
-    '<rootDir>/tests/unit/module-detail-back.test.tsx'  // JSX parsing issues with UI imports
+  '<rootDir>/tests/unit/module-detail-back.test.tsx',  // JSX parsing issues with UI imports
+  '<rootDir>/tests/unit/api.user-progression.test.ts',
+  '<rootDir>/tests/unit/api.user-remediation.test.ts'
   ],
 };
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAcademicOS } from '../../context/AcademicOSContext';
 import { WeekViewContainer as ExistingWeekViewContainer } from '@/app/week-view/WeekView.container';
-import { useUserStore } from '@/lib/user-store';
+// user store pruned
 
 /**
  * Weekly View Container - adapts existing WeekViewContainer for Academic OS.
@@ -11,7 +11,7 @@ import { useUserStore } from '@/lib/user-store';
 export function WeeklyViewContainer() {
   const { state, openModal } = useAcademicOS();
   const { currentWeekStart } = state;
-  const currentUser = useUserStore((s) => s.currentUser);
+  // user context removed
 
   return (
     <div className="container mx-auto py-6" data-testid="academicos-weekly-root">
@@ -33,7 +33,6 @@ export function WeeklyViewContainer() {
 
       {/* Reuse existing WeekViewContainer with current week context */}
       <ExistingWeekViewContainer 
-        userId={currentUser?.id}
         date={currentWeekStart || undefined}
       />
     </div>

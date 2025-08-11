@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Metadata } from 'next';
 import ClientAnalytics from './ui-client-analytics';
 import NextDynamic from 'next/dynamic';
 
@@ -30,9 +31,24 @@ import { prisma as prismaClient } from '@/lib/prisma';
 
 async function fetchAnalytics(moduleId: string): Promise<AnalyticsResponse> {
   const base = getBaseUrl();
-  const res = await fetch(`${base}/api/modules/${moduleId}/analytics`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch analytics');
-  return res.json();
+  const url = `${base}/api/modules/${moduleId}/analytics`;
+  console.log('Fetching analytics from:', url);
+  
+  const res = await fetch(url, { 
+    cache: 'no-store',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  
+  if (!res.ok) {
+    console.error('Analytics fetch failed:', res.status, res.statusText);
+    throw new Error(`Failed to fetch analytics: ${res.status} ${res.statusText}`);
+  }
+  
+  const data = await res.json();
+  console.log('Analytics data received:', data);
+  return data;
 }
 
 // Assignments are provided by analytics endpoint with derived fields
@@ -44,8 +60,12 @@ export default async function ModuleDetailPage({ params }: { params: { moduleId:
   const isCuid = /^c[a-z0-9]{24,}$/i.test(moduleId);
   const whereClause = isCuid ? { id: moduleId } : { code: moduleId };
   
-  // Guard: ensure module belongs to current mock user for SSR fetches reliant on DB
-  await prismaClient.module.findFirst({ where: whereClause, select: { id: true } });
+  // Guard: ensure module exists
+  const moduleExists = await prismaClient.module.findFirst({ where: whereClause, select: { id: true } });
+  if (!moduleExists) {
+    throw new Error(`Module ${moduleId} not found`);
+  }
+  
   const [analytics] = await Promise.all([
     fetchAnalytics(moduleId),
   ]);
@@ -58,7 +78,9 @@ export default async function ModuleDetailPage({ params }: { params: { moduleId:
         <h1 className="text-3xl font-semibold">
           {a.module.code} — {a.module.title}
         </h1>
-        <Link className="btn btn-secondary" href="/dashboard">Back to Dashboard</Link>
+        <div className="flex gap-2">
+          <Link className="btn btn-secondary" href="/dashboard">Back to Dashboard</Link>
+        </div>
       </div>
 
       {process.env.NEXT_PUBLIC_FEATURE_UI_LIBRARY === 'true' ? (

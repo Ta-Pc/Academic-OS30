@@ -5,12 +5,7 @@ import { $Enums, type Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
-  const { importType, raw, mapping, userId: bodyUserId, termId } = await req.json();
-    let userId = bodyUserId as string | undefined;
-    if (!userId) {
-      userId = (await prisma.user.findFirst({ select: { id: true } }))?.id;
-    }
-    if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 });
+  const { importType, raw, mapping, termId } = await req.json();
   const { rows } = parseCsv(raw);
   type CsvRow = Record<string, string | undefined>;
   const failures: Array<{ row: CsvRow; reason: string }> = [];
@@ -41,7 +36,7 @@ export async function POST(req: NextRequest) {
             const term = await prisma.term.findUnique({ where: { id: termId } });
             if (term) { startDate = term.startDate; endDate = term.endDate; }
           }
-          const existing = await prisma.module.findFirst({ where: { code, ownerId: userId } });
+          const existing = await prisma.module.findFirst({ where: { code } });
           if (existing) {
             const updateData: Prisma.ModuleUpdateInput = {
               title,
@@ -67,7 +62,7 @@ export async function POST(req: NextRequest) {
               data: updateData
             });
           } else {
-            const moduleData: Prisma.ModuleCreateInput = {
+            const moduleData: any = {
               code,
               title,
               creditHours,
@@ -76,7 +71,7 @@ export async function POST(req: NextRequest) {
               department,
               faculty,
               prerequisites,
-              owner: { connect: { id: userId } },
+              // user ownership removed
               startDate,
               endDate
             };
@@ -111,7 +106,7 @@ export async function POST(req: NextRequest) {
           // effortEstimateMinutes currently unused in data model
           const componentName = r[mapping['component']]?.trim();
           if (!moduleCode || !title || weight == null) throw new Error('moduleCode, title, weight required');
-          const mod = await prisma.module.findFirst({ where: { code: moduleCode, ownerId: userId } });
+          const mod = await prisma.module.findFirst({ where: { code: moduleCode } });
           if (!mod) throw new Error(`Module code '${moduleCode}' not found`);
           let componentId: string | null = null;
           if (componentName) {

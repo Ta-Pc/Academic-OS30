@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { useUserStore } from "@/lib/user-store";
+// user store pruned
 
 type CreatedModule = { id: string; code: string; title: string; creditHours: number };
 type Props = { onCreated?: (created: CreatedModule) => void };
 
 export default function AddModuleForm({ onCreated }: Props) {
-  const currentUser = useUserStore((s) => s.currentUser);
+  // user context removed
   const [code, setCode] = useState("");
   const [title, setTitle] = useState("");
   const [credits, setCredits] = useState(12);
@@ -21,7 +21,7 @@ export default function AddModuleForm({ onCreated }: Props) {
       const res = await fetch("/api/modules", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ code: code.trim(), title: (title || code).trim(), creditHours: Number(credits) || 12, ownerId: currentUser?.id }),
+  body: JSON.stringify({ code: code.trim(), title: (title || code).trim(), creditHours: Number(credits) || 12 }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "failed");

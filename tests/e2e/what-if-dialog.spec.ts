@@ -19,7 +19,7 @@ test.describe('WhatIf dialog workflow', () => {
     await btn.click();
 
     // Locate Module Test 2 row input by text first
-    const row = page.locator('tr', { hasText: 'Module Test 2' });
+    const row = page.locator('tr', { hasText: 'Module Test 2' }).first();
     await expect(row).toBeVisible();
     const input = row.locator('input[type="number"]');
     await input.fill('60');
@@ -32,10 +32,10 @@ test.describe('WhatIf dialog workflow', () => {
     await expect(stat).toBeVisible();
 
     // Close (discard) & reopen to assert reset
-    const closeBtn = page.getByRole('button', { name: 'Close' });
+    const closeBtn = page.getByRole('button', { name: 'Close' }).first();
     await closeBtn.click();
     await btn.click();
-    const reopenedRow = page.locator('tr', { hasText: 'Module Test 2' });
+    const reopenedRow = page.locator('tr', { hasText: 'Module Test 2' }).first();
     await expect(reopenedRow).toBeVisible();
     const reopenedInput = reopenedRow.locator('input[type="number"]');
     await expect(reopenedInput).toHaveValue(''); // original null

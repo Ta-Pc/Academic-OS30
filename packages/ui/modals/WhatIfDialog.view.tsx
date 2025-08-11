@@ -57,7 +57,7 @@ export function WhatIfDialogView(props: WhatIfDialogViewProps) {
         <div className="card w-full max-w-2xl mt-8 shadow-xl animate-fade-in">
           <div className="card-header flex items-center justify-between">
             <h2 id="whatIfHeading" className="text-sm font-semibold text-slate-700">What-If: {module.code}</h2>
-            <button className="btn btn-secondary btn-sm" onClick={onClose} aria-label="Close what-if dialog">×</button>
+            <button className="btn btn-secondary btn-sm" onClick={onClose} aria-label="Close dialog">×</button>
           </div>
           <div className="card-body space-y-4">
             <p className="text-xs text-slate-600">Simulate potential scores before committing. Session-only simulations won&apos;t persist until you click Commit.</p>
