@@ -58,10 +58,7 @@ export function WeekViewPageView(props: WeekViewPageProps) {
   };
 
   const handleAssignmentSave = () => {
-<<<<<<< Updated upstream
-=======
     console.log('💾 Assignment saved - refreshing Performance metrics...');
->>>>>>> Stashed changes
     setEditingAssignmentId(null);
     onRefresh?.(); // Refresh the week data
   };
@@ -72,11 +69,8 @@ export function WeekViewPageView(props: WeekViewPageProps) {
       const currentTask = priorities.find(p => p.id === taskId && p.type !== 'ASSIGNMENT');
       if (!currentTask) return;
       
-<<<<<<< Updated upstream
-=======
       console.log(`🔄 Toggling task: ${currentTask.title} (${currentTask.status} -> next)`);
       
->>>>>>> Stashed changes
       // Cycle through statuses: PENDING -> IN_PROGRESS -> COMPLETED -> PENDING
       let nextStatus = 'IN_PROGRESS';
       if (currentTask.status === 'IN_PROGRESS') nextStatus = 'COMPLETED';
@@ -92,18 +86,11 @@ export function WeekViewPageView(props: WeekViewPageProps) {
         throw new Error('Failed to update task');
       }
       
-<<<<<<< Updated upstream
-      // Refresh the week data to show updated status
-      onRefresh?.();
-    } catch (error) {
-      console.error('Failed to toggle task:', error);
-=======
       console.log(`✅ Task updated to ${nextStatus} - refreshing Task Progress metrics...`);
       // Refresh the week data to show updated status
       onRefresh?.();
     } catch (error) {
       console.error('❌ Failed to toggle task:', error);
->>>>>>> Stashed changes
     }
   };
 

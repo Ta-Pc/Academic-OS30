@@ -67,27 +67,6 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   });
   const [termMode, setTermMode] = useState<'existing' | 'create'>('existing');
 
-<<<<<<< Updated upstream
-  // Available field options for mapping
-  const fieldOptions: SelectOption[] = [
-    { value: '', label: 'Select a field...' },
-    { value: 'module_code', label: 'Module Code' },
-    { value: 'title', label: 'Title/Name' },
-    { value: 'type', label: 'Assignment Type' },
-    { value: 'weight', label: 'Weight/Credits' },
-    { value: 'due_date', label: 'Due Date' },
-    { value: 'status', label: 'Status' },
-    { value: 'grade', label: 'Grade/Mark' },
-    { value: 'effort_estimate', label: 'Effort Estimate (hours)' },
-    { value: 'description', label: 'Description' },
-    { value: 'category', label: 'Category' },
-    { value: 'priority', label: 'Priority' },
-    { value: 'notes', label: 'Notes' },
-    { value: 'ignore', label: '(Ignore this column)' }
-  ];
-
-  // Smart mapping suggestions based on header names
-=======
   // Available field options for mapping - using camelCase to match API
   const fieldOptions: SelectOption[] = [
     { value: '', label: 'Select a field...' },
@@ -143,37 +122,11 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   };
 
   // Smart mapping suggestions based on header names - using camelCase to match API
->>>>>>> Stashed changes
   const getSmartMapping = (headers: string[]): Record<string, string> => {
     const smartMap: Record<string, string> = {};
     
     headers.forEach(header => {
       const lowerHeader = header.toLowerCase().replace(/[_\s-]/g, '');
-<<<<<<< Updated upstream
-      
-      if (lowerHeader.includes('module') && lowerHeader.includes('code')) {
-        smartMap[header] = 'module_code';
-      } else if (lowerHeader.includes('title') || lowerHeader.includes('name')) {
-        smartMap[header] = 'title';
-      } else if (lowerHeader.includes('type') || lowerHeader.includes('category')) {
-        smartMap[header] = 'type';
-      } else if (lowerHeader.includes('weight') || lowerHeader.includes('credit')) {
-        smartMap[header] = 'weight';
-      } else if (lowerHeader.includes('due') && lowerHeader.includes('date')) {
-        smartMap[header] = 'due_date';
-      } else if (lowerHeader.includes('status')) {
-        smartMap[header] = 'status';
-      } else if (lowerHeader.includes('grade') || lowerHeader.includes('mark')) {
-        smartMap[header] = 'grade';
-      } else if (lowerHeader.includes('effort') || lowerHeader.includes('estimate')) {
-        smartMap[header] = 'effort_estimate';
-      } else if (lowerHeader.includes('description') || lowerHeader.includes('desc')) {
-        smartMap[header] = 'description';
-      } else if (lowerHeader.includes('priority')) {
-        smartMap[header] = 'priority';
-      } else if (lowerHeader.includes('note')) {
-        smartMap[header] = 'notes';
-=======
       const originalLower = header.toLowerCase(); // Keep underscores for exact matching
       
       // Exact matches for common CSV headers
@@ -212,7 +165,6 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
         smartMap[header] = 'component';
       } else if (lowerHeader.includes('description') || lowerHeader.includes('desc')) {
         smartMap[header] = 'description';
->>>>>>> Stashed changes
       }
     });
     
@@ -272,13 +224,10 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
       setHeaders(data.headers);
       setRaw(text);
       
-<<<<<<< Updated upstream
-=======
       // Auto-detect import type based on headers
       const detectedType = detectImportType(data.headers);
       setImportType(detectedType);
       
->>>>>>> Stashed changes
       // Apply smart mapping
       const smartMapping = getSmartMapping(data.headers);
       setMapping(smartMapping);
