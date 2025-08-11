@@ -13,11 +13,10 @@ type ApiResponse = {
   tacticalTasks: Array<{ id: string; title: string; status: string; type: string; dueDate: string; module?: { id: string; code: string; title: string } }>; // task system
 };
 
-async function fetchWeek(userId: string, date?: string): Promise<ApiResponse> {
+async function fetchWeek(date?: string): Promise<ApiResponse> {
   const url = new URL('/api/week-view', window.location.origin);
   if (date) url.searchParams.set('date', date);
-  // userId implicitly derived server-side now; still pass if available for forwards compatibility
-  if (userId) url.searchParams.set('userId', userId);
+  // No userId needed since we removed user authentication
   const res = await fetch(url.toString(), { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch week');
   return res.json();
@@ -66,16 +65,16 @@ export function WeekViewContainer({ userId, date }: { userId?: string; date?: st
   }, [openModuleId]);
 
   useEffect(() => {
-    if (!userId) return; // wait for server provided user id
+    // No need to wait for userId since we removed user authentication
     let alive = true;
     setLoading(true);
     setError(null);
-    fetchWeek(userId, date)
+    fetchWeek(date)
       .then(j => { if (alive) setData(j); })
       .catch(e => { if (alive) setError(e?.message || 'Failed'); })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
-  }, [userId, date]);
+  }, [date]); // Remove userId dependency
 
   // Persist last viewed week for back-navigation from module detail page
   useEffect(() => {

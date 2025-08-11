@@ -43,12 +43,8 @@ export async function POST(req: NextRequest) {
           errors.push({ row: r, reason: 'moduleCode, title, weight required' });
           continue;
         }
-        // Track missing modules for helper creation (scoped to user if provided)
-        let userId = bodyUserId as string | undefined;
-        if (!userId) {
-          userId = (await prisma.user.findFirst({ select: { id: true } }))?.id;
-        }
-        const mod = moduleCode ? await prisma.module.findFirst({ where: { code: moduleCode, ...(userId ? { ownerId: userId } : {}) } }) : null;
+        // Track missing modules for helper creation
+        const mod = moduleCode ? await prisma.module.findFirst({ where: { code: moduleCode } }) : null;
         if (!mod) missingSet.add(moduleCode);
         out.push({ moduleCode, title, weight, dueDate: dueDate?.toISOString() ?? null, status, type, score, description, effortEstimateMinutes, component });
       }

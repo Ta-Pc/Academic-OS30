@@ -14,9 +14,7 @@ export async function PATCH(
 
     const existing = await prisma.tacticalTask.findUnique({ where: { id: taskId }, include: { module: true } });
     if (!existing) return NextResponse.json({ error: 'not found' }, { status: 404 });
-    if (userId && existing.module?.ownerId && existing.module.ownerId !== userId) {
-      return NextResponse.json({ error: 'forbidden' }, { status: 403 });
-    }
+    // No ownership check needed since we removed users
 
     if (!status || !['PENDING', 'IN_PROGRESS', 'COMPLETED'].includes(status)) {
       return NextResponse.json({ error: 'invalid status' }, { status: 400 });

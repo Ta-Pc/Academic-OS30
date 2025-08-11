@@ -4,7 +4,6 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Reset minimal tables to avoid duplicates (dev-only convenience)
-  await prisma.studyLog.deleteMany();
   try { await prisma.tacticalTask.deleteMany(); } catch {}
   await prisma.assignment.deleteMany();
   await prisma.assessmentComponent.deleteMany();
@@ -12,14 +11,8 @@ async function main() {
   await prisma.term.deleteMany();
   await prisma.degree.deleteMany();
 
-  // Degree and user
+  // Degree only (no user needed)
   const degree = await prisma.degree.create({ data: { title: 'BSc Data Science' } });
-
-  const user = await prisma.user.upsert({
-    where: { email: 'Basic Student@Gmail.com' },
-    update: { degreeId: degree.id },
-    create: { email: 'Basic Student@Gmail.com', name: 'Basic Student', degreeId: degree.id },
-  });
 
   // Term
   const term = await prisma.term.create({
@@ -31,6 +24,39 @@ async function main() {
     },
   });
 
+  // Module STK120 (Statistics 120) - for test compatibility
+  const stk120 = await prisma.module.create({
+    data: {
+      code: 'STK120',
+      title: 'Statistics 120',
+      creditHours: 12,
+      targetMark: 75,
+      termId: term.id,
+    },
+  });
+
+  // Assessment components for STK120
+  const cSTK120Tests = await prisma.assessmentComponent.create({
+    data: { name: 'Module Tests', moduleId: stk120.id },
+  });
+
+  // Assignments for STK120 
+  await prisma.assignment.createMany({
+    data: [
+      { title: 'Module Test 1', dueDate: new Date('2025-03-26T10:00:00+02:00'), maxScore: 100, score: 85, weight: 50, status: 'GRADED', type: 'TEST', moduleId: stk120.id, componentId: cSTK120Tests.id },
+      { title: 'Module Test 2', dueDate: new Date('2025-05-10T10:00:00+02:00'), maxScore: 100, score: null, weight: 50, status: 'PENDING', type: 'TEST', moduleId: stk120.id, componentId: cSTK120Tests.id },
+    ],
+  });
+
+  // Tactical Tasks for STK120
+  await prisma.tacticalTask.createMany({
+    data: [
+      { title: 'Read Chapter 8: Hypothesis Testing', type: 'READ', status: 'PENDING', dueDate: new Date('2025-08-12T09:00:00+02:00'), moduleId: stk120.id, source: 'Textbook' },
+      { title: 'Complete Tutorial 8', type: 'PRACTICE', status: 'PENDING', dueDate: new Date('2025-08-13T17:00:00+02:00'), moduleId: stk120.id, source: 'Tutorial' },
+      { title: 'Study for Test 2', type: 'STUDY', status: 'PENDING', dueDate: new Date('2025-08-14T20:00:00+02:00'), moduleId: stk120.id },
+    ],
+  });
+
   // Module STK110 (Statistics 110)
   const stk110 = await prisma.module.create({
     data: {
@@ -39,7 +65,6 @@ async function main() {
       creditHours: 12,
       targetMark: 75,
       termId: term.id,
-      ownerId: user.id,
     },
   });
 
@@ -79,7 +104,7 @@ async function main() {
 
   // Module INF171
   const inf171 = await prisma.module.create({
-    data: { code: 'INF171', title: 'Information Systems Analysis and Design', creditHours: 12, targetMark: 80, termId: term.id, ownerId: user.id },
+    data: { code: 'INF171', title: 'Information Systems Analysis and Design', creditHours: 12, targetMark: 80, termId: term.id },
   });
 
   await prisma.assignment.createMany({
@@ -106,8 +131,9 @@ async function main() {
 
   // Module EKN120 (Economics 120)
   const ekn120 = await prisma.module.create({
-    data: { code: 'EKN120', title: 'Economics 120', creditHours: 12, targetMark: 65, termId: term.id, ownerId: user.id },
+    data: { code: 'EKN120', title: 'Economics 120', creditHours: 12, targetMark: 65, termId: term.id },
   });
+
   await prisma.assessmentComponent.createMany({
     data: [
       { name: 'Connect Exercises & Smartbook', moduleId: ekn120.id },
@@ -151,13 +177,22 @@ async function main() {
     ],
   });
 
-  // Seed a couple of study logs for realism
-  await prisma.studyLog.createMany({
+  // Add some tactical tasks for the current week to test week-view
+  const weekStart = new Date('2025-08-11T00:00:00+02:00'); // Current week
+  const weekEnd = new Date('2025-08-17T23:59:59+02:00');
+  
+  await prisma.tacticalTask.createMany({
     data: [
-      { userId: user.id, moduleId: stk110.id, durationMin: 90, loggedAt: new Date() },
-      { userId: user.id, moduleId: inf171.id, durationMin: 60, loggedAt: new Date() },
+      { title: 'Read Chapter 5: Integration', type: 'READ', status: 'PENDING', dueDate: new Date('2025-08-12T09:00:00+02:00'), moduleId: stk110.id, source: 'Textbook' },
+      { title: 'Complete Practice Set 3', type: 'PRACTICE', status: 'PENDING', dueDate: new Date('2025-08-13T17:00:00+02:00'), moduleId: stk110.id, source: 'Tutorial' },
+      { title: 'Study for upcoming test', type: 'STUDY', status: 'PENDING', dueDate: new Date('2025-08-14T20:00:00+02:00'), moduleId: stk110.id },
+      { title: 'Review last week material', type: 'REVIEW', status: 'COMPLETED', dueDate: new Date('2025-08-11T18:00:00+02:00'), moduleId: inf171.id },
+      { title: 'Submit assignment online', type: 'ADMIN', status: 'PENDING', dueDate: new Date('2025-08-15T23:59:00+02:00'), moduleId: inf171.id },
+      { title: 'Read Economics Chapter 11', type: 'READ', status: 'PENDING', dueDate: new Date('2025-08-16T10:00:00+02:00'), moduleId: ekn120.id },
     ],
   });
+
+  console.log('Seed completed successfully!');
 }
 
 main()

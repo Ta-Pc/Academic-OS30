@@ -7,24 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  name          String?
-  createdAt     DateTime       @default(now())
-  degreeId      String?
-  academicYears AcademicYear[]
-  modules       Module[]
-  studyLogs     StudyLog[]
-  ownedTerms    Term[]
-  degree        Degree?        @relation(fields: [degreeId], references: [id])
-}
-
 model Degree {
   id    String @id @default(cuid())
   title String
   terms Term[]
-  users User[]
 }
 
 model Term {
@@ -34,12 +20,10 @@ model Term {
   endDate        DateTime
   degreeId       String
   academicYearId String?
-  ownerId        String?
   type           TermType      @default(SEMESTER)
   modules        Module[]
   academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id])
   degree         Degree        @relation(fields: [degreeId], references: [id])
-  owner          User?         @relation(fields: [ownerId], references: [id])
 }
 
 model Module {
@@ -48,7 +32,6 @@ model Module {
   title         String
   creditHours   Int
   termId        String?
-  ownerId       String
   createdAt     DateTime              @default(now())
   targetMark    Float?
   department    String?
@@ -58,15 +41,12 @@ model Module {
   status        ModuleStatus          @default(ACTIVE)
   endDate       DateTime?
   startDate     DateTime?
-  // New curriculum metadata
   electiveGroup String?
   isCore        Boolean               @default(true)
   span          ModuleSpan            @default(SEMESTER)
   components    AssessmentComponent[]
   assignments   Assignment[]
-  owner         User                  @relation(fields: [ownerId], references: [id])
   term          Term?                 @relation(fields: [termId], references: [id])
-  studyLogs     StudyLog[]
   tasks         TacticalTask[]
 
   @@index([startDate, endDate])
@@ -114,24 +94,12 @@ model TacticalTask {
   @@index([dueDate])
 }
 
-model StudyLog {
-  id          String   @id @default(cuid())
-  userId      String
-  moduleId    String?
-  durationMin Int
-  loggedAt    DateTime @default(now())
-  module      Module?  @relation(fields: [moduleId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
-}
-
 model AcademicYear {
   id        String   @id @default(cuid())
   title     String
   startDate DateTime
   endDate   DateTime
-  ownerId   String
   createdAt DateTime @default(now())
-  owner     User     @relation(fields: [ownerId], references: [id])
   terms     Term[]
 }
 

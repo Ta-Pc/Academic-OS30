@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 import { prisma } from '@/lib/prisma';
-import { startOfWeek, endOfWeek, differenceInCalendarDays } from 'date-fns';
+import { startOfWeek, endOfWeek, differenceInCalendarDays, format } from 'date-fns';
 import { z } from 'zod';
 import { getPriorityScore } from '@/utils/priorityScore';
-
-// Using shared priority score util (imported)
 
 const querySchema = z.object({
   date: z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/).optional(),
@@ -17,43 +15,35 @@ export async function GET(req: NextRequest) {
     const parsed = querySchema.safeParse({ date: url.searchParams.get('date') || undefined });
     if (!parsed.success) return NextResponse.json({ error: 'Invalid query params', issues: parsed.error.issues }, { status: 400 });
 
-    // Authentication stub: use seed user in dev if no auth header
-    let userId: string | null = null;
-    const authHeader = req.headers.get('authorization');
-    if (authHeader?.startsWith('Bearer ')) {
-      // decode token stub (not implemented) -> fallback to seed user
-    }
-    const seedUser = await prisma.user.findFirst({ where: { id: 'seed-user-1' } });
-    userId = seedUser?.id || (await prisma.user.findFirst({ select: { id: true } }))?.id || null;
-    if (!userId) return NextResponse.json({ error: 'No user available' }, { status: 404 });
-
     const baseDate = parsed.data.date ? new Date(parsed.data.date + 'T00:00:00') : new Date();
     const weekStart = startOfWeek(baseDate, { weekStartsOn: 1 });
     const weekEnd = endOfWeek(baseDate, { weekStartsOn: 1 });
 
-    // Fetch assignments due in range
+    // Fetch all assignments due in range (no user filtering)
     const assignments = await prisma.assignment.findMany({
-      where: { module: { ownerId: userId }, dueDate: { gte: weekStart, lte: weekEnd } },
+      where: { dueDate: { gte: weekStart, lte: weekEnd } },
       include: { module: true },
       orderBy: [{ dueDate: 'asc' }],
     });
 
     const tacticalTasks = await prisma.tacticalTask.findMany({
-      where: { module: { ownerId: userId }, dueDate: { gte: weekStart, lte: weekEnd } },
+      where: { dueDate: { gte: weekStart, lte: weekEnd } },
       include: { module: true },
       orderBy: [{ dueDate: 'asc' }],
     });
 
-    // Study logs for total study minutes (legacy)
-    const studyLogs = await prisma.studyLog.findMany({
-      where: { userId, loggedAt: { gte: weekStart, lte: weekEnd } },
-    });
-    const totalStudyMinutes = studyLogs.reduce((s, l) => s + l.durationMin, 0);
+    // Calculate total study minutes from completed study tasks
+    const totalStudyMinutes = tacticalTasks
+      .filter(task => task.type === 'STUDY' && task.status === 'COMPLETED')
+      .reduce((total) => {
+        // Estimate 60 minutes per study task
+        return total + 60;
+      }, 0);
 
-    // Modules active during the week (intersection of date ranges)
+    // Get all active modules
     const modules = await prisma.module.findMany({
       where: {
-        ownerId: userId,
+        status: 'ACTIVE',
         OR: [
           { startDate: { lte: weekEnd }, endDate: { gte: weekStart } },
           { startDate: null, endDate: null }, // fallback modules w/o dates
@@ -87,7 +77,6 @@ export async function GET(req: NextRequest) {
     });
 
     // Weekly priorities: top items by priorityScore or due date urgency
-  // using Date.now() directly for priority scoring calculations
     type PriorityItem = { type: string; id: string; title: string; moduleCode: string; dueDate: Date | undefined; weight: number; priorityScore: number };
     const weeklyPriorities: PriorityItem[] = [
       ...assignments.map(a => {
@@ -102,7 +91,18 @@ export async function GET(req: NextRequest) {
       }),
     ].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 15);
 
+    // Group tasks by type for week view UI
+    const tasksByType = {
+      read: tacticalTasks.filter(task => task.type === 'READ'),
+      study: tacticalTasks.filter(task => task.type === 'STUDY'),
+      practice: tacticalTasks.filter(task => task.type === 'PRACTICE'),
+      review: tacticalTasks.filter(task => task.type === 'REVIEW'),
+      admin: tacticalTasks.filter(task => task.type === 'ADMIN'),
+    };
+
     const body = {
+      weekStart: format(weekStart, 'yyyy-MM-dd'),
+      weekEnd: format(weekEnd, 'yyyy-MM-dd'),
       weekRange: { start: weekStart.toISOString(), end: weekEnd.toISOString() },
       assignments: assignments.map(a => ({
         id: a.id,
@@ -122,11 +122,12 @@ export async function GET(req: NextRequest) {
       })),
       moduleSummaries,
       weeklyPriorities,
-      // Backwards compatible legacy shape for existing hook (can be removed once hook updated)
+      totalStudyMinutes,
+      // Backwards compatible legacy shape for existing hook
       data: {
         start: weekStart.toISOString(),
         end: weekEnd.toISOString(),
-        tasks: tacticalTasks.map(t => ({ id: t.id, title: t.title, status: t.status, type: t.type, dueDate: t.dueDate })),
+        tasks: tasksByType,
         totalStudyMinutes,
       },
     };

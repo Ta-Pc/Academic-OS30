@@ -70,11 +70,8 @@ const curriculum: CurriculumModuleDef[] = [
 ];
 
 async function ensureSeedUser() {
-  return prisma.user.upsert({
-    where: { id: 'seed-user-1' },
-    update: {},
-    create: { id: 'seed-user-1', email: 'seed@local', name: 'Seed User' },
-  });
+  // No user needed - return a dummy object for compatibility
+  return { id: 'seed-user-1', email: 'seed@local', name: 'Seed User' };
 }
 
 async function ensureDegree() {
@@ -86,15 +83,15 @@ async function ensureDegree() {
   return degree;
 }
 
-async function ensureAcademicYear(userId: string) {
+async function ensureAcademicYear() {
   const now = new Date();
   const year = now.getFullYear();
   const startDate = new Date(year, 0, 15); // Jan 15
   const endDate = new Date(year, 10, 30); // Nov 30
   const title = `${year} Academic Year`;
-  let ay = await prisma.academicYear.findFirst({ where: { title, ownerId: userId } });
+  let ay = await prisma.academicYear.findFirst({ where: { title } });
   if (!ay) {
-    ay = await prisma.academicYear.create({ data: { title, startDate, endDate, ownerId: userId } });
+    ay = await prisma.academicYear.create({ data: { title, startDate, endDate } });
   }
   return ay;
 }
@@ -236,11 +233,9 @@ async function main() {
   try {
     user = await ensureSeedUser();
     degree = await ensureDegree();
-    if (user.degreeId !== degree.id) {
-      await prisma.user.update({ where: { id: user.id }, data: { degreeId: degree.id } });
-    }
-    const ay = await ensureAcademicYear(user.id);
-    terms = await ensureTerms(degree.id, ay.id, user.id);
+    // No user updates needed since we removed the User model
+    const ay = await ensureAcademicYear();
+    terms = await ensureTerms(degree.id, ay.id);
   } catch (err) {
     if (dryRun) {
       offline = true;

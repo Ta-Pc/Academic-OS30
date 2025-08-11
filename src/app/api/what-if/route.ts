@@ -19,18 +19,12 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) return NextResponse.json({ error: 'invalid body', issues: parsed.error.issues }, { status: 400 });
     const { moduleId, sessionOnly, changes } = parsed.data;
 
-    // Auth stub: pick seed user or first user
-    const seed = await prisma.user.findFirst({ where: { id: 'seed-user-1' } });
-    const userId = seed?.id || (await prisma.user.findFirst({ select: { id: true } }))?.id;
-    if (!userId) return NextResponse.json({ error: 'no user' }, { status: 404 });
-
+    // No user authentication needed - direct module access
     const module = await prisma.module.findUnique({
       where: { id: moduleId },
       include: { assignments: true },
     });
     if (!module) return NextResponse.json({ error: 'module not found' }, { status: 404 });
-  // In current dev/test environment we relax strict ownership (single-user context)
-  // If multi-user auth added later, reinstate forbidden check.
 
     // Create a working copy of assignments for simulation
     const simulatedAssignments = module.assignments.map(a => ({ ...a }));

@@ -40,9 +40,9 @@ async function fetchAnalytics(moduleId: string): Promise<AnalyticsResponse> {
 export default async function ModuleDetailPage({ params }: { params: { moduleId: string } }) {
   const { moduleId } = params;
   
-  // Support lookup by both id (UUID) and code (like STK110)
-  const isUuid = /^[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}$/i.test(moduleId);
-  const whereClause = isUuid ? { id: moduleId } : { code: moduleId };
+  // Support lookup by both id (CUID) and code (like STK110)
+  const isCuid = /^c[a-z0-9]{24,}$/i.test(moduleId);
+  const whereClause = isCuid ? { id: moduleId } : { code: moduleId };
   
   // Guard: ensure module belongs to current mock user for SSR fetches reliant on DB
   await prismaClient.module.findFirst({ where: whereClause, select: { id: true } });

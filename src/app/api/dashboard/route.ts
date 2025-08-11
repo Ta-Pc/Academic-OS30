@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 import { prisma } from '@/lib/prisma';
+
 // Minimal shapes (avoid Prisma types during build lint stage)
 type Assignment = { id: string; title: string; dueDate: Date | null; status: string; score: number | null; maxScore: number | null; weight: number | null };
 type TacticalTask = { status: string };
@@ -18,13 +19,7 @@ type ModuleSummary = {
 
 export async function GET(req: NextRequest) {
   try {
-    const url = new URL(req.url);
-    let userId = url.searchParams.get('userId');
-    if (!userId) {
-      userId = (await prisma.user.findFirst({ select: { id: true } }))?.id || null;
-    }
-    if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 });
-
+    // Remove user dependency - get all modules and data
     const [modules, lateAssignments, upcomingAssignments, tasksAll] = await Promise.all<[
       Promise<ModuleRecord[]>,
       Promise<(Assignment & { module: { id: string; code: string; title: string } })[]>,
@@ -32,11 +27,11 @@ export async function GET(req: NextRequest) {
       Promise<TacticalTask[]>
     ]>([
       prisma.module.findMany({
-        where: { ownerId: userId },
+        where: { status: 'ACTIVE' },
         include: { assignments: true, tasks: true },
       }) as Promise<ModuleRecord[]>,
       prisma.assignment.findMany({
-        where: { module: { ownerId: userId }, status: 'LATE' },
+        where: { status: 'LATE' },
         include: { module: true },
         orderBy: { dueDate: 'asc' },
         take: 10,
@@ -46,7 +41,6 @@ export async function GET(req: NextRequest) {
         const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
         return prisma.assignment.findMany({
           where: {
-            module: { ownerId: userId },
             dueDate: { gte: now, lte: in3Days },
             status: { in: ['PENDING', 'DUE'] },
           },
@@ -55,7 +49,7 @@ export async function GET(req: NextRequest) {
           take: 10,
         });
       })(),
-  prisma.tacticalTask.findMany({ where: { module: { ownerId: userId } }, select: { status: true } }) as Promise<TacticalTask[]>,
+      prisma.tacticalTask.findMany({ select: { status: true } }) as Promise<TacticalTask[]>,
     ]);
 
     const computePercent = (a: { score: number | null; maxScore: number | null }): number => {
@@ -100,8 +94,8 @@ export async function GET(req: NextRequest) {
     );
     const overallWeightedAverage = weighted.totalWeight > 0 ? weighted.weightedSum / weighted.totalWeight : 0;
 
-  const tasksCompleted = tasksAll.filter((t) => t.status === 'COMPLETED').length;
-  const tasksPending = tasksAll.filter((t) => t.status === 'PENDING').length;
+    const tasksCompleted = tasksAll.filter((t) => t.status === 'COMPLETED').length;
+    const tasksPending = tasksAll.filter((t) => t.status === 'PENDING').length;
 
     return NextResponse.json({
       data: modulesSummary,
