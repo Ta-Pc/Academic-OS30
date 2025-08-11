@@ -332,6 +332,23 @@ html, body, #__next { height: 100%; }
   .cohesive-section {
     @apply bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300;
   }
+
+  /* Enhanced module cards for the modules dashboard */
+  .module-card-enhanced {
+    @apply bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all duration-200 hover:shadow-lg hover:border-slate-300 hover:-translate-y-1;
+  }
+
+  .module-card-compact {
+    @apply bg-white rounded-xl p-4 border border-slate-200 shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-300;
+  }
+
+  .progress-bar {
+    @apply w-full bg-slate-200 rounded-full h-2 overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full transition-all duration-300 ease-out;
+  }
 }
 
 
