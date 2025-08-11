@@ -186,13 +186,13 @@ export function SettingsView() {
   };
 
   const resetData = async () => {
-    if (!window.confirm('Are you sure you want to reset all academic data? This action cannot be undone.')) {
+    if (!window.confirm('Are you sure you want to COMPLETELY RESET ALL academic data? This will delete modules, assignments, tasks, study logs, terms, academic years, degrees, and all assessment components. User accounts will be preserved. This action CANNOT be undone.')) {
       return;
     }
     
     setLoading(true);
     try {
-      const response = await fetch('/api/settings/reset', {
+      const response = await fetch('/api/data/reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ confirmReset: true })
@@ -200,7 +200,7 @@ export function SettingsView() {
       
       const result = await response.json();
       if (result.success) {
-        setMessage({ type: 'success', text: 'All academic data has been reset successfully!' });
+        setMessage({ type: 'success', text: result.message || 'All academic data has been reset successfully!' });
         loadStats(); // Refresh stats
       } else {
         setMessage({ type: 'error', text: result.error || 'Failed to reset data' });
@@ -513,26 +513,41 @@ export function SettingsView() {
               </CardBody>
             </Card>
 
-            <Card className="border-red-200 bg-red-50">
-              <CardHeader>
-                <div className="flex items-center gap-2 text-red-700">
-                  <RotateCcw className="h-5 w-5" />
-                  <h3 className="text-lg font-semibold">Reset All Data</h3>
+            <Card className="border-red-300 bg-red-50 shadow-lg">
+              <CardHeader className="bg-red-100 border-b border-red-200">
+                <div className="flex items-center gap-2 text-red-800">
+                  <AlertTriangle className="h-5 w-5" />
+                  <h3 className="text-lg font-bold">⚠️ Danger Zone - Reset All Data</h3>
                 </div>
               </CardHeader>
               <CardBody>
-                <p className="text-red-600 mb-6">
-                  This will permanently delete all academic data including modules, assignments, and tasks. This action cannot be undone.
-                </p>
-                <Button
-                  onClick={resetData}
-                  loading={loading}
-                  variant="danger"
-                  size="lg"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                  Reset All Data
-                </Button>
+                <div className="space-y-4">
+                  <p className="text-red-700 font-medium">
+                    ⚠️ WARNING: This will permanently delete ALL academic data including:
+                  </p>
+                  <ul className="text-red-600 text-sm space-y-1 ml-4">
+                    <li>• All assignments, quizzes, and tests</li>
+                    <li>• All modules and courses</li>
+                    <li>• All study logs and tasks</li>
+                    <li>• All terms and academic years</li>
+                    <li>• All degrees and assessment components</li>
+                  </ul>
+                  <p className="text-red-700 font-medium">
+                    User accounts and settings will be preserved. This action CANNOT be undone!
+                  </p>
+                  <div className="pt-2">
+                    <Button
+                      onClick={resetData}
+                      loading={loading}
+                      variant="danger"
+                      size="lg"
+                      className="font-bold shadow-lg hover:shadow-xl"
+                    >
+                      <AlertTriangle className="h-5 w-5" />
+                      🗑️ RESET ALL ACADEMIC DATA
+                    </Button>
+                  </div>
+                </div>
               </CardBody>
             </Card>
           </div>

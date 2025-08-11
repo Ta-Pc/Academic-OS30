@@ -30,6 +30,7 @@ interface ImportResult {
   preview?: { 
     valid?: unknown[]; 
     errors?: unknown[]; 
+    duplicates?: Array<{ reason: string; duplicateKey: string }>;
     missingModules?: string[] 
   };
   successCount?: number;
@@ -46,7 +47,7 @@ interface Term {
 
 export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   const [step, setStep] = useState<ImportStep>(1);
-  const [importType, setImportType] = useState<ImportType>('modules');
+  const [importType, setImportType] = useState<ImportType>('assignments'); // Default to assignments
   const [raw, setRaw] = useState<string>('');
   const [headers, setHeaders] = useState<string[]>([]);
   const [mapping, setMapping] = useState<Record<string, string>>({});
@@ -66,6 +67,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   });
   const [termMode, setTermMode] = useState<'existing' | 'create'>('existing');
 
+<<<<<<< Updated upstream
   // Available field options for mapping
   const fieldOptions: SelectOption[] = [
     { value: '', label: 'Select a field...' },
@@ -85,11 +87,69 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   ];
 
   // Smart mapping suggestions based on header names
+=======
+  // Available field options for mapping - using camelCase to match API
+  const fieldOptions: SelectOption[] = [
+    { value: '', label: 'Select a field...' },
+    // Module fields
+    { value: 'code', label: 'Module Code' },
+    { value: 'title', label: 'Title/Name' },
+    { value: 'creditHours', label: 'Credit Hours' },
+    { value: 'targetMark', label: 'Target Mark' },
+    { value: 'department', label: 'Department' },
+    { value: 'faculty', label: 'Faculty' },
+    { value: 'prerequisites', label: 'Prerequisites' },
+    // Assignment fields
+    { value: 'moduleCode', label: 'Module Code' },
+    { value: 'weight', label: 'Weight/Percentage' },
+    { value: 'dueDate', label: 'Due Date' },
+    { value: 'status', label: 'Status' },
+    { value: 'type', label: 'Assignment Type' },
+    { value: 'score', label: 'Grade/Score' },
+    { value: 'effortEstimateMinutes', label: 'Effort Estimate (minutes)' },
+    { value: 'component', label: 'Component' },
+    { value: 'description', label: 'Description' },
+    { value: 'ignore', label: '(Ignore this column)' }
+  ];
+
+  // Auto-detect import type based on CSV headers
+  const detectImportType = (headers: string[]): ImportType => {
+    const lowerHeaders = headers.map(h => h.toLowerCase());
+    
+    // Check for assignment-specific fields
+    const hasAssignmentFields = lowerHeaders.some(h => 
+      h.includes('due_date') || h.includes('grade') || h.includes('weight') || 
+      h.includes('module_code') || h.includes('effort_estimate')
+    );
+    
+    // Check for module-specific fields
+    const hasModuleFields = lowerHeaders.some(h => 
+      h.includes('credit') || h.includes('department') || h.includes('faculty') ||
+      h.includes('prerequisite')
+    );
+    
+    // If we find assignment-specific fields and no module-specific fields, it's likely assignments
+    if (hasAssignmentFields && !hasModuleFields) {
+      return 'assignments';
+    }
+    
+    // If we find module-specific fields, it's likely modules
+    if (hasModuleFields) {
+      return 'modules';
+    }
+    
+    // Default to assignments if unclear
+    return 'assignments';
+  };
+
+  // Smart mapping suggestions based on header names - using camelCase to match API
+>>>>>>> Stashed changes
   const getSmartMapping = (headers: string[]): Record<string, string> => {
     const smartMap: Record<string, string> = {};
     
     headers.forEach(header => {
       const lowerHeader = header.toLowerCase().replace(/[_\s-]/g, '');
+<<<<<<< Updated upstream
       
       if (lowerHeader.includes('module') && lowerHeader.includes('code')) {
         smartMap[header] = 'module_code';
@@ -113,6 +173,46 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
         smartMap[header] = 'priority';
       } else if (lowerHeader.includes('note')) {
         smartMap[header] = 'notes';
+=======
+      const originalLower = header.toLowerCase(); // Keep underscores for exact matching
+      
+      // Exact matches for common CSV headers
+      if (originalLower === 'module_code') {
+        smartMap[header] = 'moduleCode';
+      } else if (originalLower === 'due_date') {
+        smartMap[header] = 'dueDate';
+      } else if (originalLower === 'effort_estimate') {
+        smartMap[header] = 'effortEstimateMinutes';
+      } else if (originalLower === 'grade') {
+        smartMap[header] = 'score';
+      // Generic matches
+      } else if (lowerHeader === 'code' || lowerHeader.includes('coursecode')) {
+        smartMap[header] = 'code'; // For modules
+      } else if (lowerHeader.includes('title') || lowerHeader.includes('name')) {
+        smartMap[header] = 'title';
+      } else if (lowerHeader.includes('credit') && lowerHeader.includes('hour')) {
+        smartMap[header] = 'creditHours';
+      } else if (lowerHeader.includes('target') && lowerHeader.includes('mark')) {
+        smartMap[header] = 'targetMark';
+      } else if (lowerHeader.includes('department')) {
+        smartMap[header] = 'department';
+      } else if (lowerHeader.includes('faculty')) {
+        smartMap[header] = 'faculty';
+      } else if (lowerHeader.includes('prerequisite')) {
+        smartMap[header] = 'prerequisites';
+      } else if (lowerHeader.includes('type') || lowerHeader.includes('category')) {
+        smartMap[header] = 'type';
+      } else if (lowerHeader.includes('weight') || lowerHeader.includes('percent')) {
+        smartMap[header] = 'weight';
+      } else if (lowerHeader.includes('status')) {
+        smartMap[header] = 'status';
+      } else if (lowerHeader.includes('mark') || lowerHeader.includes('score')) {
+        smartMap[header] = 'score';
+      } else if (lowerHeader.includes('component')) {
+        smartMap[header] = 'component';
+      } else if (lowerHeader.includes('description') || lowerHeader.includes('desc')) {
+        smartMap[header] = 'description';
+>>>>>>> Stashed changes
       }
     });
     
@@ -172,6 +272,13 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
       setHeaders(data.headers);
       setRaw(text);
       
+<<<<<<< Updated upstream
+=======
+      // Auto-detect import type based on headers
+      const detectedType = detectImportType(data.headers);
+      setImportType(detectedType);
+      
+>>>>>>> Stashed changes
       // Apply smart mapping
       const smartMapping = getSmartMapping(data.headers);
       setMapping(smartMapping);
@@ -649,6 +756,33 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                       {result.preview.errors.length > 5 && (
                         <div className="text-sm text-red-500">
                           ... and {result.preview.errors.length - 5} more errors
+                        </div>
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              )}
+              
+              {result.preview?.duplicates && result.preview.duplicates.length > 0 && (
+                <Card>
+                  <CardHeader gradient="orange">
+                    <div>
+                      <h4 className="font-semibold text-orange-900">Duplicate Records</h4>
+                      <p className="text-sm text-orange-700">
+                        {result.preview.duplicates.length} records are duplicates
+                      </p>
+                    </div>
+                  </CardHeader>
+                  <CardBody>
+                    <div className="max-h-32 overflow-y-auto">
+                      {result.preview.duplicates.slice(0, 5).map((duplicate, index) => (
+                        <div key={index} className="text-sm text-orange-600 mb-1">
+                          • {duplicate.reason}
+                        </div>
+                      ))}
+                      {result.preview.duplicates.length > 5 && (
+                        <div className="text-sm text-orange-500">
+                          ... and {result.preview.duplicates.length - 5} more duplicates
                         </div>
                       )}
                     </div>

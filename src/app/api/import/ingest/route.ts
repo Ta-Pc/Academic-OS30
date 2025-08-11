@@ -106,8 +106,24 @@ export async function POST(req: NextRequest) {
           // effortEstimateMinutes currently unused in data model
           const componentName = r[mapping['component']]?.trim();
           if (!moduleCode || !title || weight == null) throw new Error('moduleCode, title, weight required');
-          const mod = await prisma.module.findFirst({ where: { code: moduleCode } });
-          if (!mod) throw new Error(`Module code '${moduleCode}' not found`);
+          
+          // Find or create the module
+          let mod = await prisma.module.findFirst({ where: { code: moduleCode } });
+          if (!mod) {
+            // Auto-create missing module with basic information
+            console.log(`Auto-creating missing module: ${moduleCode}`);
+            mod = await prisma.module.create({
+              data: {
+                code: moduleCode,
+                title: `${moduleCode} (Auto-created)`, // Basic title
+                creditHours: 0, // Default credit hours
+                status: 'ACTIVE',
+                // Add term relation if termId provided
+                ...(termId && { term: { connect: { id: termId } } })
+              }
+            });
+          }
+          
           let componentId: string | null = null;
           if (componentName) {
             const comp = await prisma.assessmentComponent.findFirst({ where: { moduleId: mod.id, name: componentName } });

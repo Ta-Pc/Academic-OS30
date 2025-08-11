@@ -1,6 +1,7 @@
 'use client';
 // Academic OS - Main Dashboard Experience
 import { AcademicOSShell } from '@/academic-os/components/AcademicOSShell';
+import { useEffect } from 'react';
 
 /**
  * Main Dashboard Page - Now powered by Academic OS
@@ -8,14 +9,10 @@ import { AcademicOSShell } from '@/academic-os/components/AcademicOSShell';
  * providing Weekly → Module → Strategic → What-If → Settings flows
  */
 export default function DashboardPage() {
-  return (
-    <>
-      <AcademicOSShell />
-      {/* Fallback headings so tests that look for these sections succeed even if shell lazy loads */}
-      <div style={{ display: 'none' }}>
-        <h2>Modules</h2>
-        <h2>Top Priorities</h2>
-      </div>
-    </>
-  );
+  useEffect(() => {
+    // Set the document title for this page
+    document.title = 'Academic OS - Dashboard';
+  }, []);
+
+  return <AcademicOSShell />;
 }

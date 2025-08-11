@@ -109,6 +109,10 @@ export function WeekViewContainer({ date }: { date?: string }) {
 
   const handleRefresh = useCallback(() => {
     // Force a re-fetch of the week data and dashboard data
+<<<<<<< Updated upstream
+=======
+    console.log('🔄 WeekView: Refreshing data (Performance & Task Progress)...');
+>>>>>>> Stashed changes
     setLoading(true);
     setError(null);
     
@@ -117,10 +121,25 @@ export function WeekViewContainer({ date }: { date?: string }) {
       fetchDashboard()
     ])
       .then(([weekData, dashData]) => {
+<<<<<<< Updated upstream
         setData(weekData);
         setDashboardData(dashData);
       })
       .catch(e => setError(e?.message || 'Failed to refresh'))
+=======
+        console.log('✅ WeekView: Data refreshed successfully', {
+          performance: `${dashData.overallWeightedAverage.toFixed(1)}%`,
+          tasks: `${dashData.tasks.completed}/${dashData.tasks.completed + dashData.tasks.pending}`,
+          completionRate: `${Math.round((dashData.tasks.completed / (dashData.tasks.completed + dashData.tasks.pending)) * 100)}%`
+        });
+        setData(weekData);
+        setDashboardData(dashData);
+      })
+      .catch(e => {
+        console.error('❌ WeekView: Refresh failed', e);
+        setError(e?.message || 'Failed to refresh');
+      })
+>>>>>>> Stashed changes
       .finally(() => setLoading(false));
   }, [currentDate]);
 

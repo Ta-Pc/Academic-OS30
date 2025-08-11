@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TrendingUp, TrendingDown, Target, CheckCircle, Clock } from 'lucide-react';
 
 export type SemesterSnapshotViewProps = {
@@ -7,6 +7,15 @@ export type SemesterSnapshotViewProps = {
 };
 
 export function SemesterSnapshotView({ overallWeightedAverage, tasks }: SemesterSnapshotViewProps) {
+  // Debug: Log when component re-renders with new data
+  useEffect(() => {
+    console.log('📊 SemesterSnapshot: Updated with new data', {
+      performance: `${overallWeightedAverage.toFixed(1)}%`,
+      tasks: `${tasks.completed}/${tasks.completed + tasks.pending}`,
+      completionRate: `${Math.round((tasks.completed / (tasks.completed + tasks.pending)) * 100)}%`
+    });
+  }, [overallWeightedAverage, tasks]);
+
   const total = tasks.completed + tasks.pending;
   const completionRate = total > 0 ? (tasks.completed / total) * 100 : 0;
   

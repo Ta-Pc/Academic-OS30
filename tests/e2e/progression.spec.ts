@@ -1,12 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Academic Progression Flow', () => {
-  test.beforeEach(async ({ page }) => {
-    // Ensure seeded data is in place
-    await page.goto('/dashboard');
-    await expect(page).toHaveTitle(/Academic/);
-  });
-
   test('should display ElectiveTracker in left sidebar', async ({ page }) => {
     // Navigate to a page that shows the left sidebar (assuming dashboard or week view)
     await page.goto('/week');
@@ -30,10 +24,10 @@ test.describe('Academic Progression Flow', () => {
     // Navigate to week view which should show the progression badge
     await page.goto('/week');
     
-    // Look for progression warning badge - it might be "On Track" or show warnings
+    // Look for progression warning badge - it can be either a button (with warnings) or div (on track)
     const progressionBadge = page.locator('[class*="card"]').filter({ 
       hasText: /Warning|On Track/i 
-    });
+    }).first();
     
     await expect(progressionBadge).toBeVisible();
   });

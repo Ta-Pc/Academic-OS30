@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Cards Test - Academic OS</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .performance-card {
+            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+        .task-card {
+            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        .metric {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        .excellent { background: #d1fae5; color: #065f46; }
+        .good { background: #dcfce7; color: #166534; }
+        .fair { background: #fef3c7; color: #92400e; }
+        .critical { background: #fee2e2; color: #991b1b; }
+        .button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .log {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔄 Dynamic Performance & Task Progress Cards Test</h1>
+    
+    <div class="test-card">
+        <h2>📋 Test Instructions</h2>
+        <p>This simulation demonstrates the dynamic behavior of the Performance and Task Progress cards.</p>
+        <ol>
+            <li>Click "Grade Assignment" to simulate grading a pending assignment</li>
+            <li>Click "Toggle Task" to simulate completing a pending task</li>
+            <li>Watch the metrics update in real-time</li>
+            <li>Check the console logs for refresh behavior</li>
+        </ol>
+    </div>
+
+    <div class="test-card performance-card">
+        <h3>📊 Performance Card</h3>
+        <div class="metric" id="performance-metric">75.5%</div>
+        <div class="label">Overall Weighted Average</div>
+        <div class="badge excellent" id="performance-badge">Good</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="performance-progress" style="width: 75.5%"></div>
+        </div>
+    </div>
+
+    <div class="test-card task-card">
+        <h3>✅ Task Progress Card</h3>
+        <div class="metric" id="task-metric">38%</div>
+        <div class="label">Weekly completion rate</div>
+        <div style="margin: 10px 0;">
+            <span>Completed: <strong id="completed-count">3</strong></span>
+            <span style="margin-left: 20px;">Pending: <strong id="pending-count">5</strong></span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="task-progress" style="width: 38%"></div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h3>🎮 Simulation Controls</h3>
+        <button class="button" onclick="simulateAssignmentGrade()">💾 Grade Assignment (90%)</button>
+        <button class="button" onclick="simulateTaskToggle()">🎯 Complete Task</button>
+        <button class="button" onclick="resetSimulation()">🔄 Reset</button>
+    </div>
+
+    <div class="test-card">
+        <h3>📝 Console Logs</h3>
+        <div class="log" id="log-output">
+            <div>🚀 Dynamic Cards Test Ready</div>
+            <div>📊 Initial State: Performance 75.5% (Good), Tasks 3/8 (38%)</div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = {
+            overallWeightedAverage: 75.5,
+            tasks: { completed: 3, pending: 5 },
+            assignments: [
+                { id: 'a1', title: 'Math Quiz', score: 80, weight: 15, status: 'GRADED' },
+                { id: 'a2', title: 'Physics Lab', score: null, weight: 20, status: 'PENDING' }
+            ]
+        };
+
+        function log(message) {
+            const logOutput = document.getElementById('log-output');
+            const div = document.createElement('div');
+            div.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            logOutput.appendChild(div);
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        function getPerformanceLevel(score) {
+            if (score >= 80) return { label: 'Excellent', class: 'excellent' };
+            if (score >= 70) return { label: 'Good', class: 'good' };
+            if (score >= 60) return { label: 'Fair', class: 'fair' };
+            return { label: 'Critical', class: 'critical' };
+        }
+
+        function updatePerformanceCard(average) {
+            const level = getPerformanceLevel(average);
+            document.getElementById('performance-metric').textContent = average.toFixed(1) + '%';
+            const badge = document.getElementById('performance-badge');
+            badge.textContent = level.label;
+            badge.className = `badge ${level.class}`;
+            document.getElementById('performance-progress').style.width = average + '%';
+        }
+
+        function updateTaskCard(completed, pending) {
+            const total = completed + pending;
+            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            document.getElementById('task-metric').textContent = rate + '%';
+            document.getElementById('completed-count').textContent = completed;
+            document.getElementById('pending-count').textContent = pending;
+            document.getElementById('task-progress').style.width = rate + '%';
+        }
+
+        function simulateAssignmentGrade() {
+            log('🔄 WeekView: Refreshing data (Performance & Task Progress)...');
+            log('💾 Assignment saved - refreshing Performance metrics...');
+            
+            // Simulate grading the Physics Lab assignment
+            const assignment = currentData.assignments.find(a => a.id === 'a2');
+            assignment.score = 90;
+            assignment.status = 'GRADED';
+            
+            // Recalculate overall average
+            const gradedAssignments = currentData.assignments.filter(a => a.score !== null);
+            const totalWeight = gradedAssignments.reduce((sum, a) => sum + a.weight, 0);
+            const weightedScore = gradedAssignments.reduce((sum, a) => sum + (a.score * a.weight), 0);
+            const newAverage = totalWeight > 0 ? weightedScore / totalWeight : 0;
+            
+            currentData.overallWeightedAverage = newAverage;
+            
+            updatePerformanceCard(newAverage);
+            
+            log(`✅ WeekView: Data refreshed successfully - Performance: ${newAverage.toFixed(1)}%`);
+            log('📊 SemesterSnapshot: Updated with new data - Performance level changed to ' + getPerformanceLevel(newAverage).label);
+        }
+
+        function simulateTaskToggle() {
+            log('🔄 Toggling task: Practice Problems (PENDING -> COMPLETED)');
+            log('🎯 TacticalPane: Toggling task...');
+            
+            // Simulate completing a task
+            if (currentData.tasks.pending > 0) {
+                currentData.tasks.completed++;
+                currentData.tasks.pending--;
+                
+                updateTaskCard(currentData.tasks.completed, currentData.tasks.pending);
+                
+                const total = currentData.tasks.completed + currentData.tasks.pending;
+                const rate = Math.round((currentData.tasks.completed / total) * 100);
+                
+                log('✅ Task updated to COMPLETED - refreshing Task Progress metrics...');
+                log(`✅ WeekView: Data refreshed successfully - Tasks: ${currentData.tasks.completed}/${total} (${rate}%)`);
+                log('📊 SemesterSnapshot: Updated with new data - Task completion rate increased');
+            }
+        }
+
+        function resetSimulation() {
+            currentData = {
+                overallWeightedAverage: 75.5,
+                tasks: { completed: 3, pending: 5 },
+                assignments: [
+                    { id: 'a1', title: 'Math Quiz', score: 80, weight: 15, status: 'GRADED' },
+                    { id: 'a2', title: 'Physics Lab', score: null, weight: 20, status: 'PENDING' }
+                ]
+            };
+            
+            updatePerformanceCard(75.5);
+            updateTaskCard(3, 5);
+            
+            log('🔄 Reset simulation to initial state');
+            log('📊 Initial State: Performance 75.5% (Good), Tasks 3/8 (38%)');
+        }
+    </script>
+</body>
+</html>
