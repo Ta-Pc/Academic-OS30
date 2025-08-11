@@ -114,6 +114,7 @@ html, body, #__next { height: 100%; }
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 }
 
@@ -349,6 +350,220 @@ html, body, #__next { height: 100%; }
   .progress-fill {
     @apply h-full transition-all duration-300 ease-out;
   }
+
+}
+
+/* Enhanced module view styles outside of layer due to complexity */
+.module-detail-hero {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #eff6ff 100%);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.insight-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.insight-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.risk-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.risk-low {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.risk-medium {
+  background-color: #fef3c7;
+  color: #a16207;
+}
+
+.risk-high {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.action-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  gap: 0.5rem;
+}
+
+.action-button:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.action-button-primary {
+  background: linear-gradient(to right, #2563eb, #4f46e5);
+  color: white;
+}
+
+.action-button-primary:hover {
+  background: linear-gradient(to right, #1d4ed8, #4338ca);
+}
+
+.action-button-success {
+  background: linear-gradient(to right, #059669, #16a34a);
+  color: white;
+}
+
+.action-button-success:hover {
+  background: linear-gradient(to right, #047857, #15803d);
+}
+
+.action-button-purple {
+  background: linear-gradient(to right, #9333ea, #7c3aed);
+  color: white;
+}
+
+.action-button-purple:hover {
+  background: linear-gradient(to right, #7c2d12, #6d28d9);
+}
+
+.performance-metric {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid;
+}
+
+.performance-metric-blue {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: #bfdbfe;
+}
+
+.performance-metric-purple {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+  border-color: #c4b5fd;
+}
+
+.performance-metric-emerald {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #a7f3d0;
+}
+
+.performance-metric-amber {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fde68a;
+}
+
+.loading-shimmer {
+  background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 50%, #e2e8f0 100%);
+  animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.recommendation-item {
+  background: linear-gradient(to right, #f3e8ff 0%, #ede9fe 100%);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #c4b5fd;
+  transition: all 0.2s ease;
+}
+
+.recommendation-item:hover {
+  border-color: #a78bfa;
+}
+
+.study-time-card {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #a7f3d0;
+  text-align: center;
+}
+
+.analysis-card {
+  background: linear-gradient(to right, #eff6ff 0%, #dbeafe 100%);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #bfdbfe;
+  transition: all 0.3s ease;
+}
+
+.analysis-card:hover {
+  border-color: #93c5fd;
+}
+
+.analysis-icon {
+  padding: 0.5rem;
+  background-color: #dbeafe;
+  border-radius: 0.5rem;
+}
+
+.strength-item, .improvement-item {
+  font-size: 0.875rem;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.strength-item:hover {
+  background-color: #f0fdf4;
+}
+
+.improvement-item:hover {
+  background-color: #fff7ed;
+}
+
+.interactive-element {
+  transition: all 0.2s ease;
+}
+
+.interactive-element:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.gradient-text-blue {
+  background: linear-gradient(to right, #2563eb, #4f46e5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-purple {
+  background: linear-gradient(to right, #9333ea, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-emerald {
+  background: linear-gradient(to right, #059669, #16a34a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 
