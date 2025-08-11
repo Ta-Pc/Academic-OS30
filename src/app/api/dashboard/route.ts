@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { prisma } from '@/lib/prisma';
 
 // Minimal shapes (avoid Prisma types during build lint stage)
-type Assignment = { id: string; title: string; dueDate: Date | null; status: string; score: number | null; maxScore: number | null; weight: number | null };
+type Assignment = { id: string; title: string; dueDate: Date | null; status: string; score: number | null; weight: number | null };
 type TacticalTask = { status: string };
 type ModuleRecord = { id: string; code: string; title: string; creditHours: number; createdAt: Date; status?: string; assignments?: Assignment[] };
 
@@ -52,19 +52,24 @@ export async function GET() {
       prisma.tacticalTask.findMany({ select: { status: true } }) as Promise<TacticalTask[]>,
     ]);
 
-    const computePercent = (a: { score: number | null; maxScore: number | null }): number => {
+    const computePercent = (a: { score: number | null }): number => {
       const score = a.score == null ? 0 : Number(a.score);
-      const max = a.maxScore != null ? Number(a.maxScore) : null;
-      if (max && Number.isFinite(max) && max > 0) return (score / max) * 100;
-      return score; // assume already a percent
+      // Score is already a percentage (0-100) since maxScore was removed
+      return score;
     };
 
     const modulesSummary: ModuleSummary[] = modules.map((mod) => {
       const graded = (mod.assignments || []).filter((a) => a.score != null && a.status === 'GRADED');
-      const currentGrade = graded.reduce((sum: number, a) => sum + (computePercent(a) / 100) * (Number(a.weight) || 0), 0);
+      
+      // Calculate weighted grade for this module
+      const totalAssignmentWeight = graded.reduce((sum: number, a) => sum + (Number(a.weight) || 0), 0);
+      const weightedScore = graded.reduce((sum: number, a) => sum + (computePercent(a) * (Number(a.weight) || 0)), 0);
+      
+      const currentGrade = totalAssignmentWeight > 0 ? weightedScore / totalAssignmentWeight : 0;
       const currentAverageMark = graded.length > 0
         ? graded.reduce((s: number, a) => s + computePercent(a), 0) / graded.length
         : 0;
+      
       return {
         id: mod.id,
         code: mod.code,
@@ -80,22 +85,23 @@ export async function GET() {
       .filter((m) => m.currentAverageMark > 0 && m.currentAverageMark < 50)
       .slice(0, 10);
 
-    // Overall performance: credit-hour weighted average of currentAverageMark over ACTIVE modules
-    const activeModules = modules.filter((m) => m.status === 'ACTIVE');
-    const weighted = activeModules.reduce(
-      (acc, m) => {
-        const summary = modulesSummary.find((mm) => mm.id === m.id)!;
-        const weight = Number(m.creditHours) || 0;
-        acc.totalWeight += weight;
-        acc.weightedSum += (summary.currentAverageMark || 0) * weight;
-        return acc;
-      },
-      { totalWeight: 0, weightedSum: 0 }
+    // Overall performance: weighted average across all graded assignments
+    const allGradedAssignments = modules.flatMap(m => 
+      (m.assignments || []).filter(a => a.score != null && a.status === 'GRADED')
     );
-    const overallWeightedAverage = weighted.totalWeight > 0 ? weighted.weightedSum / weighted.totalWeight : 0;
+    
+    const totalWeight = allGradedAssignments.reduce((sum, a) => sum + (Number(a.weight) || 0), 0);
+    const totalWeightedScore = allGradedAssignments.reduce(
+      (sum, a) => sum + (computePercent(a) * (Number(a.weight) || 0)), 
+      0
+    );
+    
+    const overallWeightedAverage = totalWeight > 0 ? totalWeightedScore / totalWeight : 0;
 
-    const tasksCompleted = tasksAll.filter((t) => t.status === 'COMPLETED').length;
-    const tasksPending = tasksAll.filter((t) => t.status === 'PENDING').length;
+    // Task progress: use actual tactical tasks, not assignments
+    const completedTasks = tasksAll.filter((t: TacticalTask) => t.status === 'COMPLETED').length;
+    const totalTasks = tasksAll.length;
+    const pendingTasks = totalTasks - completedTasks;
 
     return NextResponse.json({
       data: modulesSummary,
@@ -122,7 +128,7 @@ export async function GET() {
         },
         metrics: {
           overallWeightedAverage,
-          tasks: { completed: tasksCompleted, pending: tasksPending },
+          tasks: { completed: completedTasks, pending: pendingTasks },
         },
       },
     });

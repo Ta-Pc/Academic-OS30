@@ -7,11 +7,13 @@ import { addWeeks, subWeeks, startOfWeek, format } from 'date-fns';
 // Shape returned from /api/week-view (subset used here)
 type ApiResponse = {
   weekRange: { start: string; end: string };
-  weeklyPriorities: Array<{ id: string; title: string; moduleCode: string; dueDate?: string; priorityScore: number; type: string }>;
+  weeklyPriorities: Array<{ id: string; title: string; moduleCode: string; dueDate?: string; priorityScore: number; type: string; status?: string }>;
   moduleSummaries: Array<{
     moduleId: string; code: string; title: string; creditHours: number; priorityScore: number;
   }>;
   tacticalTasks: Array<{ id: string; title: string; status: string; type: string; dueDate: string; module?: { id: string; code: string; title: string } }>; // task system
+  tasksThisWeek: Array<{ id: string; title: string; completed: boolean; type: string; dueDate: string }>; // comprehensive weekly tasks including assignments
+  assignments: Array<{ id: string; title: string; status: string; score: number | null; weight: number; dueDate?: string }>; // weekly assignments
 };
 
 async function fetchWeek(date?: string): Promise<ApiResponse> {
@@ -23,8 +25,19 @@ async function fetchWeek(date?: string): Promise<ApiResponse> {
   return res.json();
 }
 
+async function fetchDashboard(): Promise<{ overallWeightedAverage: number; tasks: { completed: number; pending: number } }> {
+  const res = await fetch('/api/dashboard', { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch dashboard');
+  const data = await res.json();
+  return {
+    overallWeightedAverage: data.widgets?.metrics?.overallWeightedAverage || 0,
+    tasks: data.widgets?.metrics?.tasks || { completed: 0, pending: 0 }
+  };
+}
+
 export function WeekViewContainer({ date }: { date?: string }) {
   const [data, setData] = useState<ApiResponse | null>(null);
+  const [dashboardData, setDashboardData] = useState<{ overallWeightedAverage: number; tasks: { completed: number; pending: number } } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openModuleId, setOpenModuleId] = useState<string | null>(null);
@@ -94,6 +107,23 @@ export function WeekViewContainer({ date }: { date?: string }) {
     setOpenModuleId(null);
   }, [openModuleId]);
 
+  const handleRefresh = useCallback(() => {
+    // Force a re-fetch of the week data and dashboard data
+    setLoading(true);
+    setError(null);
+    
+    Promise.all([
+      fetchWeek(currentDate),
+      fetchDashboard()
+    ])
+      .then(([weekData, dashData]) => {
+        setData(weekData);
+        setDashboardData(dashData);
+      })
+      .catch(e => setError(e?.message || 'Failed to refresh'))
+      .finally(() => setLoading(false));
+  }, [currentDate]);
+
   useEffect(() => {
     // Update currentDate if the prop changes
     setCurrentDate(date);
@@ -104,8 +134,17 @@ export function WeekViewContainer({ date }: { date?: string }) {
     let alive = true;
     setLoading(true);
     setError(null);
-    fetchWeek(currentDate)
-      .then(j => { if (alive) setData(j); })
+    
+    Promise.all([
+      fetchWeek(currentDate),
+      fetchDashboard()
+    ])
+      .then(([weekData, dashData]) => {
+        if (alive) {
+          setData(weekData);
+          setDashboardData(dashData);
+        }
+      })
       .catch(e => { if (alive) setError(e?.message || 'Failed'); })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
@@ -116,18 +155,59 @@ export function WeekViewContainer({ date }: { date?: string }) {
     rememberWeek(currentDate);
   }, [currentDate]);
 
-  const overallWeightedAverage = useMemo(() => {
-    // Placeholder heuristic: normalize priorityScore (0-100) average -> acts as an engagement proxy
-    if (!data?.moduleSummaries.length) return 0;
-    const avg = data.moduleSummaries.reduce((s, m) => s + (m.priorityScore || 0), 0) / data.moduleSummaries.length;
-    return Math.round(avg * 10) / 10;
+  // Use real dashboard data for performance, but calculate weekly task stats from week data
+  const overallWeightedAverage = dashboardData?.overallWeightedAverage || 0;
+  
+  // Task creation handler
+  const handleTaskCreate = useCallback(async (taskData: { title: string; type: string; dueDate: string; moduleId: string }) => {
+    const response = await fetch('/api/tactical-tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(taskData),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create task');
+    }
+    
+    return response.json();
+  }, []);
+
+  // Task toggle handler
+  const handleTaskToggle = useCallback(async (taskId: string) => {
+    const task = data?.tacticalTasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    const nextStatus = task.status === 'COMPLETED' ? 'PENDING' : 'COMPLETED';
+    
+    const response = await fetch(`/api/tactical-tasks/${taskId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: nextStatus }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to update task');
+    }
+    
+    return response.json();
+  }, [data]);
+
+  // Weekly assignment progress calculation
+  const weeklyAssignments = useMemo(() => {
+    return data?.assignments || [];
   }, [data]);
 
   const taskStats = useMemo(() => {
-    type LegacyTask = { status: string };
-    const tasks: LegacyTask[] = (data?.tacticalTasks || []).map(t => ({ status: t.status }));
-    const completed = tasks.filter(t => t.status === 'COMPLETED').length;
-    const pending = tasks.length - completed;
+    if (!data?.tacticalTasks) return { completed: 0, pending: 0 };
+    
+    // Calculate weekly task completion from tactical tasks (study/reading/practice tasks)
+    // This represents study habits and learning progress, separate from assignment grades
+    const completed = data.tacticalTasks.filter(t => t.status === 'COMPLETED').length;
+    const total = data.tacticalTasks.length;
+    const pending = total - completed;
+    
     return { completed, pending };
   }, [data]);
 
@@ -174,12 +254,17 @@ export function WeekViewContainer({ date }: { date?: string }) {
       moduleSummaries={data.moduleSummaries}
       overallWeightedAverage={overallWeightedAverage}
       taskStats={taskStats}
+      weeklyAssignments={weeklyAssignments}
+      tacticalTasks={data.tacticalTasks || []}
       onOpenModule={openModuleViaHistory}
       openModule={openModule ? { moduleId: openModule.moduleId, code: openModule.code, title: openModule.title, creditHours: openModule.creditHours } : undefined}
       onCloseModule={closeModuleViaHistory}
       onPrevWeek={handlePrevWeek}
       onNextWeek={handleNextWeek}
       onToday={handleToday}
+      onRefresh={handleRefresh}
+      onTaskCreate={handleTaskCreate}
+      onTaskToggle={handleTaskToggle}
     />
   );
 }

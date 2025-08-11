@@ -1,29 +1,95 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { WeekHeaderView } from './WeekHeader.view';
 import { WeeklyMissionListView } from './WeeklyMissionList.view';
 import { SemesterSnapshotView } from '../semester/SemesterSnapshot.view';
+import { WeeklyAssignmentProgressView } from './WeeklyAssignmentProgress.view';
+import { TacticalPaneView } from './TacticalPane.view';
 import { ModuleQuickView } from '../modules/ModuleQuickView.view';
+import { AssignmentEditModal } from './AssignmentEditModal.view';
 
 export interface WeekViewPageProps {
   week: { start: string | Date; end: string | Date };
-  priorities: Array<{ id: string; title: string; moduleCode: string; dueDate?: string; priorityScore: number; type: string }>;
+  priorities: Array<{ id: string; title: string; moduleCode: string; dueDate?: string; priorityScore: number; type: string; status?: string }>;
   moduleSummaries: Array<{ moduleId: string; code: string; title: string; creditHours: number; priorityScore: number }>;
   overallWeightedAverage: number;
   taskStats: { completed: number; pending: number };
+  weeklyAssignments: Array<{ id: string; title: string; status: string; score: number | null; weight: number; dueDate?: string }>;
+  tacticalTasks: Array<{ id: string; title: string; status: string; type: string; dueDate: string; module?: { id: string; code: string; title: string } }>;
   openModule?: { moduleId: string; code: string; title: string; creditHours: number } | undefined;
   onOpenModule?: (moduleId: string) => void;
   onCloseModule?: () => void;
   onPrevWeek?: () => void;
   onNextWeek?: () => void;
   onToday?: () => void;
+  onRefresh?: () => void;
+  onTaskCreate?: (task: { title: string; type: string; dueDate: string; moduleId: string }) => Promise<void>;
+  onTaskToggle?: (taskId: string) => Promise<void>;
 }
 
 /**
  * Standalone WeekView page-level component for Storybook usage (no Next.js dependencies).
  */
 export function WeekViewPageView(props: WeekViewPageProps) {
-  const { week, priorities, moduleSummaries, overallWeightedAverage, taskStats, openModule, onOpenModule, onCloseModule, onPrevWeek, onNextWeek, onToday } = props;
+  const { 
+    week, 
+    priorities, 
+    moduleSummaries, 
+    overallWeightedAverage, 
+    taskStats, 
+    weeklyAssignments, 
+    tacticalTasks, 
+    openModule, 
+    onOpenModule, 
+    onCloseModule, 
+    onPrevWeek, 
+    onNextWeek, 
+    onToday, 
+    onRefresh,
+    onTaskCreate,
+    onTaskToggle
+  } = props;
+  
+  // Assignment edit modal state
+  const [editingAssignmentId, setEditingAssignmentId] = useState<string | null>(null);
+
+  const handleAssignmentClick = (assignmentId: string) => {
+    setEditingAssignmentId(assignmentId);
+  };
+
+  const handleAssignmentSave = () => {
+    setEditingAssignmentId(null);
+    onRefresh?.(); // Refresh the week data
+  };
+
+  const handleTaskToggle = async (taskId: string) => {
+    try {
+      // Get current task status to determine next status
+      const currentTask = priorities.find(p => p.id === taskId && p.type !== 'ASSIGNMENT');
+      if (!currentTask) return;
+      
+      // Cycle through statuses: PENDING -> IN_PROGRESS -> COMPLETED -> PENDING
+      let nextStatus = 'IN_PROGRESS';
+      if (currentTask.status === 'IN_PROGRESS') nextStatus = 'COMPLETED';
+      else if (currentTask.status === 'COMPLETED') nextStatus = 'PENDING';
+      
+      const response = await fetch(`/api/tactical-tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update task');
+      }
+      
+      // Refresh the week data to show updated status
+      onRefresh?.();
+    } catch (error) {
+      console.error('Failed to toggle task:', error);
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
@@ -63,10 +129,13 @@ export function WeekViewPageView(props: WeekViewPageProps) {
                     moduleCode: p.moduleCode, 
                     dueDate: p.dueDate,
                     priorityScore: p.priorityScore,
-                    type: p.type
+                    type: p.type,
+                    status: p.status as "IN_PROGRESS" | "COMPLETED" | "PENDING" | "DUE" | "LATE" | "GRADED" | undefined
                   }))} 
                   emptyLabel="No high-priority items this week. Great job!" 
                   maxItems={8}
+                  onAssignmentClick={handleAssignmentClick}
+                  onTaskToggle={handleTaskToggle}
                 />
               </div>
             </section>
@@ -138,6 +207,21 @@ export function WeekViewPageView(props: WeekViewPageProps) {
           
           <aside className="lg:col-span-1 xl:col-span-2 space-y-6">
             <SemesterSnapshotView overallWeightedAverage={overallWeightedAverage} tasks={taskStats} />
+            <WeeklyAssignmentProgressView assignments={weeklyAssignments} />
+            <TacticalPaneView 
+              tasks={tacticalTasks.map(t => ({
+                id: t.id,
+                title: t.title,
+                type: t.type as 'READ' | 'STUDY' | 'PRACTICE' | 'REVIEW' | 'ADMIN',
+                status: t.status as 'PENDING' | 'IN_PROGRESS' | 'COMPLETED',
+                dueDate: t.dueDate,
+                module: t.module || { id: '', code: 'Unknown', title: 'Unknown Module' }
+              }))}
+              modules={moduleSummaries.map(m => ({ id: m.moduleId, code: m.code, title: m.title }))}
+              onTaskCreate={onTaskCreate}
+              onTaskToggle={onTaskToggle}
+              onRefresh={onRefresh}
+            />
           </aside>
         </div>
       </div>
@@ -161,10 +245,25 @@ export function WeekViewPageView(props: WeekViewPageProps) {
               </button>
             </div>
             <div className="overflow-y-auto p-6 flex-1 bg-gradient-to-b from-white to-slate-50 scroll-smooth">
-              <ModuleQuickView title={openModule.title} code={openModule.code} stats={{ creditHours: openModule.creditHours }} />
+              <ModuleQuickView 
+                title={openModule.title} 
+                code={openModule.code} 
+                stats={{ creditHours: openModule.creditHours }} 
+                moduleId={openModule.moduleId}
+              />
             </div>
           </div>
         </div>
+      )}
+
+      {/* Assignment Edit Modal */}
+      {editingAssignmentId && (
+        <AssignmentEditModal
+          isOpen={true}
+          assignmentId={editingAssignmentId}
+          onClose={() => setEditingAssignmentId(null)}
+          onSave={handleAssignmentSave}
+        />
       )}
     </div>
   );

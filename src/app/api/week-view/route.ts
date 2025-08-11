@@ -77,17 +77,17 @@ export async function GET(req: NextRequest) {
     });
 
     // Weekly priorities: top items by priorityScore or due date urgency
-    type PriorityItem = { type: string; id: string; title: string; moduleCode: string; dueDate: Date | undefined; weight: number; priorityScore: number };
+    type PriorityItem = { type: string; id: string; title: string; moduleCode: string; dueDate: Date | undefined; weight: number; priorityScore: number; status?: string };
     const weeklyPriorities: PriorityItem[] = [
       ...assignments.map(a => {
         const dueDate = a.dueDate ? new Date(a.dueDate) : undefined;
         const pr = getPriorityScore({ weightPercent: a.weight, moduleCredits: a.module.creditHours, dueDate });
-        return { type: 'ASSIGNMENT', id: a.id, title: a.title, moduleCode: a.module.code, dueDate, weight: a.weight || 0, priorityScore: pr.score } as PriorityItem;
+        return { type: 'ASSIGNMENT', id: a.id, title: a.title, moduleCode: a.module.code, dueDate, weight: a.weight || 0, priorityScore: pr.score, status: a.status } as PriorityItem;
       }),
       ...tacticalTasks.map(t => {
         const dueDate = t.dueDate ? new Date(t.dueDate) : undefined;
         const pr = getPriorityScore({ weightPercent: 0, moduleCredits: t.module.creditHours, dueDate });
-        return { type: 'TACTICAL_TASK', id: t.id, title: t.title, moduleCode: t.module.code, dueDate, weight: 0, priorityScore: pr.score } as PriorityItem;
+        return { type: 'TACTICAL_TASK', id: t.id, title: t.title, moduleCode: t.module.code, dueDate, weight: 0, priorityScore: pr.score, status: t.status } as PriorityItem;
       }),
     ].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 25); // Increased from 15 to 25 for better UX
 
@@ -109,6 +109,7 @@ export async function GET(req: NextRequest) {
         title: a.title,
         dueDate: a.dueDate,
         weight: a.weight,
+        score: a.score,
         status: a.status,
         module: { id: a.module.id, code: a.module.code, title: a.module.title, isCore: a.module.isCore },
       })),
@@ -123,6 +124,14 @@ export async function GET(req: NextRequest) {
       moduleSummaries,
       weeklyPriorities,
       totalStudyMinutes,
+      // Task progress for this week
+      tasksThisWeek: [...assignments, ...tacticalTasks].map(item => ({
+        id: item.id,
+        title: item.title,
+        type: 'dueDate' in item ? 'assignment' : 'tactical',
+        status: item.status,
+        completed: item.status === 'GRADED' || item.status === 'COMPLETED'
+      })),
       // Backwards compatible legacy shape for existing hook
       data: {
         start: weekStart.toISOString(),
