@@ -12,7 +12,7 @@ export type AcademicOSView = 'weekly' | 'modules' | 'module' | 'strategic' | 'wh
 /**
  * Modal state for overlays.
  */
-export type AcademicOSModal = 'add-task' | 'onboarding' | null;
+export type AcademicOSModal = 'add-task' | 'add-module' | 'onboarding' | null;
 
 /**
  * Academic OS application state.
@@ -259,6 +259,11 @@ export function AcademicOSProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   const selectModule = useCallback((moduleId: string, originView?: AcademicOSView) => {
+    // Handle special case for creating new module
+    if (moduleId === 'new') {
+      dispatch({ type: 'OPEN_MODAL', modal: 'add-module' });
+      return;
+    }
     dispatch({ type: 'SELECT_MODULE', moduleId, originView });
   }, []);
 

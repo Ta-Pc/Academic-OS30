@@ -281,7 +281,7 @@ export function SettingsViewContainer() {
                 </h3>
               </div>
               <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <button
                     onClick={() => openModal('onboarding')}
                     className="p-6 bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-2xl hover:from-blue-100 hover:to-indigo-200 transition-all duration-200 text-left group"
@@ -289,6 +289,15 @@ export function SettingsViewContainer() {
                     <div className="text-3xl mb-3">🚀</div>
                     <div className="font-semibold text-slate-900 mb-2">Setup Wizard</div>
                     <div className="text-sm text-slate-600">Configure your academic setup</div>
+                  </button>
+                  
+                  <button
+                    onClick={() => openModal('add-module')}
+                    className="p-6 bg-gradient-to-br from-cyan-50 to-blue-100 border border-cyan-200 rounded-2xl hover:from-cyan-100 hover:to-blue-200 transition-all duration-200 text-left group"
+                  >
+                    <div className="text-3xl mb-3">📚</div>
+                    <div className="font-semibold text-slate-900 mb-2">Create Module</div>
+                    <div className="text-sm text-slate-600">Add a new academic module</div>
                   </button>
                   
                   <button

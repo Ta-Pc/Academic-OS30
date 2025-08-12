@@ -12,7 +12,7 @@ import { formatDate } from '@/utils/date-format';
  * Provides strategic overview across all modules.
  */
 export function StrategicViewContainer() {
-  const { selectModule } = useAcademicOS();
+  const { selectModule, openModal } = useAcademicOS();
   // user context removed
   const [analytics, setAnalytics] = useState<{
     weightedGPA: number;
@@ -298,58 +298,73 @@ export function StrategicViewContainer() {
                     </div>
                   </div>
                   <div className="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm font-medium self-start">
-                    2 active
+                    {analytics ? 
+                      (analytics.atRiskModules.length + Math.max(0, (analytics.weightedGPA > 0 ? Math.min(2, 4 - analytics.atRiskModules.length) : 0))) 
+                      : 0} active
                   </div>
                 </div>
               </div>
               <div className="p-4 sm:p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-lg hover:border-blue-300 transition-all duration-200 group">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                        STK110
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-slate-900">82.3%</div>
-                      </div>
-                    </div>
-                    <h4 className="text-sm font-semibold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">
-                      Statistics 110
-                    </h4>
-                    <div className="flex items-center justify-between text-xs text-slate-500">
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                        Excellent performance
-                      </span>
-                      <a href="/modules/STK110" className="text-blue-600 font-medium group-hover:text-blue-700">
-                        View details →
-                      </a>
-                    </div>
+                {!analytics || (analytics.atRiskModules.length === 0 && analytics.weightedGPA === 0) ? (
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-2">📖</div>
+                    <div className="text-sm font-medium text-slate-700 mb-1">No modules found</div>
+                    <div className="text-xs text-slate-500 mb-4">Import your CSV data or create modules manually</div>
+                    <button 
+                      onClick={() => openModal('add-module')} 
+                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <span>➕</span>
+                      Add Module
+                    </button>
                   </div>
-
-                  <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-lg hover:border-blue-300 transition-all duration-200 group">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                        STK120
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {analytics.atRiskModules.slice(0, 4).map((module) => (
+                      <div key={module.id} className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-lg hover:border-blue-300 transition-all duration-200 group">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                            {module.code}
+                          </div>
+                          <div className="text-right">
+                            <div className="text-lg font-bold text-slate-900">{module.currentAverageMark?.toFixed(1) || 'N/A'}%</div>
+                          </div>
+                        </div>
+                        <h4 className="text-sm font-semibold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">
+                          {module.title}
+                        </h4>
+                        <div className="flex items-center justify-between text-xs text-slate-500">
+                          <span className="flex items-center gap-1">
+                            <span className={`w-2 h-2 rounded-full ${(module.currentAverageMark || 0) >= 70 ? 'bg-green-400' : (module.currentAverageMark || 0) >= 50 ? 'bg-orange-400' : 'bg-red-400'}`}></span>
+                            {(module.currentAverageMark || 0) >= 70 ? 'Excellent performance' : (module.currentAverageMark || 0) >= 50 ? 'Good progress' : 'Needs attention'}
+                          </span>
+                          <button 
+                            onClick={() => selectModule(module.id)} 
+                            className="text-blue-600 font-medium group-hover:text-blue-700"
+                          >
+                            View details →
+                          </button>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-slate-900">85.0%</div>
+                    ))}
+                    
+                    {/* Add module placeholders if we have less than 4 modules */}
+                    {Array(Math.max(0, Math.min(2, 4 - analytics.atRiskModules.length))).fill(null).map((_, index) => (
+                      <div key={`placeholder-${index}`} className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-5 border-dashed">
+                        <div className="text-center py-4">
+                          <div className="text-2xl mb-2">➕</div>
+                          <div className="text-xs text-slate-500 mb-2">Add another module</div>
+                          <button 
+                            onClick={() => openModal('add-module')} 
+                            className="text-blue-600 text-xs font-medium hover:text-blue-700"
+                          >
+                            Create module
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <h4 className="text-sm font-semibold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">
-                      Statistics 120
-                    </h4>
-                    <div className="flex items-center justify-between text-xs text-slate-500">
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                        Outstanding progress
-                      </span>
-                      <a href="/modules/STK120" className="text-blue-600 font-medium group-hover:text-blue-700">
-                        View details →
-                      </a>
-                    </div>
+                    ))}
                   </div>
-                </div>
+                )}
               </div>
             </section>
           </div>

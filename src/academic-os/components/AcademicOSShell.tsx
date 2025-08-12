@@ -10,6 +10,7 @@ import { StrategicViewContainer } from '@/academic-os/components/views/Strategic
 import { WhatIfViewContainer } from '@/academic-os/components/views/WhatIfViewContainer';
 import { SettingsViewContainer } from '@/academic-os/components/views/SettingsViewContainer';
 import { AddTaskModal } from '@/academic-os/components/modals/AddTaskModal';
+import { AddModuleModal } from '@/academic-os/components/modals/AddModuleModal';
 import { OnboardingModal } from '@/academic-os/components/modals/OnboardingModal';
 
 /**
@@ -47,6 +48,8 @@ function AcademicOSModals() {
   switch (state.activeModal) {
     case 'add-task':
       return <AddTaskModal />;
+    case 'add-module':
+      return <AddModuleModal />;
     case 'onboarding':
       return <OnboardingModal />;
     default:

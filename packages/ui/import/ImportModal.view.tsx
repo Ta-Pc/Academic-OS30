@@ -60,6 +60,17 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   const [modulesNeedingTerms, setModulesNeedingTerms] = useState<string[]>([]);
   const [terms, setTerms] = useState<Term[]>([]);
   const [selectedTermId, setSelectedTermId] = useState<string | null>(null);
+  
+  // Manual module creation state
+  const [showManualCreate, setShowManualCreate] = useState(false);
+  const [manualModule, setManualModule] = useState({
+    code: '',
+    title: '',
+    creditHours: 12,
+    targetMark: 75,
+    department: ''
+  });
+  const [creatingModule, setCreatingModule] = useState(false);
   const [newTermDraft, setNewTermDraft] = useState<{ title: string; startDate: string; endDate: string }>({ 
     title: '', 
     startDate: '', 
@@ -365,6 +376,51 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
       onComplete();
     }
     onClose();
+  };
+
+  // Manual module creation function
+  const handleCreateModule = async () => {
+    if (!manualModule.code.trim()) return;
+    
+    setCreatingModule(true);
+    try {
+      const response = await fetch('/api/modules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: manualModule.code.trim(),
+          title: manualModule.title.trim() || manualModule.code.trim(),
+          creditHours: Number(manualModule.creditHours) || 12,
+          targetMark: manualModule.targetMark || null,
+          department: manualModule.department.trim() || null,
+          status: 'ACTIVE'
+        })
+      });
+      
+      const result = await response.json();
+      if (response.ok) {
+        // Remove the created module from missing modules list
+        setMissingModules(prev => prev.filter(code => code !== manualModule.code.trim()));
+        
+        // Reset the form
+        setManualModule({
+          code: '',
+          title: '',
+          creditHours: 12,
+          targetMark: 75,
+          department: ''
+        });
+        
+        // If this was the last missing module, refresh the preview
+        if (missingModules.length === 1) {
+          handlePreview();
+        }
+      }
+    } catch (error) {
+      console.error('Failed to create module:', error);
+    } finally {
+      setCreatingModule(false);
+    }
   };
 
   const importTypeOptions: SelectOption[] = [
@@ -740,21 +796,130 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
               )}
               
               {missingModules.length > 0 && (
-                <Card>
-                  <CardHeader gradient="orange">
-                    <div>
-                      <h4 className="font-semibold text-orange-900">Missing Modules</h4>
-                      <p className="text-sm text-orange-700">
-                        These modules need to be created first
-                      </p>
-                    </div>
-                  </CardHeader>
-                  <CardBody>
-                    <div className="text-sm text-orange-600">
-                      {missingModules.join(', ')}
-                    </div>
-                  </CardBody>
-                </Card>
+                <>
+                  <Card>
+                    <CardHeader gradient="orange">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-semibold text-orange-900">Missing Modules</h4>
+                          <p className="text-sm text-orange-700">
+                            These modules need to be created first
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => setShowManualCreate(!showManualCreate)}
+                          variant="secondary"
+                          size="sm"
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          {showManualCreate ? 'Hide Form' : 'Create Manually'}
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardBody>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {missingModules.map((moduleCode) => (
+                          <span
+                            key={moduleCode}
+                            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800 border border-orange-200"
+                          >
+                            {moduleCode}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      {showManualCreate && (
+                        <div className="border-t border-orange-200 pt-4">
+                          <h5 className="font-medium text-slate-900 mb-3">Create Module Manually</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Module Code *
+                              </label>
+                              <Input
+                                value={manualModule.code}
+                                onChange={(value) => setManualModule(prev => ({ ...prev, code: value }))}
+                                placeholder="e.g. INF 164"
+                                className="text-sm"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Module Title
+                              </label>
+                              <Input
+                                value={manualModule.title}
+                                onChange={(value) => setManualModule(prev => ({ ...prev, title: value }))}
+                                placeholder="Optional - uses code if empty"
+                                className="text-sm"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Credit Hours
+                              </label>
+                              <Input
+                                type="number"
+                                value={manualModule.creditHours.toString()}
+                                onChange={(value) => setManualModule(prev => ({ ...prev, creditHours: parseInt(value) || 12 }))}
+                                className="text-sm"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Target Mark (%)
+                              </label>
+                              <Input
+                                type="number"
+                                value={manualModule.targetMark.toString()}
+                                onChange={(value) => setManualModule(prev => ({ ...prev, targetMark: parseInt(value) || 75 }))}
+                                className="text-sm"
+                              />
+                            </div>
+                            
+                            <div className="md:col-span-2">
+                              <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Department
+                              </label>
+                              <Input
+                                value={manualModule.department}
+                                onChange={(value) => setManualModule(prev => ({ ...prev, department: value }))}
+                                placeholder="e.g. Computer Science, Statistics"
+                                className="text-sm"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
+                            <div className="text-sm text-slate-600">
+                              💡 Tip: Fill in the module code from the missing list above
+                            </div>
+                            <Button
+                              onClick={handleCreateModule}
+                              disabled={!manualModule.code.trim() || creatingModule}
+                              size="sm"
+                            >
+                              {creatingModule ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1"></div>
+                                  Creating...
+                                </>
+                              ) : (
+                                <>
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Create Module
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </CardBody>
+                  </Card>
+                </>
               )}
             </div>
           )}
