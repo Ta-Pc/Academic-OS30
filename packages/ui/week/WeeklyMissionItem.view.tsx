@@ -25,7 +25,7 @@ function getRelativeTime(date: string | Date): { text: string; isUrgent: boolean
   const now = new Date();
   const diffMs = d.getTime() - now.getTime();
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays < 0) {
     return { text: `${Math.abs(diffDays)} days overdue`, isUrgent: true };
   } else if (diffDays === 0) {
@@ -43,25 +43,27 @@ export type WeeklyMissionItemViewProps = {
   title: string;
   dueDate?: Date | string | null;
   moduleCode?: string | null;
-  status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'GRADED' | 'DUE' | 'COMPLETE';
   onToggle?: () => void;
   priorityScore?: number;
   type?: string;
 };
 
-export function WeeklyMissionItemView({ 
-  title, 
-  dueDate, 
-  moduleCode, 
-  status = 'PENDING', 
-  onToggle, 
+export function WeeklyMissionItemView({
+  title,
+  dueDate,
+  moduleCode,
+  status = 'PENDING',
+  onToggle,
   priorityScore,
-  type 
+  type
 }: WeeklyMissionItemViewProps) {
-  const isDone = status === 'COMPLETED';
+  const isDone = status === 'COMPLETED' || status === 'GRADED';
+  const isComplete = status === 'COMPLETE';
   const inProgress = status === 'IN_PROGRESS';
   const timeInfo = dueDate ? getRelativeTime(dueDate) : null;
-  
+  const isUrgent = timeInfo?.isUrgent || status === 'DUE';
+
   const getTypeIcon = () => {
     switch (type?.toLowerCase()) {
       case 'read': return '📖';
@@ -69,27 +71,29 @@ export function WeeklyMissionItemView({
       case 'practice': return '💻';
       case 'review': return '🔍';
       case 'admin': return '📋';
+      case 'assignment': return '📝';
       default: return '📝';
     }
   };
 
   return (
     <li className={`group flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-md ${
-      isDone 
-        ? 'bg-green-50 border-green-200 hover:bg-green-100' 
-        : inProgress
+      isDone
+        ? 'bg-green-50 border-green-200 hover:bg-green-100'
+        : isComplete || inProgress
         ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-        : timeInfo?.isUrgent
+        : isUrgent
         ? 'bg-red-50 border-red-200 hover:bg-red-100'
         : 'bg-white border-slate-200 hover:bg-slate-50'
     }`}>
       <button
         onClick={onToggle}
         className="flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded"
+        aria-label={`Toggle status for ${title}`}
       >
         {isDone ? (
           <CheckCircle className="h-6 w-6 text-green-600" />
-        ) : inProgress ? (
+        ) : isComplete || inProgress ? (
           <Target className="h-6 w-6 text-blue-600" />
         ) : (
           <Circle className="h-6 w-6 text-slate-400 group-hover:text-primary-500" />
@@ -108,7 +112,7 @@ export function WeeklyMissionItemView({
             </span>
           )}
         </div>
-        
+
         <div className="flex items-center gap-3 text-sm">
           {moduleCode && (
             <span className="flex items-center gap-1 text-slate-600 font-medium">
@@ -116,12 +120,12 @@ export function WeeklyMissionItemView({
               {moduleCode}
             </span>
           )}
-          
+
           {timeInfo && (
             <span className={`flex items-center gap-1 ${
-              timeInfo.isUrgent ? 'text-red-600 font-medium' : 'text-slate-500'
+              isUrgent ? 'text-red-600 font-medium' : 'text-slate-500'
             }`}>
-              {timeInfo.isUrgent ? (
+              {isUrgent ? (
                 <AlertCircle className="h-4 w-4" />
               ) : (
                 <Clock className="h-4 w-4" />
@@ -134,5 +138,3 @@ export function WeeklyMissionItemView({
     </li>
   );
 }
-
-

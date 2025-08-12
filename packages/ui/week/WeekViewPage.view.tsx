@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { WeekHeaderView } from './WeekHeader.view';
-import { WeeklyMissionListView } from './WeeklyMissionList.view';
+import { WeeklyMissionListView, WeeklyMission } from './WeeklyMissionList.view';
 import { SemesterSnapshotView } from '../semester/SemesterSnapshot.view';
 import { WeeklyAssignmentProgressView } from './WeeklyAssignmentProgress.view';
 import { TacticalPaneView } from './TacticalPane.view';
@@ -31,25 +31,25 @@ export interface WeekViewPageProps {
  * Standalone WeekView page-level component for Storybook usage (no Next.js dependencies).
  */
 export function WeekViewPageView(props: WeekViewPageProps) {
-  const { 
-    week, 
-    priorities, 
-    moduleSummaries, 
-    overallWeightedAverage, 
-    taskStats, 
-    weeklyAssignments, 
-    tacticalTasks, 
-    openModule, 
-    onOpenModule, 
-    onCloseModule, 
-    onPrevWeek, 
-    onNextWeek, 
-    onToday, 
+  const {
+    week,
+    priorities,
+    moduleSummaries,
+    overallWeightedAverage,
+    taskStats,
+    weeklyAssignments,
+    tacticalTasks,
+    openModule,
+    onOpenModule,
+    onCloseModule,
+    onPrevWeek,
+    onNextWeek,
+    onToday,
     onRefresh,
     onTaskCreate,
     onTaskToggle
   } = props;
-  
+
   // Assignment edit modal state
   const [editingAssignmentId, setEditingAssignmentId] = useState<string | null>(null);
 
@@ -64,53 +64,46 @@ export function WeekViewPageView(props: WeekViewPageProps) {
   };
 
   const handleTaskToggle = async (taskId: string) => {
-    try {
-      // Get current task status to determine next status
-      const currentTask = priorities.find(p => p.id === taskId && p.type !== 'ASSIGNMENT');
-      if (!currentTask) return;
-      
-      console.log(`🔄 Toggling task: ${currentTask.title} (${currentTask.status} -> next)`);
-      
-      // Cycle through statuses: PENDING -> IN_PROGRESS -> COMPLETED -> PENDING
-      let nextStatus = 'IN_PROGRESS';
-      if (currentTask.status === 'IN_PROGRESS') nextStatus = 'COMPLETED';
-      else if (currentTask.status === 'COMPLETED') nextStatus = 'PENDING';
-      
-      const response = await fetch(`/api/tactical-tasks/${taskId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update task');
-      }
-      
-      console.log(`✅ Task updated to ${nextStatus} - refreshing Task Progress metrics...`);
-      // Refresh the week data to show updated status
-      onRefresh?.();
-    } catch (error) {
-      console.error('❌ Failed to toggle task:', error);
+    if (onTaskToggle) {
+      await onTaskToggle(taskId);
+    }
+    onRefresh?.();
+  };
+
+  const handlePriorityItemToggle = (item: WeeklyMission) => {
+    if (item.type === 'ASSIGNMENT') {
+      handleAssignmentClick(item.id);
+    } else {
+      handleTaskToggle(item.id);
     }
   };
 
-  // Keep handlers available for potential future use
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _handleAssignmentClick = handleAssignmentClick;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars  
-  const _handleTaskToggle = handleTaskToggle;
+  const mapPriorityStatus = (status: string | undefined) => {
+    switch (status) {
+      case 'GRADED':
+        return 'COMPLETED';
+      case 'COMPLETE':
+        return 'COMPLETE';
+      case 'DUE':
+        return 'DUE';
+      case 'PENDING':
+        return 'PENDING';
+      default:
+        return status as 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | undefined;
+    }
+  };
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
-        <WeekHeaderView 
-          start={week.start} 
+        <WeekHeaderView
+          start={week.start}
           end={week.end}
           onPrev={onPrevWeek}
           onNext={onNextWeek}
           onToday={onToday}
         />
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8 items-start">
           <div className="lg:col-span-2 xl:col-span-3 space-y-6 lg:space-y-8">
             {/* Priority Section */}
@@ -132,20 +125,18 @@ export function WeekViewPageView(props: WeekViewPageProps) {
                 </div>
               </div>
               <div className="p-4 sm:p-6">
-                <WeeklyMissionListView 
-                  items={priorities.map(p => ({ 
-                    id: p.id, 
-                    title: p.title, 
-                    moduleCode: p.moduleCode, 
+                <WeeklyMissionListView
+                  items={priorities.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    moduleCode: p.moduleCode,
                     dueDate: p.dueDate,
                     priorityScore: p.priorityScore,
                     type: p.type,
-                    status: p.status === 'GRADED' ? 'COMPLETED' : 
-                           p.status === 'DUE' ? 'PENDING' : 
-                           p.status === 'LATE' ? 'PENDING' : 
-                           (p.status as "IN_PROGRESS" | "COMPLETED" | "PENDING" | undefined)
-                  }))} 
-                  emptyLabel="No high-priority items this week. Great job!" 
+                    status: mapPriorityStatus(p.status)
+                  }))}
+                  onToggle={handlePriorityItemToggle}
+                  emptyLabel="No high-priority items this week. Great job!"
                   maxItems={8}
                 />
               </div>
@@ -215,11 +206,11 @@ export function WeekViewPageView(props: WeekViewPageProps) {
               </div>
             </section>
           </div>
-          
+
           <aside className="lg:col-span-1 xl:col-span-2 space-y-6">
             <SemesterSnapshotView overallWeightedAverage={overallWeightedAverage} tasks={taskStats} />
             <WeeklyAssignmentProgressView assignments={weeklyAssignments} />
-            <TacticalPaneView 
+            <TacticalPaneView
               tasks={tacticalTasks.map(t => ({
                 id: t.id,
                 title: t.title,
@@ -236,7 +227,7 @@ export function WeekViewPageView(props: WeekViewPageProps) {
           </aside>
         </div>
       </div>
-      
+
       {openModule && (
         <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true">
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={onCloseModule} />
@@ -246,8 +237,8 @@ export function WeekViewPageView(props: WeekViewPageProps) {
                 <div className="text-lg font-bold text-slate-900">Module Quick View</div>
                 <div className="text-sm text-slate-600">{openModule.code}</div>
               </div>
-              <button 
-                onClick={onCloseModule} 
+              <button
+                onClick={onCloseModule}
                 className="flex items-center justify-center w-8 h-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                 title="Close"
                 aria-label="Close module details"
@@ -256,10 +247,10 @@ export function WeekViewPageView(props: WeekViewPageProps) {
               </button>
             </div>
             <div className="overflow-y-auto p-6 flex-1 bg-gradient-to-b from-white to-slate-50 scroll-smooth">
-              <ModuleQuickView 
-                title={openModule.title} 
-                code={openModule.code} 
-                stats={{ creditHours: openModule.creditHours }} 
+              <ModuleQuickView
+                title={openModule.title}
+                code={openModule.code}
+                stats={{ creditHours: openModule.creditHours }}
                 moduleId={openModule.moduleId}
               />
             </div>
