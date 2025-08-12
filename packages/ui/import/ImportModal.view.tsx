@@ -397,7 +397,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
         })
       });
       
-      const result = await response.json();
+      //const result = await response.json();
       if (response.ok) {
         // Remove the created module from missing modules list
         setMissingModules(prev => prev.filter(code => code !== manualModule.code.trim()));
