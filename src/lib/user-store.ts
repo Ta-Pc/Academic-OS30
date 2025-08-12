@@ -8,11 +8,13 @@ const store = {
   hydrate: () => {}, // Stub function to prevent runtime errors
 };
 
-export const useUserStore = (selector?: (state: typeof store) => any) => {
+export function useUserStore<T>(selector: (state: typeof store) => T): T;
+export function useUserStore(): typeof store;
+export function useUserStore<T>(selector?: (state: typeof store) => T) {
   if (selector) {
     return selector(store);
   }
   return store;
-};
+}
 
 

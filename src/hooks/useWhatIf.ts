@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export interface WhatIfAssignmentState { id: string; title: string; weight: number; score: number | null; maxScore: number | null; }
+export interface WhatIfAssignmentState { id: string; title: string; weight: number; score: number | null; }
 export interface WhatIfPredictionState { currentObtained: number; remainingWeight: number; predictedSemesterMark: number; requiredAverageOnRemaining: number | null; }
 
-interface ApiAssignment { id: string; title: string; weight: number; score: number | null; maxScore: number | null; }
+interface ApiAssignment { id: string; title: string; weight: number; score: number | null; }
 interface ApiPrediction { currentObtained: number; remainingWeight: number; predictedSemesterMark: number; requiredAverageOnRemaining: number | null }
 type ApiResponse = { data: { module: { id: string; code: string; title: string; targetMark: number | null }; assignments: ApiAssignment[]; prediction: ApiPrediction; committed: boolean } };
 
@@ -28,7 +28,7 @@ export function useWhatIf(moduleId: string | null | undefined) {
   const json: ApiResponse = await res.json();
         if (!alive) return;
         moduleRef.current = json.data.module;
-        setAssignments(json.data.assignments.map(a => ({ id: a.id, title: a.title, weight: a.weight, score: a.score, maxScore: a.maxScore })));
+        setAssignments(json.data.assignments.map(a => ({ id: a.id, title: a.title, weight: a.weight, score: a.score })));
         setPrediction(json.data.prediction);
         const base: Record<string, number | null> = {}; json.data.assignments.forEach(a => { base[a.id] = a.score; });
         baselineRef.current = base; setWorking(base);

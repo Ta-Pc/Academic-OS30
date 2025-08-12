@@ -23,13 +23,11 @@ export async function GET(
 
     const target = typeof module.targetMark === 'number' ? module.targetMark : 0; // percent target on 0-100
 
-    // Compute using score/maxScore when available, falling back to score as percentage (0-100)
+    // Compute using score as percentage (0-100) - no maxScore needed
   const graded = module.assignments.filter((a) => a.score != null && a.status === 'GRADED');
-  const toPercent = (a: { score: number | null; maxScore: number | null }): number => {
+  const toPercent = (a: { score: number | null }): number => {
       const score = Number(a.score);
-      const max = a.maxScore != null ? Number(a.maxScore) : null;
-      if (max && Number.isFinite(max) && max > 0) return (score / max) * 100;
-      return score; // assume already a percentage
+      return score; // score is already a percentage
     };
 
     // Σ contribution where contribution = gradePercent * weight
@@ -56,10 +54,7 @@ export async function GET(
   const assignments = (module.assignments || []).map((a) => {
       const hasScore = a?.score != null;
       const scoreNum = hasScore ? Number(a.score) : null;
-      const maxNum = a?.maxScore != null ? Number(a.maxScore) : null;
-      const gradePercent = hasScore
-        ? (maxNum && Number.isFinite(maxNum) && maxNum > 0 ? (Number(scoreNum) / Number(maxNum)) * 100 : Number(scoreNum))
-        : null;
+      const gradePercent = hasScore ? Number(scoreNum) : null; // score is already a percentage
       const contribution = hasScore && a?.status === 'GRADED'
         ? ((gradePercent as number) / 100) * (Number(a?.weight) || 0)
         : null;
@@ -68,7 +63,6 @@ export async function GET(
         title: a.title,
         dueDate: a.dueDate,
         score: a.score,
-        maxScore: a.maxScore,
         weight: a.weight,
         status: a.status,
         componentId: a.componentId,

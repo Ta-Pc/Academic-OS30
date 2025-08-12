@@ -9,9 +9,8 @@ const ELECTIVE_GROUPS: Record<string, { name: string; requiredCredits: number }>
 export async function GET() {
   try {
     // Tests expect we look up a (single) user first
-  // Some environments may not have user model; tests mock prisma.user
-  const p: any = prisma as any;
-  // User features removed: operate across all ACTIVE modules only
+    // Some environments may not have user model; tests mock prisma.user
+    // User features removed: operate across all ACTIVE modules only
 
     const modules = await prisma.module.findMany({
       where: { status: 'ACTIVE' },
@@ -26,8 +25,8 @@ export async function GET() {
       const average = graded.length
         ? graded.reduce((sum, a) => {
             const score = a.score == null ? 0 : Number(a.score);
-            const max = a.maxScore == null ? 100 : Number(a.maxScore) || 100;
-            return sum + (score / max) * 100;
+            // Assume score is already a percentage (0-100) since there's no maxScore
+            return sum + score;
           }, 0) / graded.length
         : 0;
       const passed = graded.length > 0 && average >= 50; // pass threshold
@@ -69,7 +68,8 @@ export async function GET() {
       electiveGroups: groups,
       warnings,
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Database error' });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Database error';
+    return NextResponse.json({ error: errorMessage });
   }
 }

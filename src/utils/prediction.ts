@@ -14,8 +14,7 @@
 export interface PredictionAssignmentLike {
   id?: string;
   weight: number; // relative weight (percent) – may not sum to 100 overall
-  score: number | null; // student raw score or percentage if maxScore absent
-  maxScore?: number | null; // if provided, score/maxScore => percentage
+  score: number | null; // student score as percentage (0-100)
   status?: string | null; // 'GRADED' indicates inclusion (also include if score != null)
 }
 
@@ -31,8 +30,7 @@ export interface ModulePredictionResult {
 const toPercent = (a: PredictionAssignmentLike): number | null => {
   if (a.score == null) return null;
   const score = Number(a.score);
-  if (a.maxScore != null && a.maxScore > 0) return (score / Number(a.maxScore)) * 100;
-  return score; // treat as already percentage
+  return score; // score is already a percentage
 };
 
 export function computeModulePrediction(

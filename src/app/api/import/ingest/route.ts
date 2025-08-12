@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
               data: updateData
             });
           } else {
-            const moduleData: any = {
+            const moduleData: Record<string, unknown> = {
               code,
               title,
               creditHours,
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
             }
 
             await prisma.module.create({
-              data: moduleData
+              data: moduleData as unknown as Parameters<typeof prisma.module.create>[0]['data']
             });
           }
           processed.push(code);

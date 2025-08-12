@@ -5,7 +5,6 @@ export type WhatIfAssignment = {
   title: string;
   weight: number;
   score: number | null;
-  maxScore: number | null;
 };
 
 export type WhatIfPrediction = {
@@ -78,7 +77,7 @@ export function WhatIfDialogView(props: WhatIfDialogViewProps) {
                       <tr key={a.id} className="hover:bg-slate-50">
                         <td>{a.title}</td>
                         <td className="text-right">{round1(a.weight)}%</td>
-                        <td className="text-right">{a.score == null ? '—' : (a.maxScore ? round1(a.score) : `${round1(a.score)}%`)}</td>
+                        <td className="text-right">{a.score == null ? '—' : `${round1(a.score)}%`}</td>
                         <td className="text-right">
                           <input
                             ref={firstFocusable.current ? undefined : firstFocusable}

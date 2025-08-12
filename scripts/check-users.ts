@@ -3,20 +3,19 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  const users = await prisma.user.findMany({ 
-    include: { 
-      modules: { 
-        include: { 
-          assignments: true, 
-          tasks: true 
-        } 
-      } 
-    } 
-  });
+  const users = await prisma.user.findMany();
   console.log('Users in database:');
-  users.forEach(user => {
-    console.log(`- ${user.id}: ${user.name} (${user.email}) - ${user.modules.length} modules`);
-  });
+  
+  for (const user of users) {
+    const modules = await prisma.module.findMany({
+      where: { ownerId: user.id },
+      include: { 
+        assignments: true, 
+        tasks: true 
+      }
+    });
+    console.log(`- ${user.id}: ${user.name} (${user.email}) - ${modules.length} modules`);
+  }
 }
 
 main().then(() => prisma.$disconnect()).catch(console.error);

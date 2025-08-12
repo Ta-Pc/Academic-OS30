@@ -66,7 +66,6 @@ model Assignment {
   id          String               @id @default(cuid())
   title       String
   dueDate     DateTime?
-  maxScore    Float?
   score       Float?
   moduleId    String
   componentId String?
@@ -103,7 +102,6 @@ model AcademicYear {
   endDate   DateTime
   createdAt DateTime @default(now())
   terms     Term[]
-  ownerId   String?
 }
 
 // Basic user model (minimal) if not already generated elsewhere
@@ -112,10 +110,7 @@ model User {
   email     String?     @unique
   name      String?
   degreeId  String?     // simplistic link
-  modules   Module[]    @relation("UserModules")
   studyLogs StudyLog[]
-  academicYears AcademicYear[]
-  terms     Term[]
 }
 
 model StudyLog {

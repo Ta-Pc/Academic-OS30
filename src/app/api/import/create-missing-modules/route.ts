@@ -11,7 +11,13 @@ export async function POST(req: NextRequest) {
       if (!code) continue;
   const exists = await prisma.module.findFirst({ where: { code } });
       if (!exists) {
-  await prisma.module.create({ data: { code, title: code, creditHours: 12 } as any });
+  await prisma.module.create({ 
+        data: { 
+          code, 
+          title: code, 
+          creditHours: 12 
+        } 
+      });
         created++;
       }
     }

@@ -1,5 +1,6 @@
 // AcademicOS Flow Composition
 import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { useAcademicOS } from '../../context/AcademicOSContext';
 import { ModuleDetailContainer as ExistingModuleDetailContainer } from '@/app/modules/[moduleId]/ModuleDetail.container';
 
@@ -26,6 +27,17 @@ interface ModuleAnalytics {
   lastUpdated: string;
 }
 
+type AssignmentStatus = 'PENDING' | 'SUBMITTED' | 'GRADED' | 'IN_PROGRESS' | string;
+
+interface AssignmentLite {
+  id: string;
+  title?: string;
+  status: AssignmentStatus;
+  weight?: number; // percentage of module mark
+  dueDate?: string | null; // ISO string
+  obtainedMark?: number | null;
+}
+
 /**
  * Enhanced Module View Container - provides comprehensive module analytics with beautiful UI/UX.
  * Features advanced insights, predictive analytics, and actionable recommendations.
@@ -35,6 +47,8 @@ export function ModuleViewContainer() {
   const { selectedModuleId } = state;
   const [moduleAnalytics, setModuleAnalytics] = useState<ModuleAnalytics | null>(null);
   const [loading, setLoading] = useState(false);
+  const [assignments, setAssignments] = useState<AssignmentLite[]>([]);
+  const [showTips, setShowTips] = useState(false);
 
   // Load comprehensive module analytics
   useEffect(() => {
@@ -46,6 +60,17 @@ export function ModuleViewContainer() {
         const response = await fetch(`/api/modules/${selectedModuleId}/analytics`);
         if (response.ok) {
           const { data } = await response.json();
+          const normalizedAssignments: AssignmentLite[] = Array.isArray(data?.assignments)
+            ? data.assignments.map((a: Record<string, unknown>) => ({
+                id: String(a.id ?? crypto?.randomUUID?.() ?? Math.random()),
+                title: a.title as string ?? a.name as string ?? 'Assignment',
+                status: a.status as AssignmentStatus,
+                weight: typeof a.weight === 'number' ? a.weight : Number(a.weight ?? 0),
+                dueDate: a.dueDate as string ?? a.deadline as string ?? null,
+                obtainedMark: typeof a.obtainedMark === 'number' ? a.obtainedMark : Number(a.obtainedMark ?? NaN),
+              }))
+            : [];
+          setAssignments(normalizedAssignments);
           setModuleAnalytics({
             id: data.module.id,
             code: data.module.code,
@@ -76,7 +101,21 @@ export function ModuleViewContainer() {
 
     const { currentMark, predictedMark, targetMark, remainingWeight } = moduleAnalytics;
     const gap = targetMark - predictedMark;
-    const completionRate = (moduleAnalytics.assignmentsCompleted / moduleAnalytics.totalAssignments) * 100;
+    const completionRate = moduleAnalytics.totalAssignments
+      ? (moduleAnalytics.assignmentsCompleted / moduleAnalytics.totalAssignments) * 100
+      : 0;
+
+    // Identify the next upcoming deadline from non-graded assignments
+    const now = new Date();
+    const upcoming = assignments
+      .filter((a) => a.status !== 'GRADED' && a.dueDate)
+      .map((a) => ({
+        ...a,
+        due: new Date(a.dueDate as string),
+      }))
+      .filter((a) => !isNaN(a.due.getTime()) && a.due >= now)
+      .sort((a, b) => a.due.getTime() - b.due.getTime());
+    const nextDeadline = upcoming[0]?.due?.toISOString() ?? null;
 
     // Risk assessment
     let riskLevel: 'low' | 'medium' | 'high' = 'low';
@@ -85,8 +124,8 @@ export function ModuleViewContainer() {
 
     // Study time calculation (hours needed per week)
     const baseStudyTime = moduleAnalytics.creditHours * 0.5; // Base study time per credit hour
-    const riskMultiplier = riskLevel === 'high' ? 1.5 : riskLevel === 'medium' ? 1.25 : 1.0;
-    const studyTimeNeeded = Math.ceil(baseStudyTime * riskMultiplier);
+    const riskMultiplier = riskLevel === 'high' ? 1.6 : riskLevel === 'medium' ? 1.25 : 1.0;
+    const studyTimeNeeded = Math.max(2, Math.ceil(baseStudyTime * riskMultiplier));
 
     // Strength and improvement areas
     const strengthAreas: string[] = [];
@@ -99,6 +138,7 @@ export function ModuleViewContainer() {
     if (currentMark < targetMark) improvementAreas.push('Grade Performance');
     if (completionRate < 70) improvementAreas.push('Assignment Submission');
     if (remainingWeight > 50) improvementAreas.push('Workload Management');
+    if (nextDeadline) improvementAreas.push('Deadline Readiness');
 
     // Recommended actions
     const recommendedActions: string[] = [];
@@ -112,6 +152,10 @@ export function ModuleViewContainer() {
     if (gap > 10) {
       recommendedActions.push('Increase study time allocation');
     }
+    if (nextDeadline) {
+      const daysLeft = Math.ceil((new Date(nextDeadline).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      recommendedActions.push(`Prioritize work due in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`);
+    }
     if (recommendedActions.length === 0) {
       recommendedActions.push('Maintain current study schedule');
     }
@@ -119,12 +163,56 @@ export function ModuleViewContainer() {
     return {
       riskLevel,
       studyTimeNeeded,
-      nextDeadline: null, // Would be calculated from assignments
+      nextDeadline,
       strengthAreas: strengthAreas.length ? strengthAreas : ['Enrolled in Module'],
       improvementAreas: improvementAreas.length ? improvementAreas : ['No major concerns'],
       recommendedActions,
     };
-  }, [moduleAnalytics]);
+  }, [moduleAnalytics, assignments]);
+
+  // Helpers
+  const formatDate = (iso?: string | null) => {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString();
+  };
+
+  const calcCompletionRate = () => {
+    if (!moduleAnalytics || moduleAnalytics.totalAssignments === 0) return 0;
+    return Math.round((moduleAnalytics.assignmentsCompleted / moduleAnalytics.totalAssignments) * 100);
+  };
+
+  const openCalendarWithStudySession = () => {
+    if (!moduleAnalytics) return;
+    const title = encodeURIComponent(`Study: ${moduleAnalytics.code} — ${moduleAnalytics.title}`);
+    const details = encodeURIComponent('Focused study session generated by AcademicOS');
+    const start = new Date();
+    start.setHours(start.getHours() + 1);
+    const end = new Date(start);
+    end.setHours(end.getHours() + Math.max(1, Math.min(3, Math.ceil((insights?.studyTimeNeeded ?? 2) / 2))));
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const toGCalDate = (d: Date) => `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+    const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${toGCalDate(start)}/${toGCalDate(end)}`;
+    window.open(url, '_blank');
+  };
+
+  const downloadReport = () => {
+    if (!moduleAnalytics) return;
+    const payload = {
+      module: moduleAnalytics,
+      assignments,
+      insights,
+      generatedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${moduleAnalytics.code}-analytics.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   // No module selected state
   if (!selectedModuleId) {
@@ -180,12 +268,21 @@ export function ModuleViewContainer() {
                       <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
                         {moduleAnalytics.creditHours}h
                       </span>
+                      <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-medium">
+                        {calcCompletionRate()}% complete
+                      </span>
                     </div>
                     <p className="text-lg text-slate-600 mt-1">{moduleAnalytics.title}</p>
                     <div className="flex items-center space-x-4 mt-2 text-sm text-slate-500">
                       <span>Last updated: {new Date(moduleAnalytics.lastUpdated).toLocaleDateString()}</span>
                       <span>•</span>
                       <span>{moduleAnalytics.assignmentsCompleted}/{moduleAnalytics.totalAssignments} assignments completed</span>
+                      {insights?.nextDeadline && (
+                        <>
+                          <span>•</span>
+                          <span>Next due: {formatDate(insights.nextDeadline)}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -203,6 +300,14 @@ export function ModuleViewContainer() {
                         'bg-green-500'
                       }`}></div>
                       {insights.riskLevel.charAt(0).toUpperCase() + insights.riskLevel.slice(1)} Risk
+                    </div>
+                    <div className="mt-2 flex items-center justify-end space-x-2">
+                      <button onClick={downloadReport} className="px-3 py-1.5 rounded-lg text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                        Export report
+                      </button>
+                      <button onClick={() => location.reload()} className="px-3 py-1.5 rounded-lg text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                        Refresh
+                      </button>
                     </div>
                   </div>
                 )}
@@ -229,6 +334,16 @@ export function ModuleViewContainer() {
                   <div className="text-sm font-medium text-amber-700">Remaining Work</div>
                   <div className="text-2xl font-bold text-amber-900 mt-1">{Math.round(moduleAnalytics.remainingWeight)}%</div>
                   <div className="text-xs text-amber-600 mt-1">Still to complete</div>
+                </div>
+              </div>
+              {/* Progress Bar */}
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-xs text-slate-600 mb-1">
+                  <span>Completion progress</span>
+                  <span>{calcCompletionRate()}%</span>
+                </div>
+                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-500" style={{ width: `${calcCompletionRate()}%` }} />
                 </div>
               </div>
             </div>
@@ -259,6 +374,16 @@ export function ModuleViewContainer() {
                               : `You need to improve by ${Math.round(moduleAnalytics.targetMark - moduleAnalytics.predictedMark)}% to reach your target.`
                             }
                           </p>
+                          <div className="mt-3">
+                            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                              <div className="h-2 bg-emerald-500" style={{ width: `${Math.min(100, Math.max(0, moduleAnalytics.predictedMark))}%` }} />
+                            </div>
+                            <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                              <span>0%</span>
+                              <span>Predicted: {Math.round(moduleAnalytics.predictedMark)}%</span>
+                              <span>100%</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -298,6 +423,28 @@ export function ModuleViewContainer() {
                         </ul>
                       </div>
                     </div>
+                    {/* Top remaining assessments by weight */}
+                    <div className="bg-white border border-slate-200 rounded-lg p-4">
+                      <h5 className="font-medium text-slate-900 mb-3">High-impact upcoming assessments</h5>
+                      <ul className="divide-y divide-slate-100">
+                        {assignments
+                          .filter((a) => a.status !== 'GRADED')
+                          .sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))
+                          .slice(0, 5)
+                          .map((a) => (
+                            <li key={a.id} className="py-2 flex items-center justify-between">
+                              <div>
+                                <div className="text-sm font-medium text-slate-800">{a.title ?? 'Assessment'}</div>
+                                <div className="text-xs text-slate-500">Due {formatDate(a.dueDate)} • Status: {a.status}</div>
+                              </div>
+                              <div className="text-sm font-semibold text-slate-700">{a.weight ?? 0}%</div>
+                            </li>
+                          ))}
+                        {assignments.filter((a) => a.status !== 'GRADED').length === 0 && (
+                          <li className="py-4 text-sm text-slate-500">No upcoming assessments</li>
+                        )}
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -317,7 +464,14 @@ export function ModuleViewContainer() {
                           targetMark: moduleAnalytics?.targetMark || null,
                           creditHours: moduleAnalytics?.creditHours || undefined
                         },
-                        assignments: [],
+                        assignments: assignments.map(a => ({
+                          id: a.id,
+                          title: a.title || 'Assignment',
+                          dueDate: a.dueDate || null,
+                          score: a.obtainedMark || null,
+                          weight: a.weight || 0,
+                          contribution: null // Will be calculated
+                        })),
                         currentObtainedMark: moduleAnalytics?.currentMark || 0,
                         remainingWeight: moduleAnalytics?.remainingWeight || 100,
                         currentPredictedSemesterMark: moduleAnalytics?.predictedMark || 0,
@@ -329,6 +483,40 @@ export function ModuleViewContainer() {
             </div>
 
             <div className="sidebar">
+              {/* Upcoming Deadline */}
+              {insights?.nextDeadline && (
+                <div className="cohesive-section">
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
+                      <div className="p-2 bg-amber-100 rounded-lg mr-3">
+                        <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      Upcoming deadline
+                    </h3>
+                    <div className="bg-gradient-to-br from-amber-50 to-orange-100 rounded-lg p-4 border border-amber-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-sm text-amber-800">Due date</div>
+                          <div className="text-lg font-bold text-amber-900">{formatDate(insights.nextDeadline)}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-amber-800">Time remaining</div>
+                          <div className="text-lg font-bold text-amber-900">
+                            {(() => {
+                              const d = new Date(insights.nextDeadline!);
+                              const days = Math.max(0, Math.ceil((d.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+                              return `${days} day${days === 1 ? '' : 's'}`;
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* AI Recommendations */}
               <div className="cohesive-section">
                 <div className="p-6">
@@ -381,24 +569,34 @@ export function ModuleViewContainer() {
                 <div className="p-6">
                   <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
                   <div className="space-y-3">
-                    <button className="w-full btn-gradient-blue text-left justify-start">
+                    <button onClick={openCalendarWithStudySession} className="w-full btn-gradient-blue text-left justify-start">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                       Schedule Study Session
                     </button>
-                    <button className="w-full btn-gradient-emerald text-left justify-start">
+                    <Link href={`/modules/${selectedModuleId}`} className="w-full btn-gradient-emerald text-left justify-start inline-flex">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                       </svg>
                       View All Assignments
-                    </button>
-                    <button className="w-full btn-gradient-purple text-left justify-start">
+                    </Link>
+                    <button onClick={() => setShowTips((s) => !s)} className="w-full btn-gradient-purple text-left justify-start">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Get Study Tips
+                      {showTips ? 'Hide Study Tips' : 'Get Study Tips'}
                     </button>
+                    {showTips && (
+                      <div className="bg-white border border-slate-200 rounded-lg p-3 text-sm text-slate-700">
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Block {Math.max(1, Math.ceil((insights?.studyTimeNeeded ?? 2) / 2))}× {Math.min(2, Math.max(1, Math.ceil((insights?.studyTimeNeeded ?? 2) / 2)))}h deep-work sessions this week.</li>
+                          <li>Start with highest-weight items first to maximize impact.</li>
+                          <li>Use spaced repetition for theory-heavy topics; apply active recall.</li>
+                          {insights?.nextDeadline && <li>Draft an outline for the next due item by {formatDate(insights.nextDeadline)}.</li>}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -410,8 +608,18 @@ export function ModuleViewContainer() {
         {loading && (
           <div className="cohesive-section">
             <div className="p-12 text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" aria-label="Loading"></div>
               <div className="text-lg text-slate-600">Loading comprehensive analytics...</div>
+              {/* Subtle skeleton for metrics */}
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                {[1,2,3,4].map((i) => (
+                  <div key={i} className="rounded-xl p-4 border border-slate-200 bg-white">
+                    <div className="h-3 w-24 bg-slate-200 rounded mb-3 animate-pulse"></div>
+                    <div className="h-6 w-16 bg-slate-200 rounded mb-2 animate-pulse"></div>
+                    <div className="h-2 w-20 bg-slate-100 rounded animate-pulse"></div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}

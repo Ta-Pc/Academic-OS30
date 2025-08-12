@@ -96,7 +96,7 @@ async function ensureAcademicYear() {
   return ay;
 }
 
-async function ensureTerms(degreeId: string, academicYearId: string, ownerId: string) {
+async function ensureTerms(degreeId: string, academicYearId: string) {
   const ay = await prisma.academicYear.findUnique({ where: { id: academicYearId } });
   if (!ay) throw new Error('AcademicYear missing');
   const mid = new Date(ay.startDate.getFullYear(), 5, 30); // June 30 split
@@ -122,7 +122,6 @@ async function ensureTerms(degreeId: string, academicYearId: string, ownerId: st
           endDate: def.endDate,
           degreeId,
           academicYearId,
-          ownerId,
           type: 'SEMESTER',
         },
       });

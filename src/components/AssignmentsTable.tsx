@@ -10,7 +10,6 @@ export type AssignmentForTable = {
   title: string;
   dueDate: string | null;
   score: number | null;
-  maxScore: number | null;
   weight: number;
   contribution: number | null;
 };
@@ -25,8 +24,7 @@ export function AssignmentsTable({ assignments, onAfterUpdate }: {
         <thead>
           <tr>
             <th>Title</th>
-            <th className="text-right">Score</th>
-            <th className="text-right">Max</th>
+            <th className="text-right">Score (%)</th>
             <th className="text-right">Weight</th>
             <th className="text-right">Contribution</th>
             <th className="text-center">Actions</th>
@@ -99,8 +97,7 @@ function AssignmentRow({ a, onAfterSave }: { a: AssignmentForTable; onAfterSave?
         <div className="font-medium">{a.title}</div>
         {a.dueDate && <div className="text-xs text-slate-500">Due {formatDateTime(a.dueDate)}</div>}
       </td>
-      <td className="text-right">{a.score == null ? '—' : (a.maxScore == null ? `${round1(a.score)}%` : round1(a.score))}</td>
-      <td className="text-right">{a.maxScore == null ? '—' : round1(a.maxScore)}</td>
+      <td className="text-right">{a.score == null ? '—' : `${round1(a.score)}%`}</td>
       <td className="text-right">{round1(a.weight)}%</td>
       <td className="text-right">{a.contribution == null ? '—' : `${round2(a.contribution)}%`}</td>
       <td className="text-center">

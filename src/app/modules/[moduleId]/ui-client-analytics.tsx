@@ -19,7 +19,6 @@ type AnalyticsData = {
     title: string;
     dueDate: string | null;
     score: number | null;
-    maxScore: number | null;
     weight: number;
     contribution: number | null;
   }>;

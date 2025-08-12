@@ -17,14 +17,16 @@ async function main() {
     // Find another user with modules
     const otherUser = await prisma.user.findFirst({
       where: { 
-        id: { not: 'seed-user-1' },
-        modules: { some: {} }
-      },
-      include: { modules: true }
+        id: { not: 'seed-user-1' }
+      }
     });
     
-    if (otherUser) {
-      console.log(`Transferring ${otherUser.modules.length} modules from ${otherUser.id} to seed-user-1`);
+    const otherUserModules = await prisma.module.findMany({
+      where: { ownerId: otherUser?.id }
+    });
+    
+    if (otherUser && otherUserModules.length > 0) {
+      console.log(`Transferring ${otherUserModules.length} modules from ${otherUser.id} to seed-user-1`);
       
       // Transfer modules to seed-user-1
       await prisma.module.updateMany({

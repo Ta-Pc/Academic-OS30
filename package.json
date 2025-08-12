@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.47.2",
+    "@storybook/react": "^9.1.2",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.0.1",
     "@types/jest": "29.5.12",

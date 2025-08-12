@@ -23,7 +23,7 @@ export async function GET() {
       // Assignment statistics
       prisma.assignment.aggregate({
         _count: true,
-        _avg: { maxScore: true, score: true, weight: true },
+        _avg: { score: true, weight: true },
         _sum: { weight: true }
       }),
       
@@ -98,16 +98,15 @@ export async function GET() {
       },
       
       academic: {
-        totalCreditHours: moduleStats._sum.creditHours || 0,
-        averageCreditHours: moduleStats._avg.creditHours || 0,
-        averageTargetMark: moduleStats._avg.targetMark || 0,
-        totalAssignmentWeight: assignmentStats._sum.weight || 0,
-        averageAssignmentScore: assignmentStats._avg.score || 0,
-        averageMaxScore: assignmentStats._avg.maxScore || 0
+        totalCreditHours: moduleStats._sum?.creditHours || 0,
+        averageCreditHours: moduleStats._avg?.creditHours || 0,
+        averageTargetMark: moduleStats._avg?.targetMark || 0,
+        totalAssignmentWeight: assignmentStats._sum?.weight || 0,
+        averageAssignmentScore: assignmentStats._avg?.score || 0
       },
       
       progress: {
-        assignmentCompletionRate: assignmentStats._count > 0 
+        assignmentCompletionRate: typeof assignmentStats._count === 'number' && assignmentStats._count > 0 
           ? ((completedAssignments / assignmentStats._count) * 100).toFixed(1)
           : '0',
         taskCompletionRate: taskStats.length > 0

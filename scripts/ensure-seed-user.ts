@@ -36,16 +36,6 @@ async function main() {
         data: { userId: 'seed-user-1' },
       });
       
-      await prisma.academicYear.updateMany({
-        where: { ownerId: anyUser.id },
-        data: { ownerId: 'seed-user-1' },
-      });
-      
-      await prisma.term.updateMany({
-        where: { ownerId: anyUser.id },
-        data: { ownerId: 'seed-user-1' },
-      });
-      
       // Delete the old user
       await prisma.user.delete({ where: { id: anyUser.id } });
       
@@ -67,6 +57,16 @@ async function main() {
     console.log('seed-user-1 already exists');
   }
 }
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
 
 main()
   .then(async () => {

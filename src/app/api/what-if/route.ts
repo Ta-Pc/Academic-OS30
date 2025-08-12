@@ -8,7 +8,7 @@ const bodySchema = z.object({
   sessionOnly: z.boolean().default(true),
   changes: z.array(z.object({
     assignmentId: z.string(),
-    score: z.number().min(0).max(100).nullable(), // treat as percent if maxScore missing
+    score: z.number().min(0).max(100).nullable(), // score is percentage (0-100)
   })).default([]),
 });
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     }
 
     const prediction = computeModulePrediction(
-      simulatedAssignments.map(a => ({ weight: a.weight, score: a.score, maxScore: a.maxScore, status: a.status })),
+      simulatedAssignments.map(a => ({ weight: a.weight, score: a.score, status: a.status })),
       { targetMark: module.targetMark }
     );
 
@@ -62,8 +62,7 @@ export async function POST(req: NextRequest) {
     const decorated = simulatedAssignments.map(a => {
       let gradePercent: number | null = null;
       if (a.score != null) {
-        if (a.maxScore != null && a.maxScore > 0) gradePercent = (Number(a.score) / Number(a.maxScore)) * 100;
-        else gradePercent = Number(a.score);
+        gradePercent = Number(a.score); // score is already a percentage
       }
       const contribution = (a.status === 'GRADED' && gradePercent != null)
         ? (gradePercent / 100) * (a.weight) // raw contribution before normalization
@@ -73,7 +72,6 @@ export async function POST(req: NextRequest) {
         title: a.title,
         weight: a.weight,
         score: a.score,
-        maxScore: a.maxScore,
         status: a.status,
         gradePercent,
         contribution,

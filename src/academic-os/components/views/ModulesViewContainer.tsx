@@ -42,19 +42,19 @@ export function ModulesViewContainer() {
         const dashData = await dashResponse.json();
         
         // Extract modules from dashboard data and create enhanced stats
-        const modulesList = dashData.data.map((m: any) => ({
-          id: m.id,
-          code: m.code,
-          title: m.title,
-          creditHours: m.creditHours,
-          status: 'ACTIVE', // Default to active for dashboard display
-          currentGrade: m.currentGrade,
-          currentAverageMark: m.currentAverageMark,
-          priorityScore: m.currentAverageMark ? Math.max(0, 75 - m.currentAverageMark) : 50,
+        const modulesList = dashData.data.map((m: Record<string, unknown>) => ({
+          id: m.id as string,
+          code: m.code as string,
+          title: m.title as string,
+          creditHours: m.creditHours as number,
+          status: 'ACTIVE' as const, // Default to active for dashboard display
+          currentGrade: m.currentGrade as number,
+          currentAverageMark: m.currentAverageMark as number,
+          priorityScore: (m.currentAverageMark as number) ? Math.max(0, 75 - (m.currentAverageMark as number)) : 50,
           stats: {
             totalAssignments: Math.floor(Math.random() * 15) + 5, // Mock data
             completedAssignments: Math.floor(Math.random() * 10) + 2,
-            averageScore: m.currentAverageMark || Math.floor(Math.random() * 40) + 60,
+            averageScore: (m.currentAverageMark as number) || Math.floor(Math.random() * 40) + 60,
             completionRate: Math.floor(Math.random() * 50) + 50,
             totalWeight: 100,
           }

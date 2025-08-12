@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Metadata } from 'next';
 import ClientAnalytics from './ui-client-analytics';
 import NextDynamic from 'next/dynamic';
 
@@ -19,7 +18,6 @@ type AnalyticsResponse = {
       title: string;
       dueDate: string | null;
       score: number | null;
-      maxScore: number | null;
       weight: number;
       contribution: number | null;
     }>;
