@@ -61,7 +61,7 @@ describe('GET /api/user/remediation', () => {
             dueDate: yesterday,
             status: 'PENDING',
             score: null,
-            maxScore: 100,
+            
             weight: 50,
             type: 'OTHER'
           }
@@ -100,7 +100,7 @@ describe('GET /api/user/remediation', () => {
             dueDate: nextWeek,
             status: 'PENDING',
             score: null,
-            maxScore: 100,
+            
             weight: 50,
             type: 'TEST'
           }
@@ -136,7 +136,7 @@ describe('GET /api/user/remediation', () => {
             dueDate: new Date('2025-01-01'),
             status: 'GRADED',
             score: 30,
-            maxScore: 100,
+            
             weight: 100,
             type: 'TEST'
           }
@@ -181,7 +181,7 @@ describe('GET /api/user/remediation', () => {
             dueDate: new Date('2025-01-01'),
             status: 'GRADED',
             score: 85,
-            maxScore: 100,
+            
             weight: 100,
             type: 'TEST'
           }
@@ -253,7 +253,7 @@ describe('GET /api/user/remediation', () => {
           dueDate: yesterday,
           status: 'PENDING',
           score: null,
-          maxScore: 100,
+          
           weight: 50,
           type: 'OTHER'
         }

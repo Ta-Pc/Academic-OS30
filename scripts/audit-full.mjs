@@ -66,7 +66,6 @@ async function run() {
     assert(!!mt1, 'Assignment "Module Test 1" must exist for STK110');
     assert(mt1.weight === 50, `Module Test 1 weight expected 50, got ${mt1.weight}`);
     assert(mt1.score === 82, `Module Test 1 score expected 82, got ${mt1.score}`);
-    assert(mt1.maxScore === 100, `Module Test 1 maxScore expected 100, got ${mt1.maxScore}`);
     log('PASS Part 1');
 
     // Part 2: Strategic Analytics Engine Audit
@@ -79,7 +78,6 @@ async function run() {
     const expected = {
       totalWeightAssessed: 50 + 25 + 12.5 + 12.5,
       currentObtainedMark: (82/100)*50 + (40/50)*25 + (9/10)*12.5 + (8/10)*12.5,
-      currentAverageMark: (82 + 80 + 90 + 80) / 4,
     };
     expected.remainingWeight = Math.max(0, 100 - expected.totalWeightAssessed);
     expected.requiredAveOnRemaining = expected.remainingWeight > 0 ? Math.max(0, Math.min(100, ((75 - expected.currentObtainedMark)/expected.remainingWeight)*100)) : 0;
@@ -97,7 +95,6 @@ async function run() {
     assert(a.assignments.length > 0, 'analytics.assignments should not be empty');
     const firstA = a.assignments[0];
     assert(Object.prototype.hasOwnProperty.call(firstA, 'score'), 'assignment.score must be present');
-    assert(Object.prototype.hasOwnProperty.call(firstA, 'maxScore'), 'assignment.maxScore must be present');
     assert(Object.prototype.hasOwnProperty.call(firstA, 'weight'), 'assignment.weight must be present');
     assert(Object.prototype.hasOwnProperty.call(firstA, 'contribution'), 'assignment.contribution must be present');
     const sumContrib = a.assignments.reduce((s, x) => s + (x.contribution || 0), 0);
@@ -226,7 +223,7 @@ async function run() {
     const importUserId = importUser.id;
 
     const assignmentsCsv = [
-      'Module Code,Assignment Title,Weight,Due Date,Status,Type,Score,Max Score,Description,Effort Minutes,Component',
+      'Module Code,Assignment Title,Weight,Due Date,Status,Type,Score,Description,Effort Minutes,Component',
       'INF 164,Practical Class Test 1 (INF154 Revision Practical),7.00,2025-03-12,GRADED,PRACTICAL,88,,Hands-on lab,45,Practical',
       'OBS 124,Semester Test 1,25,2025-04-20,GRADED,TEST,72,,Midterm exam,120,Semester tests',
     ].join('\n');
@@ -235,7 +232,7 @@ async function run() {
     const preview = await tryFetch('/api/import/preview', {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ importType: 'assignments', raw: assignmentsCsv, mapping: {
-        moduleCode: 'Module Code', title: 'Assignment Title', weight: 'Weight', dueDate: 'Due Date', status: 'Status', type: 'Type', score: 'Score', maxScore: 'Max Score', description: 'Description', effortEstimateMinutes: 'Effort Minutes', component: 'Component'
+        moduleCode: 'Module Code', title: 'Assignment Title', weight: 'Weight', dueDate: 'Due Date', status: 'Status', type: 'Type', score: 'Score', description: 'Description', effortEstimateMinutes: 'Effort Minutes', component: 'Component'
       }, userId: importUserId })
     });
     const missing = preview.preview?.missingModules || [];
@@ -252,7 +249,7 @@ async function run() {
     const ingest = await tryFetch('/api/import/ingest', {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ importType: 'assignments', raw: assignmentsCsv, mapping: {
-        moduleCode: 'Module Code', title: 'Assignment Title', weight: 'Weight', dueDate: 'Due Date', status: 'Status', type: 'Type', score: 'Score', maxScore: 'Max Score', description: 'Description', effortEstimateMinutes: 'Effort Minutes', component: 'Component'
+        moduleCode: 'Module Code', title: 'Assignment Title', weight: 'Weight', dueDate: 'Due Date', status: 'Status', type: 'Type', score: 'Score', description: 'Description', effortEstimateMinutes: 'Effort Minutes', component: 'Component'
       }, userId: importUserId })
     });
     assert(ingest.total === 2, `ingest total expected 2, got ${ingest.total}`);

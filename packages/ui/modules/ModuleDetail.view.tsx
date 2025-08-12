@@ -1,154 +1,152 @@
 import React from 'react';
+import { ModuleDetailHeader } from './ModuleDetailHeader.view';
+import { ModuleQuickActions } from './ModuleQuickActions.view';
+import { PerformanceStatsGrid } from './PerformanceStatsGrid.view';
+import { GradeDistributionChart } from './GradeDistributionChart.view';
+import { AssignmentTimeline } from './AssignmentTimeline.view';
+import { ModuleDetailError } from './ModuleDetailError.view';
 
 export interface ModuleDetailViewProps {
-  header: { code: string; title: string; credits?: number | null };
+  header: { 
+    id?: string;
+    code: string; 
+    title: string; 
+    credits?: number | null;
+    description?: string;
+    instructor?: string;
+  };
   stats: { 
     currentObtained: number; 
     remainingWeight: number; 
     predictedSemesterMark: number;
     targetMark?: number | null;
   };
-  assignmentsSection: React.ReactNode;
+  performanceInsights?: {
+    trend: 'improving' | 'stable' | 'declining';
+    recentScores: number[];
+    averageImprovement: number;
+    consistencyScore: number;
+  };
+  gradeDistribution?: {
+    excellent: number;
+    good: number;
+    satisfactory: number;
+    poor: number;
+  };
+  upcomingDeadlines?: Array<{
+    id: string;
+    title: string;
+    dueDate: string;
+    weight: number;
+    estimatedHours: number;
+  }>;
+  assignments?: any[];
+  isRefreshing?: boolean;
+  error?: string | null;
   onBackToWeek?: () => void;
   hasLastViewedWeek?: boolean;
+  onQuickActions?: {
+    onScheduleStudy?: () => void;
+    onSetGoals?: () => void;
+    onExportReport?: () => void;
+    onOpenWhatIf?: () => void;
+    onViewAssignments?: () => void;
+  };
+  onAssignmentEdit?: (assignmentId: string, newScore: number) => void;
+  onRefresh?: () => void;
 }
 
-function round1(n: number) { return (Math.round(n * 10) / 10).toFixed(1); }
-
-function SparklineChart({ values, className = "h-10" }: { values: number[]; className?: string }) {
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const range = max - min || 1; // Avoid division by zero
+export function ModuleDetailView({ 
+  header, 
+  stats, 
+  performanceInsights,
+  gradeDistribution,
+  upcomingDeadlines,
+  assignments = [],
+  isRefreshing = false,
+  error,
+  onBackToWeek, 
+  hasLastViewedWeek,
+  onQuickActions = {},
+  onAssignmentEdit,
+  onRefresh
+}: ModuleDetailViewProps) {
   
-  return (
-    <div className={`${className} flex items-end gap-1`}>
-      {values.map((value, i) => {
-        const height = range > 0 ? ((value - min) / range) * 100 : 50;
-        return (
-          <div 
-            key={i} 
-            className="flex-1 bg-primary-200 rounded transition-all hover:bg-primary-300" 
-            style={{ height: `${Math.max(height, 10)}%` }}
-            title={`Value: ${value.toFixed(1)}%`}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-function PredictionInsight({ stats }: { stats: ModuleDetailViewProps['stats'] }) {
-  const { currentObtained, remainingWeight, predictedSemesterMark, targetMark } = stats;
-  const target = targetMark || 75; // Default target
-  const gap = target - predictedSemesterMark;
-  
-  if (remainingWeight <= 0) {
+  // Handle error state
+  if (error) {
     return (
-      <div className="text-xs text-slate-600 mt-1">
-        <span className="font-medium">Final mark:</span> {round1(currentObtained)}%
-        {currentObtained >= target ? (
-          <span className="text-green-600 ml-1">✓ Target achieved</span>
-        ) : (
-          <span className="text-red-600 ml-1">⚠ Below target</span>
-        )}
-      </div>
+      <ModuleDetailError 
+        error={error} 
+        onRetry={onRefresh} 
+        onGoBack={onBackToWeek} 
+      />
     );
   }
-  
-  const requiredAverage = remainingWeight > 0 ? (gap / remainingWeight) * 100 : 0;
-  
-  return (
-    <div className="text-xs text-slate-600 mt-1">
-      {gap > 0 ? (
-        <span>
-          Need <span className="font-medium text-orange-600">{round1(requiredAverage)}%</span> average 
-          on remaining work to reach target
-        </span>
-      ) : (
-        <span className="text-green-600">
-          ✓ On track to exceed target of {target}%
-        </span>
-      )}
-    </div>
-  );
-}
-
-export function ModuleDetailView({ header, stats, assignmentsSection, onBackToWeek, hasLastViewedWeek }: ModuleDetailViewProps) {
-  // Generate sample sparkline data (in a real app, this would come from props)
-  const sparklineData = Array.from({ length: 12 }, (_, i) => {
-    const base = stats.currentObtained;
-    const variation = Math.sin(i * 0.5) * 5 + Math.random() * 3 - 1.5;
-    return Math.max(0, Math.min(100, base + variation));
-  });
 
   return (
-    <div className="space-y-8" data-testid="module-detail-root">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <div className="text-sm text-slate-600">{header.code}</div>
-          <h1 className="text-2xl font-semibold">{header.title}</h1>
-          {header.credits != null && <div className="text-xs text-slate-500 mt-1">{header.credits} credits</div>}
+    <div className="space-y-6" data-testid="module-detail-root">
+      {/* 1. HEADER SECTION */}
+      <ModuleDetailHeader 
+        header={header}
+        onBackToWeek={onBackToWeek}
+        hasLastViewedWeek={hasLastViewedWeek}
+        isRefreshing={isRefreshing}
+        onRefresh={onRefresh}
+      />
+
+      {/* 2. MAIN CONTENT GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* LEFT MAIN CONTENT (3 columns) */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* 4a. PERFORMANCE STATS GRID (4 columns) */}
+          <PerformanceStatsGrid 
+            stats={stats}
+            performanceInsights={performanceInsights}
+            isRefreshing={isRefreshing}
+          />
+
+          {/* 4b. GRADE DISTRIBUTION (Full Width) */}
+          <GradeDistributionChart 
+            assignments={assignments}
+            targetMark={stats.targetMark}
+          />
+
+          {/* 4c. ASSIGNMENT TIMELINE (Full Width) */}
+          <AssignmentTimeline 
+            assignments={assignments}
+            currentDate={new Date()}
+          />
         </div>
-        <div className="flex gap-2">
-          <button type="button" className="btn btn-secondary" onClick={onBackToWeek} data-testid="back-to-week">
-            {hasLastViewedWeek ? 'Back to Week' : 'Week View'}
-          </button>
+
+        {/* RIGHT SIDEBAR (1 column) */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* 4d. UPCOMING DEADLINES */}
+          {upcomingDeadlines && upcomingDeadlines.length > 0 && (
+            <section>
+              <h2 className="text-lg font-semibold mb-4">Upcoming Deadlines</h2>
+              <div className="space-y-3">
+                {upcomingDeadlines.map(deadline => (
+                  <div key={deadline.id} className="card">
+                    <div className="card-body p-4">
+                      <h3 className="font-medium text-sm mb-2">{deadline.title}</h3>
+                      <div className="text-xs text-slate-600 space-y-1">
+                        <div>Due: {deadline.dueDate}</div>
+                        <div>Weight: {deadline.weight}%</div>
+                        <div>Est. {deadline.estimatedHours}h</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="card">
-          <div className="card-body">
-            <div className="text-xs text-slate-600">Current Obtained</div>
-            <div className="text-xl font-semibold" data-testid="currentObtainedMark">{round1(stats.currentObtained)}%</div>
-            <div className="text-xs text-slate-500">
-              Weighted average from graded work
-            </div>
-          </div>
-        </div>
-        
-        <div className="card">
-          <div className="card-body">
-            <div className="text-xs text-slate-600">Remaining Weight</div>
-            <div className="text-xl font-semibold">{round1(stats.remainingWeight)}%</div>
-            <div className="text-xs text-slate-500">
-              {stats.remainingWeight > 0 ? 'Still to be assessed' : 'All work completed'}
-            </div>
-          </div>
-        </div>
-        
-        <div className="card">
-          <div className="card-body">
-            <div className="text-xs text-slate-600">Predicted Final</div>
-            <div className="text-xl font-semibold" data-testid="predictedSemesterMark">{round1(stats.predictedSemesterMark)}%</div>
-            <PredictionInsight stats={stats} />
-          </div>
-        </div>
-        
-        <div className="card">
-          <div className="card-body">
-            <div className="text-xs text-slate-600 mb-1">Performance Trend</div>
-            <SparklineChart values={sparklineData} className="h-8" />
-            <div className="text-xs text-slate-500 mt-1">
-              Last 12 assessments
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="space-y-3" data-testid="assignments-section">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Assignments</h2>
-          <div className="text-sm text-slate-600">
-            Click &quot;Edit&quot; to update scores
-          </div>
-        </div>
-        <div className="card">
-          <div className="card-body p-0">
-            {assignmentsSection}
-          </div>
-        </div>
-      </section>
+      {/* Live region for accessibility */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {isRefreshing ? 'Refreshing module data' : 'Module data updated'}
+      </div>
     </div>
   );
 }

@@ -54,8 +54,8 @@ describe('GET /api/user/progression', () => {
         electiveGroup: null,
         isCore: true,
         assignments: [
-          { score: 82, maxScore: 100, weight: 50, status: 'GRADED' },
-          { score: 40, maxScore: 50, weight: 25, status: 'GRADED' }
+          { score: 82, weight: 50, status: 'GRADED' },
+          { score: 40, weight: 25, status: 'GRADED' }
         ]
       },
       {
@@ -66,7 +66,7 @@ describe('GET /api/user/progression', () => {
         electiveGroup: null,
         isCore: true,
         assignments: [
-          { score: 75, maxScore: 100, weight: 60, status: 'GRADED' }
+          { score: 75, weight: 60, status: 'GRADED' }
         ]
       }
     ]);
@@ -93,8 +93,8 @@ describe('GET /api/user/progression', () => {
         electiveGroup: null,
         isCore: true,
         assignments: [
-          { score: 30, maxScore: 100, weight: 50, status: 'GRADED' },
-          { score: 25, maxScore: 50, weight: 25, status: 'GRADED' }
+          { score: 30, weight: 50, status: 'GRADED' },
+          { score: 25, weight: 25, status: 'GRADED' }
         ]
       },
       {
@@ -105,7 +105,7 @@ describe('GET /api/user/progression', () => {
         electiveGroup: null,
         isCore: true,
         assignments: [
-          { score: null, maxScore: 100, weight: 60, status: 'PENDING', dueDate: new Date('2024-01-01') }
+          { score: null, weight: 60, status: 'PENDING', dueDate: new Date('2024-01-01') }
         ]
       }
     ]);
@@ -132,7 +132,7 @@ describe('GET /api/user/progression', () => {
         electiveGroup: 'DSM',
         isCore: false,
         assignments: [
-          { score: 80, maxScore: 100, weight: 100, status: 'GRADED' }
+          { score: 80, weight: 100, status: 'GRADED' }
         ]
       },
       {
@@ -143,7 +143,7 @@ describe('GET /api/user/progression', () => {
         electiveGroup: 'DSM',
         isCore: false,
         assignments: [
-          { score: 60, maxScore: 100, weight: 100, status: 'GRADED' }
+          { score: 60, weight: 100, status: 'GRADED' }
         ]
       }
     ]);
@@ -171,7 +171,7 @@ describe('GET /api/user/progression', () => {
         electiveGroup: null,
         isCore: true,
         assignments: [
-          { score: 30, maxScore: 100, weight: 100, status: 'GRADED' }
+          { score: 30, weight: 100, status: 'GRADED' }
         ]
       },
       {

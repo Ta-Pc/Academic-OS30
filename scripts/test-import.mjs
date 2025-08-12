@@ -17,9 +17,9 @@ async function run() {
 
   // Import assignments with one bad row
   const assignmentsCsv = await readFile('sample-data/assignments.csv', 'utf8');
-  const previewA = await (await fetch(`${BASE}/api/import/preview`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ importType: 'assignments', raw: assignmentsCsv, mapping: { moduleCode: 'Module Code', title: 'Assignment Title', weight: 'Weight', dueDate: 'Due Date', status: 'Status', type: 'Type', score: 'Score', maxScore: 'Max Score', description: 'Description', effortEstimateMinutes: 'Effort Minutes', component: 'Component' }, userId }) })).json();
+  const previewA = await (await fetch(`${BASE}/api/import/preview`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ importType: 'assignments', raw: assignmentsCsv, mapping: { moduleCode: 'Module Code', title: 'Assignment Title', weight: 'Weight', dueDate: 'Due Date', status: 'Status', type: 'Type', score: 'Score', description: 'Description', effortEstimateMinutes: 'Effort Minutes', component: 'Component' }, userId }) })).json();
   assert(previewA.preview.valid.length === 3, 'expected 3 assignment rows in preview');
-  const resA = await (await fetch(`${BASE}/api/import/ingest`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ importType: 'assignments', raw: assignmentsCsv, mapping: { moduleCode: 'Module Code', title: 'Assignment Title', weight: 'Weight', dueDate: 'Due Date', status: 'Status', type: 'Type', score: 'Score', maxScore: 'Max Score', description: 'Description', effortEstimateMinutes: 'Effort Minutes', component: 'Component' }, userId }) })).json();
+  const resA = await (await fetch(`${BASE}/api/import/ingest`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ importType: 'assignments', raw: assignmentsCsv, mapping: { moduleCode: 'Module Code', title: 'Assignment Title', weight: 'Weight', dueDate: 'Due Date', status: 'Status', type: 'Type', score: 'Score', description: 'Description', effortEstimateMinutes: 'Effort Minutes', component: 'Component' }, userId }) })).json();
   assert(resA.total === 3, 'total rows mismatch');
   assert(resA.successCount === 2, 'expected 2 successes');
   assert(resA.failures?.length === 1, `expected 1 failure: ${JSON.stringify(resA)}`);

@@ -25,6 +25,24 @@ export type { WeekViewPageProps } from './week/WeekViewPage.view';
 export { ModuleCardView } from './modules/ModuleCard.view';
 export { ModuleQuickView } from './modules/ModuleQuickView.view';
 export { ModuleDetailView } from './modules/ModuleDetail.view';
+export { ModuleDetailHeader } from './modules/ModuleDetailHeader.view';
+export { ModuleQuickActions } from './modules/ModuleQuickActions.view';
+export { PerformanceStatsGrid } from './modules/PerformanceStatsGrid.view';
+export { GradeDistributionChart } from './modules/GradeDistributionChart.view';
+export { AssignmentTimeline } from './modules/AssignmentTimeline.view';
+export { AssignmentsSummary } from './modules/AssignmentsSummary.view';
+export { AssignmentsModal } from './modules/AssignmentsModal.view';
+export { ModuleDetailError } from './modules/ModuleDetailError.view';
+export { ModuleDetailSkeleton } from './modules/ModuleDetailSkeleton.view';
+
+// Module Component Types
+export type { ModuleDetailHeaderProps } from './modules/ModuleDetailHeader.view';
+export type { ModuleQuickActionsProps } from './modules/ModuleQuickActions.view';
+export type { PerformanceStatsGridProps } from './modules/PerformanceStatsGrid.view';
+export type { GradeDistributionChartProps } from './modules/GradeDistributionChart.view';
+export type { AssignmentTimelineProps } from './modules/AssignmentTimeline.view';
+export type { AssignmentsSummaryProps } from './modules/AssignmentsSummary.view';
+export type { AssignmentsModalProps } from './modules/AssignmentsModal.view';
 
 // Semester Components
 export { SemesterSnapshotView } from './semester/SemesterSnapshot.view';

@@ -62,8 +62,8 @@ async function main() {
   
   // Also add some assignments for this week
   const assignmentsToAdd = [
-    { title: 'Weekly Quiz 1', dueDate: addDays(weekStart, 2), maxScore: 100, score: null, weight: 5, status: 'PENDING' as const, type: 'QUIZ' as const, moduleId: modules[0].id },
-    { title: 'Lab Assignment 2', dueDate: addDays(weekStart, 5), maxScore: 50, score: null, weight: 10, status: 'PENDING' as const, type: 'OTHER' as const, moduleId: modules[1].id },
+    { title: 'Weekly Quiz 1', dueDate: addDays(weekStart, 2), score: null, weight: 5, status: 'PENDING' as const, type: 'QUIZ' as const, moduleId: modules[0].id },
+    { title: 'Lab Assignment 2', dueDate: addDays(weekStart, 5), score: null, weight: 10, status: 'PENDING' as const, type: 'OTHER' as const, moduleId: modules[1].id }
   ];
 
   await prisma.assignment.createMany({

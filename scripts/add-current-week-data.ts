@@ -76,7 +76,6 @@ async function main() {
     {
       title: 'Current Week Assignment 1',
       dueDate: addDays(weekStart, 2), // Wednesday
-      maxScore: 100,
       weight: 15,
       status: 'PENDING' as const,
       type: 'OTHER' as const,
@@ -85,7 +84,6 @@ async function main() {
     {
       title: 'Current Week Quiz',
       dueDate: addDays(weekStart, 4), // Friday
-      maxScore: 50,
       weight: 10,
       status: 'PENDING' as const,
       type: 'QUIZ' as const,

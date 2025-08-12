@@ -31,8 +31,7 @@ ADD COLUMN     "description" TEXT,
 ADD COLUMN     "status" "public"."AssignmentStatus" NOT NULL DEFAULT 'PENDING',
 ADD COLUMN     "type" "public"."AssignmentType" NOT NULL DEFAULT 'OTHER',
 -- weight added earlier for backfill
-ALTER COLUMN "dueDate" DROP NOT NULL,
-ALTER COLUMN "maxScore" DROP NOT NULL;
+ALTER COLUMN "dueDate" DROP NOT NULL;
 
 -- AlterTable
 ALTER TABLE "public"."Module" ADD COLUMN     "department" TEXT,

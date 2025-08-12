@@ -56,7 +56,6 @@ CREATE TABLE "public"."Assignment" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "dueDate" TIMESTAMP(3) NOT NULL,
-    "maxScore" DOUBLE PRECISION NOT NULL,
     "score" DOUBLE PRECISION,
     "moduleId" TEXT NOT NULL,
     "componentId" TEXT,

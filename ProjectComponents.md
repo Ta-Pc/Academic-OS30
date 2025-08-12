@@ -92,7 +92,7 @@ High-level inventory of the codebase: pages, API routes, UI components, state, u
   - **Degree** 1—N **Term**; **Term** 1—N **Module**
   - **Module** fields: code, title, creditHours, targetMark?, status, department?, faculty?, prerequisites?, ownerId, termId?
   - **AssessmentComponent** 1—N **Assignment** (optional grouping)
-  - **Assignment** fields: title, description?, dueDate?, maxScore?, score?, weight, status, type, moduleId, componentId?
+  - **Assignment** fields: title, description?, dueDate?, score?, weight, status, type, moduleId, componentId?
   - **TacticalTask** fields: title, status, type, dueDate, moduleId, source?, links?
   - **StudyLog** fields: userId, moduleId?, durationMin, loggedAt
 - Migrations: `prisma/migrations/*`
