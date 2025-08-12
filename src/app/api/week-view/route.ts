@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 import { prisma } from '@/lib/prisma';
+import { AssignmentStatus, ModuleStatus } from '@prisma/client';
 import { startOfWeek, endOfWeek, differenceInCalendarDays, format } from 'date-fns';
 import { z } from 'zod';
 import { getPriorityScore } from '@/utils/priorityScore';
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
     // Get all active modules
     const modules = await prisma.module.findMany({
       where: {
-        status: 'ACTIVE',
+        status: ModuleStatus.ACTIVE,
         OR: [
           { startDate: { lte: weekEnd }, endDate: { gte: weekStart } },
           { startDate: null, endDate: null }, // fallback modules w/o dates
@@ -44,7 +45,7 @@ export async function GET(req: NextRequest) {
       include: {
         assignments: {
           where: {
-            status: 'MISSED',
+            status: AssignmentStatus.MISSED,
           },
         },
       },
