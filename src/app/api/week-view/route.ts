@@ -98,6 +98,16 @@ export async function GET(req: NextRequest) {
       }),
     ].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 25);
 
+    const studyLogs = await prisma.studyLog.findMany({
+      where: {
+        date: {
+          gte: weekStart,
+          lte: weekEnd,
+        },
+      },
+    });
+    const totalStudyMinutes = studyLogs.reduce((acc, log) => acc + log.durationMin, 0);
+
     const body = {
       weekStart: format(weekStart, 'yyyy-MM-dd'),
       weekEnd: format(weekEnd, 'yyyy-MM-dd'),
@@ -117,10 +127,16 @@ export async function GET(req: NextRequest) {
         dueDate: t.dueDate,
         status: t.status,
         type: t.type,
-        module: { id: t.module.id, code: t.module.code, title: t.module.title, isCore: t.module.isCore },
+        module: { id: t.module.id, code: t.module.code, title: t.module.title, isCore: a.module.isCore },
       })),
       moduleSummaries,
       weeklyPriorities,
+      data: {
+        start: weekStart.toISOString(),
+        end: weekEnd.toISOString(),
+        tasks: [...assignments, ...tacticalTasks],
+        totalStudyMinutes,
+      }
     };
 
     return NextResponse.json(body, { status: 200 });

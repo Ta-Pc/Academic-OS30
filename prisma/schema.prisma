@@ -73,7 +73,7 @@ model Assignment {
   weight      Float
   description String?
   status      AssignmentStatus     @default(PENDING)
-  type        AssignmentType       @default(OTHER)
+  type        AssignmentType       @default(ASSIGNMENT)
   component   AssessmentComponent? @relation(fields: [componentId], references: [id])
   module      Module               @relation(fields: [moduleId], references: [id])
 
@@ -134,11 +134,12 @@ enum AssignmentStatus {
 
 enum AssignmentType {
   QUIZ
-  TEST
+  SEMESTER_TEST
+  ASSIGNMENT
+  HOMEWORK
   PRACTICAL
-  GROUP
-  CLASS_TEST
-  OTHER
+  EXAM
+  TUTORIAL
 }
 
 enum ModuleStatus {

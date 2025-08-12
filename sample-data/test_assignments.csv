@@ -1,0 +1,6 @@
+moduleCode,title,weight,dueDate,type
+TEST101,Quiz 1,10,2025-09-01,Quiz
+TEST101,Semester Test 1,30,2025-10-15,Semester Test
+TEST101,Homework 1,5,2025-09-08,Homework
+TEST101,Practical 1,20,2025-09-22,Practical
+TEST101,Final Exam,35,2025-11-20,Exam

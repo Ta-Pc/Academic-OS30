@@ -150,7 +150,8 @@ describe('week-view unit tests', () => {
         electiveGroup: null,
         creditHours: 12,
         startDate: new Date('2025-08-01'),
-        endDate: new Date('2025-12-01')
+        endDate: new Date('2025-12-01'),
+        assignments: []
       }
     ]);
 

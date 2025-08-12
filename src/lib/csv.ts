@@ -79,14 +79,17 @@ export function normalizeStatus(value: string | null | undefined): 'PENDING' | '
   return 'PENDING';
 }
 
-export function normalizeType(value: string | null | undefined): 'QUIZ' | 'TEST' | 'PRACTICAL' | 'GROUP' | 'CLASS_TEST' | 'OTHER' | undefined {
+export function normalizeType(value: string | null | undefined): 'QUIZ' | 'SEMESTER_TEST' | 'ASSIGNMENT' | 'HOMEWORK' | 'PRACTICAL' | 'EXAM' | 'TUTORIAL' | undefined {
   if (!value) return undefined;
   const v = value.trim().toLowerCase();
   if (v.includes('quiz')) return 'QUIZ';
+  if (v.includes('semester test')) return 'SEMESTER_TEST';
+  if (v.includes('assignment')) return 'ASSIGNMENT';
+  if (v.includes('homework')) return 'HOMEWORK';
   if (v.includes('practical')) return 'PRACTICAL';
-  if (v.includes('class test')) return 'CLASS_TEST';
-  if (v.includes('semester') || v.includes('exam') || v.includes('test')) return 'TEST';
-  if (v.includes('group')) return 'GROUP';
-  return 'OTHER';
+  if (v.includes('exam')) return 'EXAM';
+  if (v.includes('tutorial')) return 'TUTORIAL';
+  if (v.includes('test')) return 'SEMESTER_TEST';
+  return 'ASSIGNMENT';
 }
 

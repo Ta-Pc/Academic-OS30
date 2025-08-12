@@ -1,14 +1,14 @@
+'use client'
 import '@/styles/globals.css';
 import React from 'react';
 import { Inter } from 'next/font/google';
-import { UserBoot } from './user-boot';
+import { UserBoot }_from './user-boot';
+import NotificationManager from '@/components/NotificationManager';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  title: 'Academic OS - Standalone Academic Management System',
-  description: 'Academic Management System for tracking modules, assignments, and academic progress'
-};
+const queryClient = new QueryClient();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,10 +17,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <title>Academic OS</title>
       </head>
       <body className={`min-h-screen bg-slate-50 ${inter.className}`}>
-        <div className="min-h-screen">
-          <UserBoot />
-          {children}
-        </div>
+        <QueryClientProvider client={queryClient}>
+          <div className="min-h-screen">
+            <UserBoot />
+            <NotificationManager />
+            {children}
+          </div>
+        </QueryClientProvider>
       </body>
     </html>
   );
