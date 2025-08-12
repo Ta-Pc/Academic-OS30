@@ -8,7 +8,6 @@ export interface ModuleQuickActionsProps {
   onExportReport?: () => void;
   onOpenWhatIf?: () => void;
   onViewAssignments?: () => void;
-  moduleId?: string;
 }
 
 export function ModuleQuickActions({ 
@@ -16,8 +15,7 @@ export function ModuleQuickActions({
   onSetGoals, 
   onExportReport, 
   onOpenWhatIf,
-  onViewAssignments,
-  moduleId 
+  onViewAssignments
 }: ModuleQuickActionsProps) {
   return (
     <div className="flex flex-wrap gap-2 mb-6">

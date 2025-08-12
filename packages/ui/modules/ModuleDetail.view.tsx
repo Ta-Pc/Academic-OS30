@@ -1,10 +1,18 @@
 import React from 'react';
 import { ModuleDetailHeader } from './ModuleDetailHeader.view';
-import { ModuleQuickActions } from './ModuleQuickActions.view';
 import { PerformanceStatsGrid } from './PerformanceStatsGrid.view';
 import { GradeDistributionChart } from './GradeDistributionChart.view';
 import { AssignmentTimeline } from './AssignmentTimeline.view';
 import { ModuleDetailError } from './ModuleDetailError.view';
+
+export interface Assignment {
+  id: string;
+  title: string;
+  dueDate: string | null;
+  status: string;
+  weight: number;
+  score: number | null;
+}
 
 export interface ModuleDetailViewProps {
   header: { 
@@ -27,12 +35,6 @@ export interface ModuleDetailViewProps {
     averageImprovement: number;
     consistencyScore: number;
   };
-  gradeDistribution?: {
-    excellent: number;
-    good: number;
-    satisfactory: number;
-    poor: number;
-  };
   upcomingDeadlines?: Array<{
     id: string;
     title: string;
@@ -40,19 +42,11 @@ export interface ModuleDetailViewProps {
     weight: number;
     estimatedHours: number;
   }>;
-  assignments?: any[];
+  assignments?: Assignment[];
   isRefreshing?: boolean;
   error?: string | null;
   onBackToWeek?: () => void;
   hasLastViewedWeek?: boolean;
-  onQuickActions?: {
-    onScheduleStudy?: () => void;
-    onSetGoals?: () => void;
-    onExportReport?: () => void;
-    onOpenWhatIf?: () => void;
-    onViewAssignments?: () => void;
-  };
-  onAssignmentEdit?: (assignmentId: string, newScore: number) => void;
   onRefresh?: () => void;
 }
 
@@ -60,15 +54,12 @@ export function ModuleDetailView({
   header, 
   stats, 
   performanceInsights,
-  gradeDistribution,
   upcomingDeadlines,
   assignments = [],
   isRefreshing = false,
   error,
   onBackToWeek, 
   hasLastViewedWeek,
-  onQuickActions = {},
-  onAssignmentEdit,
   onRefresh
 }: ModuleDetailViewProps) {
   

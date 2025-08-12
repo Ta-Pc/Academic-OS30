@@ -2,14 +2,30 @@ import React from 'react';
 import { Card, CardHeader, CardBody } from '../layout/Card.view';
 import { BarChart3 } from 'lucide-react';
 
+export interface Assignment {
+  id: string;
+  title: string;
+  dueDate: string | null;
+  status: string;
+  weight: number;
+  score: number | null;
+}
+
+export interface GradeDistribution {
+  excellent: number;
+  good: number;
+  satisfactory: number;
+  poor: number;
+}
+
 export interface GradeDistributionChartProps {
-  assignments: any[];
+  assignments: Assignment[];
   targetMark?: number | null;
   compact?: boolean;
 }
 
-function calculateGradeDistribution(assignments: any[]) {
-  const distribution = {
+function calculateGradeDistribution(assignments: Assignment[]): GradeDistribution {
+  const distribution: GradeDistribution = {
     excellent: 0,
     good: 0,
     satisfactory: 0,
@@ -33,8 +49,8 @@ function calculateGradeDistribution(assignments: any[]) {
   return distribution;
 }
 
-function getTargetAnalysis(distribution: any, targetMark: number) {
-  const total = Object.values(distribution).reduce((sum: number, count: any) => sum + count, 0);
+function getTargetAnalysis(distribution: GradeDistribution, targetMark: number) {
+  const total = Object.values(distribution).reduce((sum: number, count: number) => sum + count, 0);
   if (total === 0) return 'No graded assignments yet';
   
   const excellentRate = (distribution.excellent / total) * 100;

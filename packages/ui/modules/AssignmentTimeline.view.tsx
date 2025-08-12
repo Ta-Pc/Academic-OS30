@@ -3,9 +3,17 @@ import { Card, CardHeader, CardBody } from '../layout/Card.view';
 import { Button } from '../forms/Button.view';
 import { Clock, CheckCircle, AlertCircle, Calendar, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 
+export interface Assignment {
+  id: string;
+  title: string;
+  dueDate: string | null;
+  status: string;
+  weight: number;
+  score: number | null;
+}
+
 export interface AssignmentTimelineProps {
-  assignments: any[];
-  currentDate: Date;
+  assignments: Assignment[];
   maxVisible?: number;
 }
 
@@ -15,7 +23,7 @@ function formatDateTime(dateString: string | null) {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function getStatusColor(assignment: any) {
+function getStatusColor(assignment: Assignment) {
   switch (assignment.status) {
     case 'GRADED':
       return 'bg-green-500';
@@ -28,7 +36,7 @@ function getStatusColor(assignment: any) {
   }
 }
 
-function getStatusIcon(assignment: any) {
+function getStatusIcon(assignment: Assignment) {
   switch (assignment.status) {
     case 'GRADED':
       return <CheckCircle className="w-3 h-3 text-green-600" />;
@@ -41,7 +49,7 @@ function getStatusIcon(assignment: any) {
   }
 }
 
-export function AssignmentTimeline({ assignments, currentDate, maxVisible = 6 }: AssignmentTimelineProps) {
+export function AssignmentTimeline({ assignments, maxVisible = 6 }: AssignmentTimelineProps) {
   const [startIndex, setStartIndex] = useState(0);
 
   const sortedAssignments = [...assignments].sort((a, b) => {
@@ -130,7 +138,7 @@ export function AssignmentTimeline({ assignments, currentDate, maxVisible = 6 }:
           
           {/* Timeline Items */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {visibleAssignments.map((assignment, index) => (
+            {visibleAssignments.map((assignment) => (
               <div key={assignment.id} className="relative">
                 {/* Timeline Dot */}
                 <div className="absolute top-5 left-1/2 transform -translate-x-1/2 z-10">

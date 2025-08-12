@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
-import { Card, CardHeader, CardBody } from '../layout/Card.view';
+import { Card, CardBody } from '../layout/Card.view';
 import { Button } from '../forms/Button.view';
-import { X, Edit3, Calendar, TrendingUp, Filter, Grid, List } from 'lucide-react';
+import { X, Edit3, Calendar, Filter, Grid, List } from 'lucide-react';
+
+export interface Assignment {
+  id: string;
+  title: string;
+  dueDate: string | null;
+  status: string;
+  weight: number;
+  score: number | null;
+}
 
 export interface AssignmentsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  assignments: any[];
+  assignments: Assignment[];
   onAssignmentEdit: (assignmentId: string, newScore: number) => void;
-  moduleTargetMark?: number;
 }
 
 function formatDateTime(dateString: string | null) {
@@ -25,7 +33,7 @@ function getStatusColor(status: string) {
   }
 }
 
-function AssignmentCard({ assignment, onEdit, moduleTargetMark }: { assignment: any; onEdit: (id: string) => void; moduleTargetMark?: number }) {
+function AssignmentCard({ assignment, onEdit }: { assignment: Assignment; onEdit: (id: string) => void }) {
   return (
     <Card hover className="h-full">
       <CardBody>
@@ -67,7 +75,7 @@ function AssignmentCard({ assignment, onEdit, moduleTargetMark }: { assignment: 
   );
 }
 
-export function AssignmentsModal({ isOpen, onClose, assignments, onAssignmentEdit, moduleTargetMark }: AssignmentsModalProps) {
+export function AssignmentsModal({ isOpen, onClose, assignments, onAssignmentEdit }: AssignmentsModalProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'dueDate' | 'weight' | 'status'>('dueDate');
@@ -142,7 +150,7 @@ export function AssignmentsModal({ isOpen, onClose, assignments, onAssignmentEdi
             {/* Sort Options */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as 'dueDate' | 'weight' | 'status')}
               className="px-3 py-1 rounded-lg border border-slate-200 text-sm bg-white"
             >
               <option value="dueDate">Sort by Due Date</option>
@@ -186,7 +194,6 @@ export function AssignmentsModal({ isOpen, onClose, assignments, onAssignmentEdi
                     onAssignmentEdit(id, assignment.score || 0);
                     // Note: In real implementation, this would open an edit modal
                   }}
-                  moduleTargetMark={moduleTargetMark}
                 />
               ))}
             </div>

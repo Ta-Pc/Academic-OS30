@@ -4,14 +4,23 @@ import { Button } from '../forms/Button.view';
 import { BookOpen, Eye, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
 import { AssignmentsModal } from './AssignmentsModal.view';
 
+export interface Assignment {
+  id: string;
+  title: string;
+  dueDate: string | null;
+  status: string;
+  weight: number;
+  score: number | null;
+}
+
 export interface AssignmentsSummaryProps {
-  assignments: any[];
+  assignments: Assignment[];
   onAssignmentEdit: (assignmentId: string, newScore: number) => void;
   moduleTargetMark?: number;
   isRefreshing?: boolean;
 }
 
-function getUrgentAssignments(assignments: any[]) {
+function getUrgentAssignments(assignments: Assignment[]) {
   const now = new Date();
   const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   
@@ -22,7 +31,7 @@ function getUrgentAssignments(assignments: any[]) {
   });
 }
 
-function getRecentlyGraded(assignments: any[]) {
+function getRecentlyGraded(assignments: Assignment[]) {
   return assignments
     .filter(a => a.status === 'GRADED' && a.score !== null)
     .sort((a, b) => new Date(b.dueDate || '').getTime() - new Date(a.dueDate || '').getTime())
@@ -72,7 +81,7 @@ export function AssignmentsSummary({ assignments, onAssignmentEdit, moduleTarget
                   <div className="text-center py-6">
                     <div className="text-3xl mb-2">✅</div>
                     <div className="text-sm text-slate-600">No urgent assignments</div>
-                    <div className="text-xs text-slate-500 mt-1">You're all caught up!</div>
+                    <div className="text-xs text-slate-500 mt-1">You&apos;re all caught up!</div>
                   </div>
                 ) : (
                   <div className="space-y-3">
