@@ -12,17 +12,26 @@ const fetchAssignments = async () => {
 };
 
 const NotificationManager = () => {
-  const [permission, setPermission] = useState(Notification.permission);
+  const [permission, setPermission] = useState(
+    typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default'
+  );
   const { data: assignments } = useQuery('assignments', fetchAssignments);
 
   useEffect(() => {
-    if (Notification.permission === 'default') {
-      Notification.requestPermission().then(setPermission);
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(setPermission);
+      }
     }
   }, []);
 
   useEffect(() => {
-    if (permission === 'granted' && assignments) {
+    if (
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      permission === 'granted' &&
+      assignments
+    ) {
       const now = new Date();
       assignments.forEach((assignment: any) => {
         const dueDate = new Date(assignment.dueDate);

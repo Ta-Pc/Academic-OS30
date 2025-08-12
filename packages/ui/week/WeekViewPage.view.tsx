@@ -78,19 +78,33 @@ export function WeekViewPageView(props: WeekViewPageProps) {
     }
   };
 
-  const mapPriorityStatus = (status: string | undefined) => {
-    switch (status) {
-      case 'GRADED':
-        return 'COMPLETED';
-      case 'COMPLETE':
-        return 'COMPLETE';
-      case 'DUE':
-        return 'DUE';
-      case 'PENDING':
-        return 'PENDING';
-      default:
-        return status as 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | undefined;
+  // Dynamically determine status for assignments/tasks in priorities
+  // Only return allowed AssignmentStatus values for backend
+  const getDynamicPriorityStatus = (item: {
+    status?: string;
+    dueDate?: string;
+    type: string;
+  }): 'PENDING' | 'DUE' | 'COMPLETE' | 'GRADED' | 'MISSED' => {
+    if (item.status === 'GRADED') return 'GRADED';
+    if (item.status === 'COMPLETE') return 'COMPLETE';
+    if (item.status === 'MISSED') return 'MISSED';
+    if (item.type !== 'ASSIGNMENT' || !item.dueDate) return 'PENDING';
+    const now = new Date();
+    const due = new Date(item.dueDate);
+    // If due date is today, treat as DUE
+    if (
+      due.getFullYear() === now.getFullYear() &&
+      due.getMonth() === now.getMonth() &&
+      due.getDate() === now.getDate()
+    ) {
+      return 'DUE';
     }
+    // If overdue, treat as MISSED
+    if (due < now) {
+      return 'MISSED';
+    }
+    // Otherwise, pending
+    return 'PENDING';
   };
 
   return (
@@ -133,7 +147,7 @@ export function WeekViewPageView(props: WeekViewPageProps) {
                     dueDate: p.dueDate,
                     priorityScore: p.priorityScore,
                     type: p.type,
-                    status: mapPriorityStatus(p.status)
+                    status: getDynamicPriorityStatus(p)
                   }))}
                   onToggle={handlePriorityItemToggle}
                   emptyLabel="No high-priority items this week. Great job!"

@@ -2,7 +2,7 @@
 import '@/styles/globals.css';
 import React from 'react';
 import { Inter } from 'next/font/google';
-import { UserBoot }_from './user-boot';
+import { UserBoot } from './user-boot';
 import NotificationManager from '@/components/NotificationManager';
 import { QueryClient, QueryClientProvider } from 'react-query';
 

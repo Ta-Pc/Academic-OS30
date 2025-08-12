@@ -43,7 +43,7 @@ export type WeeklyMissionItemViewProps = {
   title: string;
   dueDate?: Date | string | null;
   moduleCode?: string | null;
-  status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'GRADED' | 'DUE' | 'COMPLETE';
+  status?: 'PENDING' | 'DUE' | 'COMPLETE' | 'GRADED' | 'MISSED';
   onToggle?: () => void;
   priorityScore?: number;
   type?: string;
@@ -58,9 +58,10 @@ export function WeeklyMissionItemView({
   priorityScore,
   type
 }: WeeklyMissionItemViewProps) {
-  const isDone = status === 'COMPLETED' || status === 'GRADED';
+  const isDone = status === 'GRADED';
   const isComplete = status === 'COMPLETE';
-  const inProgress = status === 'IN_PROGRESS';
+  const isMissed = status === 'MISSED';
+  const isDue = status === 'DUE';
   const timeInfo = dueDate ? getRelativeTime(dueDate) : null;
   const isUrgent = timeInfo?.isUrgent || status === 'DUE';
 
@@ -80,10 +81,12 @@ export function WeeklyMissionItemView({
     <li className={`group flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-md ${
       isDone
         ? 'bg-green-50 border-green-200 hover:bg-green-100'
-        : isComplete || inProgress
+        : isComplete
         ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-        : isUrgent
+        : isMissed || isUrgent
         ? 'bg-red-50 border-red-200 hover:bg-red-100'
+        : isDue
+        ? 'bg-orange-50 border-orange-200 hover:bg-orange-100'
         : 'bg-white border-slate-200 hover:bg-slate-50'
     }`}>
       <button
@@ -93,8 +96,12 @@ export function WeeklyMissionItemView({
       >
         {isDone ? (
           <CheckCircle className="h-6 w-6 text-green-600" />
-        ) : isComplete || inProgress ? (
+        ) : isComplete ? (
           <Target className="h-6 w-6 text-blue-600" />
+        ) : isMissed ? (
+          <AlertCircle className="h-6 w-6 text-red-600" />
+        ) : isDue ? (
+          <AlertCircle className="h-6 w-6 text-orange-600" />
         ) : (
           <Circle className="h-6 w-6 text-slate-400 group-hover:text-primary-500" />
         )}

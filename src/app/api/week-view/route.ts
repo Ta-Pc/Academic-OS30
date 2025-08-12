@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
         dueDate: t.dueDate,
         status: t.status,
         type: t.type,
-        module: { id: t.module.id, code: t.module.code, title: t.module.title, isCore: a.module.isCore },
+        module: { id: t.module.id, code: t.module.code, title: t.module.title, isCore: t.module.isCore },
       })),
       moduleSummaries,
       weeklyPriorities,

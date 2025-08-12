@@ -38,8 +38,9 @@ export async function PATCH(
 ) {
   try {
     const { assignmentId } = params;
-    const body = await req.json();
-    const { score, status } = body as { score?: number | null; status?: AssignmentStatus };
+  const body = await req.json();
+  const { score, status } = body as { score?: number | null; status?: AssignmentStatus };
+  console.log('PATCH /api/assignments/[assignmentId] received:', { score, status });
 
     const existing = await prisma.assignment.findUnique({ where: { id: assignmentId } });
     if (!existing) {
@@ -61,10 +62,12 @@ export async function PATCH(
     }
 
     if (status) {
+      console.log('AssignmentStatus enum values:', Object.values(AssignmentStatus));
       if (Object.values(AssignmentStatus).includes(status)) {
         updateData.status = status;
       } else {
-        return NextResponse.json({ error: 'Invalid status value' }, { status: 400 });
+        console.error('Invalid status value received:', status);
+        return NextResponse.json({ error: 'Invalid status value', received: status, allowed: Object.values(AssignmentStatus) }, { status: 400 });
       }
     }
 

@@ -31,7 +31,7 @@ export async function GET() {
         include: { assignments: true, tasks: true },
       }) as Promise<ModuleRecord[]>,
       prisma.assignment.findMany({
-        where: { status: 'LATE' },
+        where: { status: 'DUE' },
         include: { module: true },
         orderBy: { dueDate: 'asc' },
         take: 10,

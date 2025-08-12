@@ -12,18 +12,30 @@ type ModuleData = {
   code: string;
   title: string;
   creditHours: number;
-  currentObtained: number;
-  remainingWeight: number;
-  predictedSemesterMark: number;
-  targetMark: number | null;
-  assignments: Array<{
-    id: string;
-    title: string;
-    dueDate: string | null;
-    weight: number;
-    score: number | null;
-    status: string;
-  }>;
+  targetMark: number;
+  status: string;
+  currentGrade: number;
+  assignmentStats: {
+    total: number;
+    graded: number;
+    pending: number;
+    due: number;
+    late: number;
+    totalWeight: number;
+    gradedWeight: number;
+    remainingWeight: number;
+  };
+  upcoming: {
+    assignments: Array<{
+      id: string;
+      title: string;
+      weight: number;
+      dueDate: string | null;
+      status: string;
+      daysUntil: number;
+    }>;
+    tasks: Array<any>;
+  };
 };
 
 function round1(n: number) { return (Math.round(n * 10) / 10).toFixed(1); }
@@ -80,36 +92,34 @@ export function ModuleQuickView({ title, code, moduleId, stats }: ModuleQuickVie
   }
 
   const target = moduleData.targetMark || 75;
-  const gap = target - moduleData.predictedSemesterMark;
-  const requiredAverage = moduleData.remainingWeight > 0 ? (gap / moduleData.remainingWeight) * 100 : 0;
+  const currentObtained = moduleData.currentGrade;
+  const predictedSemesterMark = moduleData.currentGrade; // No predicted, use currentGrade
+  const remainingWeight = moduleData.assignmentStats.remainingWeight;
+  const gap = target - currentObtained;
+  const requiredAverage = remainingWeight > 0 ? (gap / remainingWeight) * 100 : 0;
 
-  const upcomingAssignments = moduleData.assignments
-    .filter(a => a.status !== 'GRADED' && a.dueDate)
-    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
-    .slice(0, 3);
-
-  const completedCount = moduleData.assignments.filter(a => a.status === 'GRADED').length;
-  const totalCount = moduleData.assignments.length;
+  const upcomingAssignments = moduleData.upcoming.assignments ?? [];
+  const completedCount = moduleData.assignmentStats.graded;
+  const totalCount = moduleData.assignmentStats.total;
 
   return (
     <div className="space-y-6">
       {/* Module Header */}
       <div>
         <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-        <p className="text-sm text-slate-600">{moduleData.creditHours} credits</p>
+  <p className="text-sm text-slate-600">{moduleData.creditHours} credits</p>
       </div>
 
       {/* Current Performance */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-slate-50 rounded-lg p-4">
           <div className="text-xs text-slate-600 uppercase tracking-wide">Current Mark</div>
-          <div className="text-2xl font-bold text-slate-900">{round1(moduleData.currentObtained)}%</div>
+          <div className="text-2xl font-bold text-slate-900">{round1(currentObtained)}%</div>
           <div className="text-xs text-slate-500 mt-1">From graded work</div>
         </div>
-        
         <div className="bg-slate-50 rounded-lg p-4">
           <div className="text-xs text-slate-600 uppercase tracking-wide">Predicted</div>
-          <div className="text-2xl font-bold text-slate-900">{round1(moduleData.predictedSemesterMark)}%</div>
+          <div className="text-2xl font-bold text-slate-900">{round1(predictedSemesterMark)}%</div>
           <div className="text-xs text-slate-500 mt-1">Final semester mark</div>
         </div>
       </div>
@@ -117,10 +127,10 @@ export function ModuleQuickView({ title, code, moduleId, stats }: ModuleQuickVie
       {/* Progress Insight */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
         <div className="text-sm font-medium text-slate-900 mb-2">Progress Insight</div>
-        {moduleData.remainingWeight <= 0 ? (
+        {remainingWeight <= 0 ? (
           <div className="text-sm text-slate-600">
-            <span className="font-medium">Module complete!</span> Final mark: {round1(moduleData.currentObtained)}%
-            {moduleData.currentObtained >= target ? (
+            <span className="font-medium">Module complete!</span> Final mark: {round1(currentObtained)}%
+            {currentObtained >= target ? (
               <span className="text-green-600 ml-2">✓ Target achieved</span>
             ) : (
               <span className="text-red-600 ml-2">⚠ Below target</span>

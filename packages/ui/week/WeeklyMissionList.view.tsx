@@ -6,7 +6,7 @@ export type WeeklyMission = {
   title: string;
   moduleCode?: string;
   dueDate?: string | Date;
-  status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  status?: 'PENDING' | 'DUE' | 'COMPLETE' | 'GRADED' | 'MISSED';
   priorityScore?: number;
   type?: string;
 };
@@ -15,9 +15,10 @@ export type WeeklyMissionListViewProps = {
   items: WeeklyMission[];
   emptyLabel?: string;
   maxItems?: number;
+  onToggle?: (item: WeeklyMission) => void;
 };
 
-export function WeeklyMissionListView({ items, emptyLabel = 'No missions', maxItems = 10 }: WeeklyMissionListViewProps) {
+export function WeeklyMissionListView({ items, emptyLabel = 'No missions', maxItems = 10, onToggle }: WeeklyMissionListViewProps) {
   if (!items.length) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -42,9 +43,9 @@ export function WeeklyMissionListView({ items, emptyLabel = 'No missions', maxIt
           status={i.status}
           priorityScore={i.priorityScore}
           type={i.type}
+          onToggle={onToggle ? () => onToggle(i) : undefined}
         />
       ))}
-      
       {hasMore && (
         <div className="text-center py-4">
           <div className="text-sm text-slate-500 bg-slate-50 rounded-lg py-3 px-4 border border-slate-200">

@@ -47,8 +47,8 @@ async function main() {
   // Assignments for STK120 
   await prisma.assignment.createMany({
     data: [
-      { title: 'Module Test 1', dueDate: new Date('2025-03-26T10:00:00+02:00'), score: 85, weight: 50, status: 'GRADED', type: 'TEST', moduleId: stk120.id, componentId: cSTK120Tests.id },
-      { title: 'Module Test 2', dueDate: new Date('2025-05-10T10:00:00+02:00'), score: null, weight: 50, status: 'PENDING', type: 'TEST', moduleId: stk120.id, componentId: cSTK120Tests.id },
+  { title: 'Module Test 1', dueDate: new Date('2025-03-26T10:00:00+02:00'), score: 85, weight: 50, status: 'GRADED', type: 'SEMESTER_TEST', moduleId: stk120.id, componentId: cSTK120Tests.id },
+  { title: 'Module Test 2', dueDate: new Date('2025-05-10T10:00:00+02:00'), score: null, weight: 50, status: 'PENDING', type: 'SEMESTER_TEST', moduleId: stk120.id, componentId: cSTK120Tests.id },
     ],
   });
 
@@ -86,11 +86,11 @@ async function main() {
   // Assignments for STK110
   await prisma.assignment.createMany({
     data: [
-      { title: 'Module Test 1', dueDate: new Date('2025-03-26T10:00:00+02:00'), score: 82, weight: 50, status: 'GRADED', type: 'TEST', moduleId: stk110.id, componentId: cModuleTests.id },
-      { title: 'Module Test 2', dueDate: new Date('2025-05-10T10:00:00+02:00'), score: null, weight: 25, status: 'PENDING', type: 'TEST', moduleId: stk110.id, componentId: cModuleTests.id },
+  { title: 'Module Test 1', dueDate: new Date('2025-03-26T10:00:00+02:00'), score: 82, weight: 50, status: 'GRADED', type: 'SEMESTER_TEST', moduleId: stk110.id, componentId: cModuleTests.id },
+  { title: 'Module Test 2', dueDate: new Date('2025-05-10T10:00:00+02:00'), score: null, weight: 25, status: 'PENDING', type: 'SEMESTER_TEST', moduleId: stk110.id, componentId: cModuleTests.id },
       { title: 'Formal Practical Test', dueDate: new Date('2025-05-23T10:00:00+02:00'), score: 40, weight: 25, status: 'GRADED', type: 'PRACTICAL', moduleId: stk110.id, componentId: cPractical.id },
-      { title: 'Pre-class Assignment 1', dueDate: new Date('2025-02-17T08:00:00+02:00'), score: 9, weight: 12.5, status: 'GRADED', type: 'OTHER', moduleId: stk110.id, componentId: cContinuous.id },
-      { title: 'Post-class 1', dueDate: new Date('2025-03-07T10:00:00+02:00'), score: 8, weight: 12.5, status: 'GRADED', type: 'OTHER', moduleId: stk110.id, componentId: cContinuous.id },
+  { title: 'Pre-class Assignment 1', dueDate: new Date('2025-02-17T08:00:00+02:00'), score: 9, weight: 12.5, status: 'GRADED', type: 'ASSIGNMENT', moduleId: stk110.id, componentId: cContinuous.id },
+  { title: 'Post-class 1', dueDate: new Date('2025-03-07T10:00:00+02:00'), score: 8, weight: 12.5, status: 'GRADED', type: 'ASSIGNMENT', moduleId: stk110.id, componentId: cContinuous.id },
     ],
   });
 
@@ -115,14 +115,14 @@ async function main() {
     data: [
       { title: 'Quiz 1', dueDate: new Date('2025-03-10T10:00:00+02:00'), score: 90, weight: 10, status: 'GRADED', type: 'QUIZ', moduleId: inf171.id },
       { title: 'Quiz 2', dueDate: new Date('2025-04-11T10:00:00+02:00'), score: 85, weight: 10, status: 'GRADED', type: 'QUIZ', moduleId: inf171.id },
-      { title: 'Tutorial 1: Rich Picture', dueDate: new Date('2025-02-24T10:00:00+02:00'), score: 100, weight: 10, status: 'GRADED', type: 'OTHER', moduleId: inf171.id },
-      { title: 'Group Assignment 1', dueDate: new Date('2025-08-07T10:00:00+02:00'), score: null, weight: 20, status: 'PENDING', type: 'GROUP', moduleId: inf171.id },
-      { title: 'Semester Test 1', dueDate: new Date('2025-03-29T10:00:00+02:00'), score: 78, weight: 20, status: 'GRADED', type: 'TEST', moduleId: inf171.id },
-      { title: 'Semester Test 2', dueDate: new Date('2025-08-25T10:00:00+02:00'), score: null, weight: 20, status: 'PENDING', type: 'TEST', moduleId: inf171.id },
-      { title: 'Class Test 1', dueDate: new Date('2025-04-01T10:00:00+02:00'), score: 75, weight: 15, status: 'GRADED', type: 'CLASS_TEST', moduleId: inf171.id },
+  { title: 'Tutorial 1: Rich Picture', dueDate: new Date('2025-02-24T10:00:00+02:00'), score: 100, weight: 10, status: 'GRADED', type: 'TUTORIAL', moduleId: inf171.id },
+  { title: 'Group Assignment 1', dueDate: new Date('2025-08-07T10:00:00+02:00'), score: null, weight: 20, status: 'PENDING', type: 'ASSIGNMENT', moduleId: inf171.id },
+  { title: 'Semester Test 1', dueDate: new Date('2025-03-29T10:00:00+02:00'), score: 78, weight: 20, status: 'GRADED', type: 'SEMESTER_TEST', moduleId: inf171.id },
+  { title: 'Semester Test 2', dueDate: new Date('2025-08-25T10:00:00+02:00'), score: null, weight: 20, status: 'PENDING', type: 'SEMESTER_TEST', moduleId: inf171.id },
+  { title: 'Class Test 1', dueDate: new Date('2025-04-01T10:00:00+02:00'), score: 75, weight: 15, status: 'GRADED', type: 'SEMESTER_TEST', moduleId: inf171.id },
       // Add urgent assignments for testing high priority actions
-      { title: 'Urgent Assignment', dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), score: null, weight: 10, status: 'PENDING', type: 'OTHER', moduleId: inf171.id },
-      { title: 'Critical Task', dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), score: null, weight: 15, status: 'PENDING', type: 'OTHER', moduleId: stk110.id },
+  { title: 'Urgent Assignment', dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), score: null, weight: 10, status: 'PENDING', type: 'ASSIGNMENT', moduleId: inf171.id },
+  { title: 'Critical Task', dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), score: null, weight: 15, status: 'PENDING', type: 'ASSIGNMENT', moduleId: stk110.id },
     ],
   });
 
@@ -153,9 +153,9 @@ async function main() {
   const eknSem = eknComponents.find((c: { name: string }) => c.name.includes('Semester'))!;
   await prisma.assignment.createMany({
     data: [
-      { title: 'Chapter 11-12 Connect', dueDate: new Date('2025-08-08T10:00:00+02:00'), score: null, weight: 30, status: 'PENDING', type: 'OTHER', moduleId: ekn120.id, componentId: eknConnect.id },
-      { title: 'Semester Test 1', dueDate: new Date('2025-08-23T10:00:00+02:00'), score: null, weight: 25, status: 'PENDING', type: 'TEST', moduleId: ekn120.id, componentId: eknSem.id },
-      { title: 'Semester Test 2', dueDate: new Date('2025-10-13T10:00:00+02:00'), score: null, weight: 25, status: 'PENDING', type: 'TEST', moduleId: ekn120.id, componentId: eknSem.id },
+  { title: 'Chapter 11-12 Connect', dueDate: new Date('2025-08-08T10:00:00+02:00'), score: null, weight: 30, status: 'PENDING', type: 'ASSIGNMENT', moduleId: ekn120.id, componentId: eknConnect.id },
+  { title: 'Semester Test 1', dueDate: new Date('2025-08-23T10:00:00+02:00'), score: null, weight: 25, status: 'PENDING', type: 'SEMESTER_TEST', moduleId: ekn120.id, componentId: eknSem.id },
+  { title: 'Semester Test 2', dueDate: new Date('2025-10-13T10:00:00+02:00'), score: null, weight: 25, status: 'PENDING', type: 'SEMESTER_TEST', moduleId: ekn120.id, componentId: eknSem.id },
     ],
   });
 
@@ -167,7 +167,7 @@ async function main() {
   await prisma.assignment.createMany({
     data: [
       // Overdue assignment (explicit LATE)
-      { title: 'Overdue Practice Set', dueDate: twoDaysAgo, score: null, weight: 5, status: 'LATE', type: 'PRACTICAL', moduleId: ekn120.id },
+  { title: 'Overdue Practice Set', dueDate: twoDaysAgo, score: null, weight: 5, status: 'DUE', type: 'PRACTICAL', moduleId: ekn120.id },
       // Upcoming assignment due in 2 days
       { title: 'Upcoming Short Quiz', dueDate: twoDaysFromNow, score: null, weight: 5, status: 'PENDING', type: 'QUIZ', moduleId: ekn120.id },
       // Low graded item to make EKN120 at-risk (<50% average on graded)
