@@ -1,5 +1,7 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { WeeklyMissionItemView } from './WeeklyMissionItem.view';
+import { EditAssignmentModalView } from '../modals/EditAssignmentModal.view';
 
 export type WeeklyMission = {
   id: string;
@@ -9,6 +11,7 @@ export type WeeklyMission = {
   status?: 'PENDING' | 'DUE' | 'COMPLETE' | 'GRADED' | 'MISSED';
   priorityScore?: number;
   type?: string;
+  score?: number | null;
 };
 
 export type WeeklyMissionListViewProps = {
@@ -16,9 +19,16 @@ export type WeeklyMissionListViewProps = {
   emptyLabel?: string;
   maxItems?: number;
   onToggle?: (item: WeeklyMission) => void;
+  onAssignmentSave?: (item: WeeklyMission, newScore: number | null) => void;
 };
 
-export function WeeklyMissionListView({ items, emptyLabel = 'No missions', maxItems = 10, onToggle }: WeeklyMissionListViewProps) {
+
+export function WeeklyMissionListView({ items, emptyLabel = 'No missions', maxItems = 10, onToggle, onAssignmentSave }: WeeklyMissionListViewProps) {
+  const [editModal, setEditModal] = useState<{ open: boolean; item: WeeklyMission | null }>({ open: false, item: null });
+  const [editScore, setEditScore] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   if (!items.length) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -32,18 +42,35 @@ export function WeeklyMissionListView({ items, emptyLabel = 'No missions', maxIt
   const displayItems = items.slice(0, maxItems);
   const hasMore = items.length > maxItems;
 
+  const handleEdit = (item: WeeklyMission) => {
+    setEditModal({ open: true, item });
+    setEditScore(item.score ?? null);
+    setError(null);
+  };
+
+  const handleSave = async () => {
+    if (!editModal.item) return;
+    setSaving(true);
+    setError(null);
+    try {
+      if (onAssignmentSave) {
+        await onAssignmentSave(editModal.item, editScore);
+      }
+      setEditModal({ open: false, item: null });
+    } catch (e: any) {
+      setError(e?.message || 'Failed to save');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-3">
       {displayItems.map(i => (
-        <WeeklyMissionItemView 
-          key={i.id} 
-          title={i.title} 
-          moduleCode={i.moduleCode} 
-          dueDate={i.dueDate} 
-          status={i.status}
-          priorityScore={i.priorityScore}
-          type={i.type}
-          onToggle={onToggle ? () => onToggle(i) : undefined}
+        <WeeklyMissionItemView
+          key={i.id}
+          item={i}
+          onClick={() => handleEdit(i)}
         />
       ))}
       {hasMore && (
@@ -54,6 +81,16 @@ export function WeeklyMissionListView({ items, emptyLabel = 'No missions', maxIt
           </div>
         </div>
       )}
+      <EditAssignmentModalView
+        open={editModal.open}
+        title={editModal.item?.title || ''}
+        initialValue={editScore}
+        onChange={setEditScore}
+        onSave={handleSave}
+        onCancel={() => setEditModal({ open: false, item: null })}
+        saving={saving}
+        error={error}
+      />
     </div>
   );
 }

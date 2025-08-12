@@ -40,24 +40,21 @@ function getRelativeTime(date: string | Date): { text: string; isUrgent: boolean
 }
 
 export type WeeklyMissionItemViewProps = {
-  title: string;
-  dueDate?: Date | string | null;
-  moduleCode?: string | null;
-  status?: 'PENDING' | 'DUE' | 'COMPLETE' | 'GRADED' | 'MISSED';
-  onToggle?: () => void;
-  priorityScore?: number;
-  type?: string;
+  item: {
+    id: string;
+    title: string;
+    moduleCode?: string;
+    dueDate?: string | Date;
+    status?: 'PENDING' | 'DUE' | 'COMPLETE' | 'GRADED' | 'MISSED';
+    priorityScore?: number;
+    type?: string;
+    score?: number | null;
+  };
+  onClick: () => void;
 };
 
-export function WeeklyMissionItemView({
-  title,
-  dueDate,
-  moduleCode,
-  status = 'PENDING',
-  onToggle,
-  priorityScore,
-  type
-}: WeeklyMissionItemViewProps) {
+export function WeeklyMissionItemView({ item, onClick }: WeeklyMissionItemViewProps) {
+  const { title, dueDate, moduleCode, status = 'PENDING', priorityScore, type } = item;
   const isDone = status === 'GRADED';
   const isComplete = status === 'COMPLETE';
   const isMissed = status === 'MISSED';
@@ -78,22 +75,25 @@ export function WeeklyMissionItemView({
   };
 
   return (
-    <li className={`group flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-md ${
-      isDone
-        ? 'bg-green-50 border-green-200 hover:bg-green-100'
-        : isComplete
-        ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-        : isMissed || isUrgent
-        ? 'bg-red-50 border-red-200 hover:bg-red-100'
-        : isDue
-        ? 'bg-orange-50 border-orange-200 hover:bg-orange-100'
-        : 'bg-white border-slate-200 hover:bg-slate-50'
-    }`}>
-      <button
-        onClick={onToggle}
-        className="flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded"
-        aria-label={`Toggle status for ${title}`}
-      >
+    <li
+      className={`group flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-md cursor-pointer ${
+        isDone
+          ? 'bg-green-50 border-green-200 hover:bg-green-100'
+          : isComplete
+          ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+          : isMissed || isUrgent
+          ? 'bg-red-50 border-red-200 hover:bg-red-100'
+          : isDue
+          ? 'bg-orange-50 border-orange-200 hover:bg-orange-100'
+          : 'bg-white border-slate-200 hover:bg-slate-50'
+      }`}
+      onClick={onClick}
+      tabIndex={0}
+      role="button"
+      aria-label={`Edit assignment ${title}`}
+      onKeyPress={e => { if (e.key === 'Enter' || e.key === ' ') onClick(); }}
+    >
+      <span className="flex-shrink-0">
         {isDone ? (
           <CheckCircle className="h-6 w-6 text-green-600" />
         ) : isComplete ? (
@@ -105,14 +105,12 @@ export function WeeklyMissionItemView({
         ) : (
           <Circle className="h-6 w-6 text-slate-400 group-hover:text-primary-500" />
         )}
-      </button>
+      </span>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-lg">{getTypeIcon()}</span>
-          <span className={`font-medium truncate ${isDone ? 'line-through text-slate-500' : 'text-slate-900'}`}>
-            {title}
-          </span>
+          <span className={`font-medium truncate ${isDone ? 'line-through text-slate-500' : 'text-slate-900'}`}>{title}</span>
           {priorityScore && (
             <span className="flex-shrink-0 px-2 py-1 text-xs font-medium bg-primary-100 text-primary-700 rounded-full">
               PS {Math.round(priorityScore)}
