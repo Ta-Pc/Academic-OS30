@@ -1,5 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { updateSingleAssignmentStatus } from '@/lib/assignment-status';
+import { AssignmentStatus } from '@prisma/client';
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { assignmentId: string } }
+) {
+  try {
+    const { assignmentId } = params;
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+      include: {
+        module: {
+          select: {
+            code: true,
+            title: true,
+          },
+        },
+      },
+    });
+
+    if (!assignment) {
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ assignment });
+  } catch (error) {
+    console.error('Failed to get assignment:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
 
 export async function PATCH(
   req: NextRequest,
@@ -8,35 +39,48 @@ export async function PATCH(
   try {
     const { assignmentId } = params;
     const body = await req.json();
-    const score = body?.score as number | null;
-  // User features removed: skip user validation
+    const { score, status } = body as { score?: number | null; status?: AssignmentStatus };
 
-    const existing = await prisma.assignment.findUnique({ where: { id: assignmentId }, include: { module: true } });
-    if (!existing) return NextResponse.json({ error: 'not found' }, { status: 404 });
-  // Ownership checks removed
+    const existing = await prisma.assignment.findUnique({ where: { id: assignmentId } });
+    if (!existing) {
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
+    }
 
-    if (score !== null && score !== undefined) {
-      if (typeof score !== 'number' || Number.isNaN(score)) {
-        return NextResponse.json({ error: 'score must be a number' }, { status: 400 });
+    const updateData: { score?: number | null; status?: AssignmentStatus } = {};
+
+    if (score !== undefined) {
+      if (score === null) {
+        updateData.score = null;
+      } else {
+        if (typeof score !== 'number' || isNaN(score) || score < 0 || score > 100) {
+          return NextResponse.json({ error: 'Score must be a number between 0 and 100' }, { status: 400 });
+        }
+        updateData.score = score;
+        updateData.status = 'GRADED';
       }
-      if (score < 0 || score > 100) {
-        return NextResponse.json({ error: 'score must be between 0 and 100 (percent)' }, { status: 400 });
+    }
+
+    if (status) {
+      if (Object.values(AssignmentStatus).includes(status)) {
+        updateData.status = status;
+      } else {
+        return NextResponse.json({ error: 'Invalid status value' }, { status: 400 });
       }
     }
 
     const updated = await prisma.assignment.update({
       where: { id: assignmentId },
-      data: {
-        score,
-        // Guarantee analytics inclusion semantics: when a score is set, mark as GRADED; when cleared, revert to PENDING
-        status: score == null ? 'PENDING' : 'GRADED',
-      },
+      data: updateData,
     });
+
+    // If score was cleared, re-evaluate status based on due date
+    if (score === null) {
+      await updateSingleAssignmentStatus(assignmentId);
+    }
+
     return NextResponse.json({ data: updated });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: 'internal' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
-
-

@@ -8,8 +8,8 @@
  *  - proximity: logistic time-to-due transformation of daysUntilDue.
  *      Uses daysUntil = clamp(-5 .. 60). Earlier (negative / imminent) => value near 1, far future -> ~0.
  *  - deficit: max(0, (targetMark - currentPredicted)/100)  (need-to-improve component)
- *  - progression: bump for prerequisite criticality & historical failures.
- *      progressionRaw = (isPrereqCritical ? 0.7 : 0) + min(0.4, failedBeforeCount * 0.2)
+ *  - progression: bump for prerequisite criticality, historical failures, and missed assignments.
+ *      progressionRaw = (isPrereqCritical ? 0.7 : 0) + min(0.4, failedBeforeCount * 0.2) + min(0.3, missedAssignmentsCount * 0.1)
  *      normalized progression = min(1, progressionRaw) (weight applied later)
  *  - creditMultiplier: (1 + moduleCredits / 30) (larger credit modules scale composite)
  *  - electiveBonus: small additive (<= 0.1) if DSM elective & user behind elective credits.
@@ -33,6 +33,7 @@ export interface PriorityScoreInput {
   currentPredicted?: number | null;
   isPrereqCritical?: boolean;
   failedBeforeCount?: number;
+  missedAssignmentsCount?: number;
   isElectiveDSM?: boolean;
   electiveCreditDeficit?: number | null;
 }
@@ -71,6 +72,7 @@ export function getPriorityScore(input: PriorityScoreInput): PriorityScoreResult
     currentPredicted = 0,
     isPrereqCritical = false,
     failedBeforeCount = 0,
+    missedAssignmentsCount = 0,
     isElectiveDSM = false,
     electiveCreditDeficit = 0,
   } = input;
@@ -81,7 +83,7 @@ export function getPriorityScore(input: PriorityScoreInput): PriorityScoreResult
   const proximity = logisticProximity(daysUntilDue);
   const deficitRaw = targetMark && currentPredicted ? targetMark - currentPredicted : 0;
   const deficit = clamp(deficitRaw / 100, 0, 1);
-  const progressionRaw = (isPrereqCritical ? 0.7 : 0) + clamp(failedBeforeCount * 0.2, 0, 0.4);
+  const progressionRaw = (isPrereqCritical ? 0.7 : 0) + clamp(failedBeforeCount * 0.2, 0, 0.4) + clamp(missedAssignmentsCount * 0.1, 0, 0.3);
   const progression = clamp(progressionRaw, 0, 1);
   const creditMultiplier = 1 + clamp((moduleCredits || 0) / 30, 0, 2);
   const electiveBonus = isElectiveDSM && electiveCreditDeficit && electiveCreditDeficit > 0 ? clamp(electiveCreditDeficit / 60, 0.05, 0.1) : 0;

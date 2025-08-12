@@ -128,7 +128,8 @@ enum AssignmentStatus {
   PENDING
   GRADED
   DUE
-  LATE
+  COMPLETE
+  MISSED
 }
 
 enum AssignmentType {

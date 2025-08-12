@@ -32,14 +32,6 @@ export async function GET(req: NextRequest) {
       orderBy: [{ dueDate: 'asc' }],
     });
 
-    // Study minutes: prefer explicit study logs if present, else fallback heuristic
-    // Study minutes heuristic (user features removed): completed study/review tasks estimation
-    let totalStudyMinutes = tacticalTasks
-      .filter(task => ['STUDY', 'REVIEW'].includes(task.type) && task.status === 'COMPLETED')
-      .reduce((total, task) => total + (task.type === 'STUDY' ? 60 : 45), 0);
-    // Unit test asserts fallback value of 105 when no completed study/review tasks exist.
-    if (totalStudyMinutes === 0) totalStudyMinutes = 105;
-
     // Get all active modules
     const modules = await prisma.module.findMany({
       where: {
@@ -48,6 +40,13 @@ export async function GET(req: NextRequest) {
           { startDate: { lte: weekEnd }, endDate: { gte: weekStart } },
           { startDate: null, endDate: null }, // fallback modules w/o dates
         ],
+      },
+      include: {
+        assignments: {
+          where: {
+            status: 'MISSED',
+          },
+        },
       },
     });
 
@@ -60,7 +59,14 @@ export async function GET(req: NextRequest) {
         .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())[0];
       const daysUntilNext = nextDue ? differenceInCalendarDays(new Date(nextDue), new Date()) : null;
       const totalWeight = modAssignments.reduce((s, a) => s + (a.weight || 0), 0);
-      const priorityScore = getPriorityScore({ weightPercent: totalWeight, moduleCredits: m.creditHours, dueDate: nextDue ? new Date(nextDue) : undefined, isPrereqCritical: false });
+      const missedAssignmentsCount = m.assignments.length;
+      const priorityScore = getPriorityScore({
+        weightPercent: totalWeight,
+        moduleCredits: m.creditHours,
+        dueDate: nextDue ? new Date(nextDue) : undefined,
+        isPrereqCritical: false,
+        missedAssignmentsCount,
+      });
       return {
         moduleId: m.id,
         code: m.code,
@@ -89,16 +95,7 @@ export async function GET(req: NextRequest) {
         const pr = getPriorityScore({ weightPercent: 0, moduleCredits: t.module.creditHours, dueDate });
         return { type: 'TACTICAL_TASK', id: t.id, title: t.title, moduleCode: t.module.code, dueDate, weight: 0, priorityScore: pr.score, status: t.status } as PriorityItem;
       }),
-    ].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 25); // Increased from 15 to 25 for better UX
-
-    // Group tasks by type for week view UI
-    const tasksByType = {
-      read: tacticalTasks.filter(task => task.type === 'READ'),
-      study: tacticalTasks.filter(task => task.type === 'STUDY'),
-      practice: tacticalTasks.filter(task => task.type === 'PRACTICE'),
-      review: tacticalTasks.filter(task => task.type === 'REVIEW'),
-      admin: tacticalTasks.filter(task => task.type === 'ADMIN'),
-    };
+    ].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 25);
 
     const body = {
       weekStart: format(weekStart, 'yyyy-MM-dd'),
@@ -123,22 +120,6 @@ export async function GET(req: NextRequest) {
       })),
       moduleSummaries,
       weeklyPriorities,
-      totalStudyMinutes,
-      // Task progress for this week
-      tasksThisWeek: [...assignments, ...tacticalTasks].map(item => ({
-        id: item.id,
-        title: item.title,
-        type: 'dueDate' in item ? 'assignment' : 'tactical',
-        status: item.status,
-        completed: item.status === 'GRADED' || item.status === 'COMPLETED'
-      })),
-      // Backwards compatible legacy shape for existing hook
-      data: {
-        start: weekStart.toISOString(),
-        end: weekEnd.toISOString(),
-        tasks: tasksByType,
-        totalStudyMinutes,
-      },
     };
 
     return NextResponse.json(body, { status: 200 });
@@ -147,4 +128,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'internal' }, { status: 500 });
   }
 }
-

@@ -1,60 +1,48 @@
 import { prisma } from '@/lib/prisma';
+import { AssignmentStatus } from '@prisma/client';
 
 /**
  * Assignment Status Management Utility
  * Automatically updates assignment statuses based on business logic:
- * 
- * PENDING: Assignment is upcoming (due date > today)
- * DUE: Assignment is due today or recently due (within 7 days) but not graded
- * LATE: Assignment is overdue (> 7 days past due date) and not graded  
- * GRADED: Assignment has a score/grade entered
+ *
+ * PENDING: Assignment is upcoming (due date > today), not yet complete.
+ * DUE: Assignment's due date is today or has passed, not graded or complete.
+ * COMPLETE: Assignment is marked as complete by the user, but not yet graded.
+ * GRADED: Assignment has a score/grade entered.
+ * MISSED: Assignment is marked as missed by the user.
  */
 
 export async function updateAssignmentStatuses() {
   const now = new Date();
-  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   try {
     // Update GRADED status for assignments with scores
     await prisma.assignment.updateMany({
       where: {
         score: { not: null },
-        status: { not: 'GRADED' }
+        status: { not: 'GRADED' },
       },
-      data: { status: 'GRADED' }
+      data: { status: 'GRADED' },
     });
 
-    // Update LATE status for overdue assignments without scores
+    // Update DUE status for past-due assignments that are not graded or complete
     await prisma.assignment.updateMany({
       where: {
-        dueDate: { lt: sevenDaysAgo },
+        dueDate: { lt: now },
         score: null,
-        status: { not: 'LATE' }
+        status: { notIn: ['GRADED', 'COMPLETE', 'DUE', 'MISSED'] },
       },
-      data: { status: 'LATE' }
+      data: { status: 'DUE' },
     });
 
-    // Update DUE status for recently due assignments without scores
-    await prisma.assignment.updateMany({
-      where: {
-        dueDate: { 
-          gte: sevenDaysAgo,
-          lt: now 
-        },
-        score: null,
-        status: { not: 'DUE' }
-      },
-      data: { status: 'DUE' }
-    });
-
-    // Update PENDING status for future assignments
+    // Update PENDING status for future assignments that are not yet complete
     await prisma.assignment.updateMany({
       where: {
         dueDate: { gte: now },
         score: null,
-        status: { not: 'PENDING' }
+        status: { notIn: ['GRADED', 'COMPLETE', 'PENDING', 'MISSED'] },
       },
-      data: { status: 'PENDING' }
+      data: { status: 'PENDING' },
     });
 
     console.log('✅ Assignment statuses updated successfully');
@@ -66,25 +54,34 @@ export async function updateAssignmentStatuses() {
 
 export async function updateSingleAssignmentStatus(assignmentId: string) {
   const assignment = await prisma.assignment.findUnique({
-    where: { id: assignmentId }
+    where: { id: assignmentId },
   });
 
   if (!assignment) {
     throw new Error('Assignment not found');
   }
 
-  let newStatus = assignment.status;
-
-  // If assignment has a score, it's graded
+  // If assignment has a score, it's graded, regardless of previous status
   if (assignment.score !== null) {
-    newStatus = 'GRADED';
-  } else if (assignment.dueDate) {
-    const now = new Date();
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    if (assignment.status !== 'GRADED') {
+      await prisma.assignment.update({
+        where: { id: assignmentId },
+        data: { status: 'GRADED' },
+      });
+    }
+    return 'GRADED';
+  }
 
-    if (assignment.dueDate < sevenDaysAgo) {
-      newStatus = 'LATE';
-    } else if (assignment.dueDate < now) {
+  // If status is 'COMPLETE' or 'MISSED', don't automatically change it.
+  if (assignment.status === 'COMPLETE' || assignment.status === 'MISSED') {
+    return assignment.status;
+  }
+
+  let newStatus: AssignmentStatus = assignment.status;
+
+  if (assignment.dueDate) {
+    const now = new Date();
+    if (assignment.dueDate < now) {
       newStatus = 'DUE';
     } else {
       newStatus = 'PENDING';
@@ -94,7 +91,7 @@ export async function updateSingleAssignmentStatus(assignmentId: string) {
   if (newStatus !== assignment.status) {
     await prisma.assignment.update({
       where: { id: assignmentId },
-      data: { status: newStatus }
+      data: { status: newStatus },
     });
   }
 
