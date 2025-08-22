@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, AssignmentStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest, { params }: { params: { moduleId
     const gradedAssignments = assignments.filter(a => a.score !== null);
     const pendingAssignments = assignments.filter(a => a.status === 'PENDING');
     const dueAssignments = assignments.filter(a => a.status === 'DUE');
-    const lateAssignments = assignments.filter(a => a.status === 'LATE');
+  const lateAssignments = assignments.filter(a => a.status === AssignmentStatus.LATE);
     
     // Performance calculations
     const totalWeight = assignments.reduce((sum, a) => sum + (a.weight || 0), 0);

@@ -60,7 +60,7 @@ export function ModuleDetailHeader({
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           </Button>
-          <Button variant="secondary" size="sm" onClick={onBackToWeek}>
+          <Button variant="secondary" size="sm" onClick={onBackToWeek} testId="back-to-week">
             <ArrowLeft className="w-4 h-4 mr-1" />
             {hasLastViewedWeek ? 'Back to Week' : 'Week View'}
           </Button>

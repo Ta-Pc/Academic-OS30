@@ -82,7 +82,8 @@ export async function updateSingleAssignmentStatus(assignmentId: string) {
   if (assignment.dueDate) {
     const now = new Date();
     if (assignment.dueDate < now) {
-      newStatus = 'DUE';
+      // If assignment is past due and not graded, complete, or missed, mark as LATE
+      newStatus = 'LATE';
     } else {
       newStatus = 'PENDING';
     }

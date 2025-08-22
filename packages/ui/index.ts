@@ -1,27 +1,56 @@
+// Barrel exports
+
 export * from './tokens';
 
-// Layout Components
+// ---- Prisma enum re-exports (Prisma v6+ uses `$Enums`) ----
+// Expose both the runtime objects (for assigning values) and the TS types.
+
+import { $Enums } from '@prisma/client';
+
+// Runtime values
+export const AssignmentStatus = $Enums.AssignmentStatus;
+export const AssignmentType = $Enums.AssignmentType;
+export const ModuleStatus = $Enums.ModuleStatus;
+export const TermType = $Enums.TermType;
+export const TacticalTaskStatus = $Enums.TacticalTaskStatus;
+export const TacticalTaskType = $Enums.TacticalTaskType;
+export const ModuleSpan = $Enums.ModuleSpan;
+
+// Types
+export type AssignmentStatus = $Enums.AssignmentStatus;
+export type AssignmentType = $Enums.AssignmentType;
+export type ModuleStatus = $Enums.ModuleStatus;
+export type TermType = $Enums.TermType;
+export type TacticalTaskStatus = $Enums.TacticalTaskStatus;
+export type TacticalTaskType = $Enums.TacticalTaskType;
+export type ModuleSpan = $Enums.ModuleSpan;
+
+// Optionally also expose the whole `$Enums` namespace under a stable name
+export { $Enums as PrismaEnums } from '@prisma/client';
+
+
+// ---- Layout Components ----
 export { PageHeaderView } from './layout/PageHeader.view';
 export { Card, CardHeader, CardBody } from './layout/Card.view';
 
-// Form Components
+// ---- Form Components ----
 export { Button, IconButton } from './forms/Button.view';
 export { Input, Textarea, Select } from './forms/Input.view';
 
-// Settings Components
+// ---- Settings Components ----
 export { SettingsView } from './settings/SettingsView';
 
-// Import Components
+// ---- Import Components ----
 export { ImportModal } from './import/ImportModal.view';
 
-// Week Components
+// ---- Week Components ----
 export { WeekHeaderView } from './week/WeekHeader.view';
 export { WeeklyMissionItemView } from './week/WeeklyMissionItem.view';
 export { WeeklyMissionListView } from './week/WeeklyMissionList.view';
 export { WeekViewPageView } from './week/WeekViewPage.view';
 export type { WeekViewPageProps } from './week/WeekViewPage.view';
 
-// Module Components
+// ---- Module Components ----
 export { ModuleCardView } from './modules/ModuleCard.view';
 export { ModuleQuickView } from './modules/ModuleQuickView.view';
 export { ModuleDetailView } from './modules/ModuleDetail.view';
@@ -35,7 +64,7 @@ export { AssignmentsModal } from './modules/AssignmentsModal.view';
 export { ModuleDetailError } from './modules/ModuleDetailError.view';
 export { ModuleDetailSkeleton } from './modules/ModuleDetailSkeleton.view';
 
-// Module Component Types
+// ---- Module Component Types ----
 export type { ModuleDetailHeaderProps } from './modules/ModuleDetailHeader.view';
 export type { ModuleQuickActionsProps } from './modules/ModuleQuickActions.view';
 export type { PerformanceStatsGridProps } from './modules/PerformanceStatsGrid.view';
@@ -44,15 +73,13 @@ export type { AssignmentTimelineProps } from './modules/AssignmentTimeline.view'
 export type { AssignmentsSummaryProps } from './modules/AssignmentsSummary.view';
 export type { AssignmentsModalProps } from './modules/AssignmentsModal.view';
 
-// Semester Components
+// ---- Semester Components ----
 export { SemesterSnapshotView } from './semester/SemesterSnapshot.view';
 
-// Left Panel Components
+// ---- Left Panel Components ----
 export { ElectiveTrackerView } from './left/ElectiveTracker.view';
 export type { ElectiveTrackerProps } from './left/ElectiveTracker.view';
 export { ProgressionWarningBadgeView } from './left/ProgressionWarningBadge.view';
 export type { ProgressionWarningBadgeProps } from './left/ProgressionWarningBadge.view';
 export { ProgressionDetailView } from './left/ProgressionDetail.view';
 export type { ProgressionDetailProps, RemediationAction } from './left/ProgressionDetail.view';
-
-

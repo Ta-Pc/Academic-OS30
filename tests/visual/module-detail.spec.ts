@@ -22,8 +22,8 @@ test.describe('ModuleDetail visual', () => {
     const href = await first.getAttribute('href');
     if (!href) test.skip(true, 'No module link found');
     
-    // Navigate via week view context first to set lastViewedWeek store
-    await page.goto('/week-view?date=2025-08-10&ui=1');
+    // Navigate via week context first to set lastViewedWeek store
+    await page.goto('/week?date=2025-08-10&ui=1');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(1000); // Allow store to set
     
@@ -62,8 +62,8 @@ test.describe('ModuleDetail visual', () => {
     const href = await first.getAttribute('href');
     if (!href) test.skip(true, 'No module link found');
     
-    // Set up week view context
-    await page.goto('/week-view?date=2025-08-05&ui=1');
+    // Set up week context
+    await page.goto('/week?date=2025-08-05&ui=1');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(1000);
     
@@ -75,9 +75,9 @@ test.describe('ModuleDetail visual', () => {
     const backButton = page.locator('[data-testid="back-to-week"]');
     await backButton.click();
     
-    // Should navigate to week view with the date parameter
+    // Should navigate to week with the date parameter
     await page.waitForLoadState('domcontentloaded');
-    expect(page.url()).toContain('/week-view');
+    expect(page.url()).toContain('/week');
     expect(page.url()).toContain('date=2025-08-05');
   });
 

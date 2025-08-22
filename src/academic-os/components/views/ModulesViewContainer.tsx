@@ -200,7 +200,7 @@ export function ModulesViewContainer() {
                   <div>
                     <div className="text-slate-500">Average</div>
                     <div className="font-medium text-slate-700">
-                      {module.stats.averageScore > 0 ? `${module.stats.averageScore}%` : 'N/A'}
+                      {module.stats.averageScore > 0 ? `${Math.round(module.stats.averageScore)}%` : 'N/A'}
                     </div>
                   </div>
                 </div>

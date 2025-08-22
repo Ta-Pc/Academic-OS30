@@ -25,8 +25,8 @@ test.describe('WeekView visual', () => {
   });
 
   test('renders baseline', async ({ page }) => {
-    // Navigate to week-view; environment should set NEXT_PUBLIC_FEATURE_UI_LIBRARY=true when launching dev server
-    await page.goto('/week-view?ui=1');
+    // Navigate to week; environment should set NEXT_PUBLIC_FEATURE_UI_LIBRARY=true when launching dev server
+    await page.goto('/week?ui=1');
     await page.waitForLoadState('domcontentloaded');
     const priorities = page.locator('text=Top Priorities').first();
     try {

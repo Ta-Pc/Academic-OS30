@@ -110,6 +110,12 @@ export function WeekViewPageView(props: WeekViewPageProps) {
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
+        {/* Page Title */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-slate-900">Weekly Mission Brief</h1>
+          <p className="text-slate-600 mt-1">Your tactical overview for the week</p>
+        </div>
+        
         <WeekHeaderView
           start={week.start}
           end={week.end}

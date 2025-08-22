@@ -52,8 +52,8 @@ test.describe('WhatIf dialog workflow', () => {
     const obtained = page.getByTestId('currentObtainedMark');
     await expect(obtained).toBeVisible();
 
-    // Navigate to week-view and ensure status graded through API
-    await page.goto('/week-view');
+    // Navigate to week and ensure status graded through API
+    await page.goto('/week');
     const today = new Date().toISOString().slice(0,10);
     const resp = await page.request.get(`/api/week-view?date=${today}`);
   const json: { assignments?: { title: string; status: string }[] } = await resp.json();

@@ -105,7 +105,6 @@ export function ModuleDetailView({
           {/* 4c. ASSIGNMENT TIMELINE (Full Width) */}
           <AssignmentTimeline 
             assignments={assignments}
-            currentDate={new Date()}
           />
         </div>
 

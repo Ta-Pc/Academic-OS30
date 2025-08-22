@@ -3,7 +3,20 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 
-const fetchAssignments = async () => {
+interface Assignment {
+  id: string;
+  title: string;
+  dueDate: string | null;
+  weight: number | null;
+  score: number | null;
+  status: string;
+}
+
+interface AssignmentsResponse {
+  assignments: Assignment[];
+}
+
+const fetchAssignments = async (): Promise<AssignmentsResponse> => {
   const response = await fetch('/api/assignments');
   if (!response.ok) {
     throw new Error('Failed to fetch assignments');
@@ -15,7 +28,7 @@ const NotificationManager = () => {
   const [permission, setPermission] = useState(
     typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default'
   );
-  const { data: assignments } = useQuery('assignments', fetchAssignments);
+  const { data: assignmentsData } = useQuery('assignments', fetchAssignments);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
@@ -30,23 +43,25 @@ const NotificationManager = () => {
       typeof window !== 'undefined' &&
       'Notification' in window &&
       permission === 'granted' &&
-      assignments
+      assignmentsData
     ) {
       const now = new Date();
-      assignments.forEach((assignment: any) => {
-        const dueDate = new Date(assignment.dueDate);
-        const timeDiff = dueDate.getTime() - now.getTime();
-        const hoursUntilDue = timeDiff / (1000 * 60 * 60);
+      assignmentsData.assignments.forEach((assignment: Assignment) => {
+        if (assignment.dueDate) {
+          const dueDate = new Date(assignment.dueDate);
+          const timeDiff = dueDate.getTime() - now.getTime();
+          const hoursUntilDue = timeDiff / (1000 * 60 * 60);
 
-        if (hoursUntilDue > 0 && hoursUntilDue <= 24) {
-          new Notification('Assignment Due Soon', {
-            body: `${assignment.title} is due in less than 24 hours.`,
-            icon: '/favicon.ico',
-          });
+          if (hoursUntilDue > 0 && hoursUntilDue <= 24) {
+            new Notification('Assignment Due Soon', {
+              body: `${assignment.title} is due in less than 24 hours.`,
+              icon: '/favicon.ico',
+            });
+          }
         }
       });
     }
-  }, [permission, assignments]);
+  }, [permission, assignmentsData]);
 
   return null;
 };

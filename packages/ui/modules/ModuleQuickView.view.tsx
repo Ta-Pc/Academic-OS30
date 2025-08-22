@@ -196,12 +196,16 @@ export function ModuleQuickView({ title, code, moduleId, stats }: ModuleQuickVie
 
       {/* Quick Actions */}
       <div className="pt-4 border-t border-slate-200">
-        <a 
-          href={`/modules/${moduleId}`}
+        <button
+          onClick={() => {
+            // This will be handled by the parent component via navigation
+            window.location.href = `/modules/${moduleId}`;
+          }}
           className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors"
+          data-testid="view-full-module-details"
         >
           View Full Module Details
-        </a>
+        </button>
       </div>
     </div>
   );

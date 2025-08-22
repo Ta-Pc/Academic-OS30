@@ -36,7 +36,7 @@ export default function Home() {
           Launch Academic OS
         </Link>
         <div className="mt-6 space-x-4">
-          <Link href="/week-view" className="text-blue-600 hover:text-blue-700 underline text-sm">
+          <Link href="/dashboard?view=weekly" className="text-blue-600 hover:text-blue-700 underline text-sm">
             Weekly View
           </Link>
           <Link href="/modules" className="text-blue-600 hover:text-blue-700 underline text-sm">

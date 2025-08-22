@@ -1,3 +1,0 @@
-{
-  "*.{ts,tsx,js,jsx,json,md}": "echo 'Skipping lint-staged temporarily'"
-}

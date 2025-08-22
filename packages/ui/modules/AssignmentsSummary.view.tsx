@@ -90,7 +90,7 @@ export function AssignmentsSummary({ assignments, onAssignmentEdit, moduleTarget
                         <div className="font-medium text-sm line-clamp-1 mb-1">{assignment.title}</div>
                         <div className="text-xs text-orange-700 flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                          Due: {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'No due date'}
                         </div>
                         {assignment.weight && (
                           <div className="text-xs text-orange-600 mt-1">Weight: {assignment.weight}%</div>
@@ -211,7 +211,6 @@ export function AssignmentsSummary({ assignments, onAssignmentEdit, moduleTarget
         onClose={() => setIsModalOpen(false)}
         assignments={assignments}
         onAssignmentEdit={onAssignmentEdit}
-        moduleTargetMark={moduleTargetMark}
       />
     </>
   );

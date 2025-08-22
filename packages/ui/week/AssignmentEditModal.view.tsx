@@ -147,7 +147,7 @@ export function AssignmentEditModal({ isOpen, onClose, assignmentId, onSave }: A
         <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={handleClose} disabled={loading}>Cancel</Button>
           <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={handleMarkAsMissed} loading={loading} disabled={!assignment || !!score}>Mark as Missed</Button>
+            <Button variant="secondary" onClick={handleMarkAsMissed} loading={loading} disabled={!assignment || !!score}>Mark as Missed</Button>
             <Button variant="secondary" onClick={handleMarkAsComplete} loading={loading} disabled={!assignment || assignment.status === 'COMPLETE' || !!score}>Mark as Complete</Button>
             <Button variant="primary" onClick={handleSaveGrade} loading={loading} disabled={!assignment || !score}>Save Grade</Button>
           </div>

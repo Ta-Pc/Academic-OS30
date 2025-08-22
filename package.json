@@ -20,6 +20,7 @@
     "pretest:e2e": "docker compose up -d db && cross-env DATABASE_URL=postgresql://postgres:postgres@localhost:5432/academic_os?schema=public NEXT_PUBLIC_BASE_URL=http://localhost:3000 npx prisma migrate deploy && cross-env DATABASE_URL=postgresql://postgres:postgres@localhost:5432/academic_os?schema=public NEXT_PUBLIC_BASE_URL=http://localhost:3000 npx prisma db seed",
     "test:e2e": "playwright install && cross-env NEXT_PUBLIC_FEATURE_UI_LIBRARY=true playwright test",
     "test:e2e:week-first": "cross-env NEXT_PUBLIC_FEATURE_UI_LIBRARY=true playwright test tests/e2e/week-first.spec.ts",
+    "test:e2e:settings": "cross-env NEXT_PUBLIC_FEATURE_UI_LIBRARY=true playwright test tests/e2e/enhanced-settings.spec.ts",
     "generate:components": "tsx scripts/generate-component-manifest.ts",
     "generate:tailwind": "tsx scripts/generate-tailwind-from-tokens.ts",
     "codemod:imports": "node scripts/codemods/replace-imports.js --dry-run",
@@ -27,7 +28,7 @@
     "seed:bit": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.13.0",
+    "@prisma/client": "^6.14.0",
     "date-fns": "3.6.0",
     "lucide-react": "^0.539.0",
     "next": "^14.2.31",
@@ -58,7 +59,7 @@
     "jest-environment-jsdom": "29.7.0",
     "postcss": "8.4.31",
     "prettier": "2.8.8",
-    "prisma": "^6.13.0",
+    "prisma": "^6.14.0",
     "tailwindcss": "3.4.4",
     "ts-jest": "29.1.2",
     "ts-loader": "^9.5.2",

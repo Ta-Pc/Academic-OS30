@@ -11,6 +11,7 @@ export interface ButtonProps {
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
+  testId?: string;
 }
 
 export function Button({ 
@@ -22,7 +23,8 @@ export function Button({
   fullWidth = false,
   onClick, 
   type = 'button',
-  className = ''
+  className = '',
+  testId
 }: ButtonProps) {
   const baseClasses = 'inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg';
   
@@ -51,6 +53,7 @@ export function Button({
       className={combinedClasses}
       onClick={onClick}
       disabled={disabled || loading}
+      data-testid={testId}
     >
       {loading && <Loader2 className="h-4 w-4 animate-spin" />}
       {children}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly View Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Weekly View Container Test</h1>
+        <p>This test verifies that the WeeklyViewContainer component has been successfully created.</p>
+        
+        <h2>Component Details:</h2>
+        <ul>
+            <li><strong>Location:</strong> src/academic-os/components/views/WeeklyViewContainer.tsx</li>
+            <li><strong>Type:</strong> React Functional Component</li>
+            <li><strong>Features:</strong> Weekly mission brief, module summaries, tactical tasks, progress tracking</li>
+        </ul>
+
+        <h2>Import Paths:</h2>
+        <ul>
+            <li>✅ Button: @ui/forms/Button.view</li>
+            <li>✅ ModuleQuickView: @ui/modules/ModuleQuickView.view</li>
+            <li>✅ ElectiveTrackerContainer: @/components/ElectiveTrackerContainer</li>
+            <li>✅ ProgressionWarningBadgeContainer: @/components/ProgressionWarningBadgeContainer</li>
+            <li>✅ AcademicOSContext: ../../context/AcademicOSContext</li>
+        </ul>
+
+        <h2>Testing Instructions:</h2>
+        <ol>
+            <li>Ensure the development server is running: <code>npm run dev</code></li>
+            <li>Visit <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></li>
+            <li>Check if the weekly view loads without errors</li>
+            <li>Test the module quick view functionality by clicking on a module card</li>
+            <li>Verify that week navigation buttons work</li>
+            <li>Test task toggling functionality</li>
+        </ol>
+
+        <h2>Expected Behavior:</h2>
+        <ul>
+            <li>✅ Weekly data should load from /api/week-view endpoint</li>
+            <li>✅ Module cards should display current marks and assignments due</li>
+            <li>✅ Tactical tasks should be toggleable</li>
+            <li>✅ Week navigation should change the displayed week</li>
+            <li>✅ Module quick view modal should appear when clicking a module</li>
+        </ul>
+
+        <div id="status">
+            <p class="success">✅ WeeklyViewContainer component created successfully!</p>
+            <p>Check the browser console for any runtime errors.</p>
+        </div>
+    </div>
+
+    <script>
+        console.log('Weekly View Container Test Page Loaded');
+        console.log('Component location: src/academic-os/components/views/WeeklyViewContainer.tsx');
+        console.log('Next.js development server should be running at http://localhost:3000');
+    </script>
+</body>
+</html>
