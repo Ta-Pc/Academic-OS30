@@ -33,7 +33,7 @@ const NotificationManager = () => {
       assignments
     ) {
       const now = new Date();
-      assignments.forEach((assignment: any) => {
+      assignments.forEach((assignment: { title: string; dueDate: string | number | Date; }) => {
         const dueDate = new Date(assignment.dueDate);
         const timeDiff = dueDate.getTime() - now.getTime();
         const hoursUntilDue = timeDiff / (1000 * 60 * 60);

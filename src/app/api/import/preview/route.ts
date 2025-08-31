@@ -40,7 +40,9 @@ export async function POST(req: NextRequest) {
         
         // Check for existing records in database
         if (!existingKeys.has(moduleKey)) {
-          const existing = await prisma.module.findFirst({ where: { code: { equals: code, mode: 'insensitive' } } });
+          // Prisma's StringFilter type in this project does not include 'mode'.
+          // Fall back to a simple equals check (case-sensitive) and rely on CSV normalization earlier.
+          const existing = await prisma.module.findFirst({ where: { code: { equals: code } } });
           existingKeys.set(moduleKey, !!existing);
         }
         if (existingKeys.get(moduleKey)) {
@@ -79,8 +81,8 @@ export async function POST(req: NextRequest) {
           const existing = await prisma.assignment.findFirst({ 
             where: { 
               AND: [
-                { module: { code: { equals: moduleCode, mode: 'insensitive' } } },
-                { title: { equals: title, mode: 'insensitive' } }
+                { module: { code: { equals: moduleCode } } },
+                { title: { equals: title } }
               ]
             } 
           });

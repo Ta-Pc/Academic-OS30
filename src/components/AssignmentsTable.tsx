@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { AssignmentStatus } from '@prisma/client';
 // user store pruned
 import { EditAssignmentModalView } from '@ui/modals/EditAssignmentModal.view';
 import { pushModal, closeModal, listenModal } from '@/lib/modal-history';
@@ -12,6 +13,7 @@ export type AssignmentForTable = {
   score: number | null;
   weight: number;
   contribution: number | null;
+  status: AssignmentStatus;
 };
 
 export function AssignmentsTable({ assignments, onAfterUpdate }: {
@@ -75,11 +77,13 @@ function AssignmentRow({ a, onAfterSave }: { a: AssignmentForTable; onAfterSave?
     setError(null);
     try {
       // user logic removed
-      const res = await fetch(`/api/assignments/${a.id}`, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ score: currentValue }),
-      });
+      const res = await fetch(`/api/assignments/${a.id}`,
+        {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ score: currentValue }),
+        }
+      );
       if (!res.ok) throw new Error(await res.text());
       closeEdit();
       // Actively re-fetch analytics to ensure UI reflects latest DB state

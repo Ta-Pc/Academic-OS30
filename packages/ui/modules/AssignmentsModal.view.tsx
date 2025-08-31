@@ -17,6 +17,7 @@ export interface AssignmentsModalProps {
   onClose: () => void;
   assignments: Assignment[];
   onAssignmentEdit: (assignmentId: string, newScore: number) => void;
+  moduleTargetMark?: number;
 }
 
 function formatDateTime(dateString: string | null) {
@@ -75,7 +76,7 @@ function AssignmentCard({ assignment, onEdit }: { assignment: Assignment; onEdit
   );
 }
 
-export function AssignmentsModal({ isOpen, onClose, assignments, onAssignmentEdit }: AssignmentsModalProps) {
+export function AssignmentsModal({ isOpen, onClose, assignments, onAssignmentEdit, moduleTargetMark }: AssignmentsModalProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'dueDate' | 'weight' | 'status'>('dueDate');
@@ -118,6 +119,7 @@ export function AssignmentsModal({ isOpen, onClose, assignments, onAssignmentEdi
           <div>
             <h2 className="text-xl font-semibold">All Assignments</h2>
             <p className="text-sm text-slate-600">{assignments.length} total assignments</p>
+            {moduleTargetMark && <p className="text-sm text-slate-600">Target: {moduleTargetMark}%</p>}
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-5 h-5" />

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import ClientAnalytics from './ui-client-analytics';
 import NextDynamic from 'next/dynamic';
+import { AssignmentStatus } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,7 @@ type AnalyticsResponse = {
       score: number | null;
       weight: number;
       contribution: number | null;
+      status: AssignmentStatus;
     }>;
   };
 };

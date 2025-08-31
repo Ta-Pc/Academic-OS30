@@ -70,11 +70,12 @@ export function toDate(value: string | null | undefined): Date | null {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-export function normalizeStatus(value: string | null | undefined): 'PENDING' | 'GRADED' | 'DUE' | 'LATE' | undefined {
+export function normalizeStatus(value: string | null | undefined): 'PENDING' | 'GRADED' | 'DUE' | 'MISSED' | 'COMPLETE' | undefined {
   if (!value) return undefined;
   const v = value.trim().toLowerCase();
   if (v.startsWith('grad')) return 'GRADED';
-  if (v.startsWith('miss')) return 'LATE';
+  if (v.startsWith('miss')) return 'MISSED';
+  if (v.startsWith('comp')) return 'COMPLETE';
   if (v.startsWith('upcom') || v.startsWith('due')) return 'DUE';
   return 'PENDING';
 }

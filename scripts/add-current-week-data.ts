@@ -78,7 +78,7 @@ async function main() {
       dueDate: addDays(weekStart, 2), // Wednesday
       weight: 15,
       status: 'PENDING' as const,
-      type: 'OTHER' as const,
+      type: 'ASSIGNMENT' as const,
       moduleId: activeModules[0].id,
     },
     {

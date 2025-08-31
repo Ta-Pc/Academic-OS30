@@ -5,6 +5,7 @@ import { useWhatIf } from '@/hooks/useWhatIf';
 import { pushModal, closeModal, listenModal } from '@/lib/modal-history';
 import { AssignmentsTable } from '@/components/AssignmentsTable';
 import { getBaseUrl } from '@/lib/base-url';
+import { AssignmentStatus } from '@prisma/client';
 
 type AnalyticsData = {
   module: { id: string; code: string; title: string; targetMark: number | null };
@@ -21,11 +22,22 @@ type AnalyticsData = {
     score: number | null;
     weight: number;
     contribution: number | null;
+    status: AssignmentStatus;
   }>;
 };
 
 export default function ClientAnalytics({ moduleId, initial }: { moduleId: string; initial: AnalyticsData }) {
-  const [data, setData] = useState<AnalyticsData>(initial);
+  // Ensure all assignments have a status property (default to PENDING if missing)
+  function withStatus(data: AnalyticsData): AnalyticsData {
+    return {
+      ...data,
+      assignments: data.assignments.map(a => ({
+        ...a,
+        status: a.status ?? AssignmentStatus.PENDING
+      }))
+    };
+  }
+  const [data, setData] = useState<AnalyticsData>(withStatus(initial));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showWhatIf, setShowWhatIf] = useState(false);
@@ -39,7 +51,7 @@ export default function ClientAnalytics({ moduleId, initial }: { moduleId: strin
       const resp = await fetch(`${baseUrl}/api/modules/${moduleId}/analytics`, { cache: 'no-store' });
       if (!resp.ok) throw new Error(await resp.text());
       const json = await resp.json();
-      setData(json.data);
+      setData(withStatus(json.data));
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to refresh';
       setError(msg);

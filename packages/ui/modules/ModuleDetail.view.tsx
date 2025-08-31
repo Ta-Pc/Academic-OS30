@@ -15,6 +15,15 @@ export interface Assignment {
 }
 
 export interface ModuleDetailViewProps {
+  onQuickActions?: {
+    onScheduleStudy: () => void;
+    onSetGoals: () => void;
+    onExportReport: () => void;
+    onOpenWhatIf: () => void;
+    onViewAssignments: () => void;
+  };
+  // Use unknown[] instead of any to satisfy lint rules
+  onAssignmentEdit?: (...args: unknown[]) => void;
   header: { 
     id?: string;
     code: string; 
@@ -34,6 +43,12 @@ export interface ModuleDetailViewProps {
     recentScores: number[];
     averageImprovement: number;
     consistencyScore: number;
+  };
+  gradeDistribution?: {
+    excellent: number;
+    good: number;
+    satisfactory: number;
+    poor: number;
   };
   upcomingDeadlines?: Array<{
     id: string;

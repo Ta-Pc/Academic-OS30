@@ -15,6 +15,7 @@ export interface Assignment {
 export interface AssignmentTimelineProps {
   assignments: Assignment[];
   maxVisible?: number;
+  currentDate?: Date;
 }
 
 function formatDateTime(dateString: string | null) {
@@ -49,7 +50,7 @@ function getStatusIcon(assignment: Assignment) {
   }
 }
 
-export function AssignmentTimeline({ assignments, maxVisible = 6 }: AssignmentTimelineProps) {
+export function AssignmentTimeline({ assignments, maxVisible = 6, currentDate = new Date() }: AssignmentTimelineProps) {
   const [startIndex, setStartIndex] = useState(0);
 
   const sortedAssignments = [...assignments].sort((a, b) => {
@@ -92,6 +93,8 @@ export function AssignmentTimeline({ assignments, maxVisible = 6 }: AssignmentTi
       setStartIndex(startIndex + maxVisible);
     }
   };
+
+  const todayIndex = sortedAssignments.findIndex(a => a.dueDate && new Date(a.dueDate) >= currentDate);
 
   return (
     <Card>
@@ -136,6 +139,16 @@ export function AssignmentTimeline({ assignments, maxVisible = 6 }: AssignmentTi
           {/* Timeline Line */}
           <div className="absolute top-6 left-6 right-6 h-0.5 bg-slate-200"></div>
           
+          {/* Today Marker */}
+          {todayIndex !== -1 && (
+            <div 
+              className="absolute top-2 h-10 w-0.5 bg-red-500 z-20"
+              style={{ left: `${((todayIndex - startIndex) / maxVisible) * 100}%` }}
+            >
+              <div className="absolute -top-2 -left-2.5 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">Today</div>
+            </div>
+          )}
+
           {/* Timeline Items */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {visibleAssignments.map((assignment) => (

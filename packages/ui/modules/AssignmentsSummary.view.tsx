@@ -88,10 +88,12 @@ export function AssignmentsSummary({ assignments, onAssignmentEdit, moduleTarget
                     {urgentAssignments.slice(0, 3).map(assignment => (
                       <div key={assignment.id} className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
                         <div className="font-medium text-sm line-clamp-1 mb-1">{assignment.title}</div>
+                        {assignment.dueDate && (
                         <div className="text-xs text-orange-700 flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           Due: {new Date(assignment.dueDate).toLocaleDateString()}
                         </div>
+                        )}
                         {assignment.weight && (
                           <div className="text-xs text-orange-600 mt-1">Weight: {assignment.weight}%</div>
                         )}
