@@ -22,12 +22,13 @@ export async function GET() {
     type ModuleEval = { id: string; code: string; creditHours: number; average: number; passed: boolean; electiveGroup: string | null };
     const evaluated: ModuleEval[] = modules.map((m) => {
       const graded = m.assignments.filter((a) => a.status === 'GRADED' && a.score != null);
-      const average = graded.length
+      const totalWeight = graded.reduce((sum, a) => sum + (a.weight || 0), 0);
+      const average = totalWeight > 0
         ? graded.reduce((sum, a) => {
             const score = a.score == null ? 0 : Number(a.score);
-            // Assume score is already a percentage (0-100) since there's no maxScore
-            return sum + score;
-          }, 0) / graded.length
+            const weight = a.weight || 0;
+            return sum + (score * weight);
+          }, 0) / totalWeight
         : 0;
       const passed = graded.length > 0 && average >= 50; // pass threshold
       return { id: m.id, code: m.code, creditHours: m.creditHours, average, passed, electiveGroup: m.electiveGroup };

@@ -1,4 +1,6 @@
 'use client';
+// DEPRECATED: This page is deprecated and will be removed in a future version.
+// Please use the main AcademicOSShell and navigate to the 'weekly' view.
 import { AcademicOSProvider } from '@/academic-os/context/AcademicOSContext';
 import { WeeklyViewContainer } from '@/academic-os/components/views/WeeklyViewContainer';
 import { AcademicOSHeader } from '@/academic-os/components/AcademicOSHeader';

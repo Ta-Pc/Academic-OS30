@@ -149,6 +149,7 @@ export function WeekViewContainer({ date }: { date?: string }) {
       fetchDashboard()
     ])
       .then(([weekData, dashData]) => {
+        console.log('--- DEBUG: Received weekData from API ---', JSON.stringify(weekData, null, 2));
         if (alive) {
           setData(weekData);
           setDashboardData(dashData);

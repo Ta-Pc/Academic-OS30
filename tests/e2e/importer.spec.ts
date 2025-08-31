@@ -5,15 +5,24 @@ import { test, expect } from '@playwright/test';
 test.describe('CSV Importer with Term mapping', () => {
   test('uploads modules CSV w/o dates, creates term, imports modules with dates', async ({ page }, testInfo) => {
     try {
-      await page.goto('/import');
+      await page.goto('/');
+
+      // Navigate to settings page
+      await page.getByTestId('academicos-nav-settings').click();
+
+      // Open import modal
+      await page.getByRole('button', { name: /Import Data/i }).click();
+
+      const importModal = page.getByTestId('import-modal');
+      await expect(importModal).toBeVisible();
 
       // Select modules type (already default but explicit for clarity)
-      const typeSelect = page.getByTestId('importer-type-select');
+      const typeSelect = importModal.getByTestId('importer-type-select');
       await expect(typeSelect).toBeVisible();
       await typeSelect.selectOption('modules');
 
       // Upload fixture CSV
-      const fileInput = page.getByTestId('importer-file-input');
+      const fileInput = importModal.getByTestId('importer-file-input');
       await fileInput.setInputFiles('tests/fixtures/modules-no-dates.csv');
 
       // Map columns
@@ -59,7 +68,7 @@ test.describe('CSV Importer with Term mapping', () => {
       await expect(page.getByTestId('import-success-summary')).toBeVisible();
       const successCountText = await page.getByTestId('import-success-count').textContent();
       testInfo.attach('success-count-text', { body: successCountText || 'none', contentType: 'text/plain' });
-      
+
       // Try to capture debug JSON if it exists
       try {
         const debugJsonElement = page.getByTestId('import-debug-json');

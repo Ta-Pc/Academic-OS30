@@ -8,11 +8,11 @@ test.describe('Week-first UX flows', () => {
     // Should have seed-user-1 with STK110 module and tactical tasks
   });
 
-  test('onboarding flow: open /week-view and verify top 3 mission items', async ({ page }) => {
-    await page.goto('/week-view');
+  test('onboarding flow: open /week and verify top 3 mission items', async ({ page }) => {
+    await page.goto('/week');
 
     // Verify the page loads and shows the Week-first UI flag is enabled
-    await expect(page.locator('h1')).toContainText('Weekly Mission Brief');
+    await expect(page.locator('h2')).toContainText('Weekly Mission Brief');
 
     // Wait for data to load (Weekly Mission Brief should show priorities)
     const prioritiesSection = page.locator('section').filter({ hasText: 'Top Priorities' });
@@ -21,15 +21,15 @@ test.describe('Week-first UX flows', () => {
     // Verify we have at least 1 priority item (could be assignments or tactical tasks)
     const priorityItems = prioritiesSection.locator('li');
     const itemCount = await priorityItems.count();
-    
+
     if (itemCount > 0) {
       // Check that priority items are visible
       await expect(priorityItems.first()).toBeVisible();
-      
+
       // Verify structure of first priority item (has title and module code)
       const firstItem = priorityItems.first();
       await expect(firstItem).toContainText(/.+/); // Has some text content
-      
+
       // Should show up to 3 top priorities if available
       const visibleCount = Math.min(itemCount, 3);
       for (let i = 0; i < visibleCount; i++) {
@@ -44,14 +44,14 @@ test.describe('Week-first UX flows', () => {
     // Should have at least one module (from seed data)
     const moduleCards = modulesSection.locator('button[type="button"]');
     await expect(moduleCards.first()).toBeVisible({ timeout: 5000 });
-    
+
     // Verify STK120 module is present (from seed data)
     const stkModule = moduleCards.filter({ hasText: 'STK120' });
     await expect(stkModule).toBeVisible();
   });
 
   test('navigation flow: WeeklyMissionItem → ModuleQuickView → ModuleDetail → Back to WeekView', async ({ page }) => {
-    await page.goto('/week-view');
+    await page.goto('/week');
 
     // Wait for modules section to load
     const modulesSection = page.locator('section').filter({ hasText: 'Modules' });
@@ -60,7 +60,7 @@ test.describe('Week-first UX flows', () => {
     // Click on a module card to open ModuleQuickView
     const moduleCards = modulesSection.locator('button[type="button"]');
     await expect(moduleCards.first()).toBeVisible();
-    
+
     // Click on STK120 module (from seed data)
     const stkModule = moduleCards.filter({ hasText: 'STK120' });
     await expect(stkModule).toBeVisible();
@@ -69,53 +69,51 @@ test.describe('Week-first UX flows', () => {
     // Verify ModuleQuickView slide-over opens
     const slideOver = page.locator('[role="dialog"][aria-modal="true"]');
     await expect(slideOver).toBeVisible({ timeout: 5000 });
-    
+
     // Verify quick view header
     await expect(slideOver.locator('text=Module Quick View')).toBeVisible();
-    
+
     // Verify module title and code are displayed
     await expect(slideOver).toContainText('STK120');
     await expect(slideOver).toContainText('Statistics 120');
 
     // Navigate to full ModuleDetail view
     // Look for a link or button that would take us to the full module page
-    const fullViewLink = slideOver.getByRole('link', { name: /view full details|module detail|full view/i }).or(
-      slideOver.getByRole('button', { name: /view full details|module detail|full view/i })
-    );
-    
+    const fullViewLink = slideOver.getByRole('link', { name: /view full details|module detail|full view/i });
+
     // If no direct link in quick view, we'll navigate via URL
     if (await fullViewLink.count() === 0) {
       // Close the slide-over and navigate directly to module detail
       const closeButton = slideOver.getByRole('button', { name: /close/i });
       await closeButton.click();
       await expect(slideOver).toBeHidden();
-      
+
       // Navigate to module detail page using the moduleId from the response
       await page.goto('/modules/STK120'); // Assuming STK120 route exists, or use module ID
     } else {
-      await fullViewLink.click();
+      await fullViewLink.first().click();
     }
 
     // Verify we're on the ModuleDetail page
     await expect(page.locator('h1')).toContainText('STK120');
-    
+
     // Verify key elements of module detail page
     await expect(page.getByTestId('currentObtainedMark')).toBeVisible({ timeout: 5000 });
-    
+
     // Navigate back to WeekView using the Back to Week button
     const backButton = page.getByTestId('back-to-week');
     await expect(backButton).toBeVisible();
     await backButton.click();
 
     // Verify we're back on the week view
-    await expect(page.locator('h1')).toContainText('Weekly Mission Brief');
+    await expect(page.locator('h2')).toContainText('Weekly Mission Brief');
     await expect(page.locator('section').filter({ hasText: 'Top Priorities' })).toBeVisible();
   });
 
   test('what-if simulation flow: session-only simulate → commit persists changes', async ({ page }) => {
     // Navigate to a module with assignments for what-if testing
     await page.goto('/modules/STK120');
-    
+
     // Wait for module detail page to load
     await expect(page.locator('h1')).toContainText('STK120');
     await expect(page.getByTestId('currentObtainedMark')).toBeVisible({ timeout: 10000 });
@@ -123,7 +121,7 @@ test.describe('Week-first UX flows', () => {
     // Check if what-if button exists (might not be present if no assignments)
     const whatIfButton = page.getByTestId('open-whatif');
     const hasWhatIfButton = await whatIfButton.count() > 0;
-    
+
     if (!hasWhatIfButton) {
       console.log('What-if button not found - possibly no assignments to simulate');
       // Skip the test if no what-if functionality is available
@@ -146,7 +144,7 @@ test.describe('Week-first UX flows', () => {
     // Find an assignment row to modify (look for Module Test or Assignment)
     const assignmentRows = whatIfDialog.locator('tr').filter({ hasText: /test|assignment|quiz/i });
     const assignmentCount = await assignmentRows.count();
-    
+
     if (assignmentCount === 0) {
       console.log('No assignments found to simulate');
       // Close dialog and skip test
@@ -182,7 +180,7 @@ test.describe('Week-first UX flows', () => {
     // Verify the predicted mark has changed from baseline
     const simulatedMarkText = await predictedSemesterMark.textContent();
     const simulatedValue = parseFloat(simulatedMarkText?.replace('%', '') || '0');
-    
+
     // The simulated value should be different from baseline (assuming the input affects the calculation)
     // Note: This might not always be different if the weight is 0 or calculation doesn't change much
     console.log(`Baseline: ${baselineValue}%, Simulated: ${simulatedValue}%`);
@@ -194,13 +192,13 @@ test.describe('Week-first UX flows', () => {
 
     // Verify dialog closes and mark returns to baseline
     await expect(whatIfDialog).toBeHidden();
-    
+
     // Refresh page and verify original mark is preserved
     await page.reload();
     await expect(page.getByTestId('currentObtainedMark')).toBeVisible({ timeout: 10000 });
     const afterCloseMarkText = await page.getByTestId('currentObtainedMark').textContent();
     const afterCloseValue = parseFloat(afterCloseMarkText?.replace('%', '') || '0');
-    
+
     // Should be back to baseline (no changes persisted)
     expect(Math.abs(afterCloseValue - baselineValue)).toBeLessThan(0.1);
 
@@ -242,10 +240,10 @@ test.describe('Week-first UX flows', () => {
   });
 
   test('mark tactical task done → item moves to history and UI updates', async ({ page }) => {
-    await page.goto('/week-view');
+    await page.goto('/week');
 
     // Wait for page to load
-    await expect(page.locator('h1')).toContainText('Weekly Mission Brief');
+    await expect(page.locator('h2')).toContainText('Weekly Mission Brief');
 
     // Look for tactical tasks in priorities section
     const prioritiesSection = page.locator('section').filter({ hasText: 'Top Priorities' });
@@ -253,28 +251,28 @@ test.describe('Week-first UX flows', () => {
 
     // Find a task that's not completed (checkbox not checked)
     const taskItems = prioritiesSection.locator('li').filter({ has: page.locator('input[type="checkbox"]:not(:checked)') });
-    
+
     // If no uncompleted tasks in priorities, check if we need to use the legacy task list
     const taskCount = await taskItems.count();
-    
+
     if (taskCount === 0) {
       // Check if there's a legacy task group list (older UI)
       const taskGroupSections = page.locator('section').filter({ hasText: /study|practice|review|read|admin/i });
       const legacyTaskCount = await taskGroupSections.count();
-      
+
       if (legacyTaskCount > 0) {
         // Use legacy task interface
         const taskSection = taskGroupSections.first();
         await expect(taskSection).toBeVisible();
-        
+
         const legacyTaskItems = taskSection.locator('li').filter({ has: page.locator('input[type="checkbox"]:not(:checked)') });
         const legacyCount = await legacyTaskItems.count();
-        
+
         if (legacyCount > 0) {
           // Get the task title before completing it
           const taskItem = legacyTaskItems.first();
           const taskTitle = await taskItem.locator('[class*="font-medium"], .font-medium').textContent();
-          
+
           // Mark the task as done
           const checkbox = taskItem.locator('input[type="checkbox"]');
           await checkbox.check();
@@ -284,7 +282,7 @@ test.describe('Week-first UX flows', () => {
 
           // Verify task is now marked as completed
           await expect(checkbox).toBeChecked();
-          
+
           // The task might move to a completed section or change styling
           // Check that the task is either moved or visually indicated as complete
           const completedTask = page.locator('li').filter({ hasText: taskTitle || '' }).filter({ has: page.locator('input[type="checkbox"]:checked') });
@@ -300,10 +298,10 @@ test.describe('Week-first UX flows', () => {
     } else {
       // Use modern priorities interface
       const taskItem = taskItems.first();
-      
-      // Get the task title before completing it  
+
+      // Get the task title before completing it
       const taskTitle = await taskItem.locator('[class*="font-medium"], .font-medium').textContent();
-      
+
       // Mark the task as done
       const checkbox = taskItem.locator('input[type="checkbox"]');
       await checkbox.check();
@@ -313,7 +311,7 @@ test.describe('Week-first UX flows', () => {
 
       // Verify the task is marked as completed
       await expect(checkbox).toBeChecked();
-      
+
       // Check that the completed task is still visible (might be styled differently)
       const completedTask = page.locator('li').filter({ hasText: taskTitle || '' }).filter({ has: page.locator('input[type="checkbox"]:checked') });
       await expect(completedTask).toBeVisible();
@@ -329,33 +327,33 @@ test.describe('Week-first UX flows', () => {
 
   test('stable data references: tests use seed-user-1 deterministic data', async ({ page }) => {
     // Verify that we're using the expected seeded data
-    await page.goto('/week-view');
+    await page.goto('/week');
 
     // Check API response contains expected user
     const response = await page.request.get('/api/week-view');
     expect(response.ok()).toBeTruthy();
-    
+
     const data = await response.json();
-    
+
     // Verify response structure
     expect(data).toHaveProperty('weekRange');
     expect(data).toHaveProperty('moduleSummaries');
     expect(data).toHaveProperty('weeklyPriorities');
-    
+
     // Should have at least STK120 module from seed data
     const hasSTK120 = data.moduleSummaries.some((module: { code: string }) => module.code === 'STK120');
     expect(hasSTK120).toBeTruthy();
 
     // Navigate to page and verify expected seeded content appears
-    await expect(page.locator('h1')).toContainText('Weekly Mission Brief');
-    
+    await expect(page.locator('h2')).toContainText('Weekly Mission Brief');
+
     // Should show modules section with STK120
     const modulesSection = page.locator('section').filter({ hasText: 'Modules' });
     await expect(modulesSection).toBeVisible();
-    
+
     const stkModule = modulesSection.locator('button').filter({ hasText: 'STK120' });
     await expect(stkModule).toBeVisible({ timeout: 10000 });
-    
+
     // Verify consistent module information
     await expect(stkModule).toContainText('Statistics 120');
   });

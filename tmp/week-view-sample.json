@@ -1,9 +1,5 @@
 {
-  "offline": true,
-  "note": "Database not available during test run",
-  "weekRange": null,
-  "assignments": [],
-  "tacticalTasks": [],
-  "moduleSummaries": [],
-  "weeklyPriorities": []
+  "empty": true,
+  "reason": "No modules in DB; seed script not run",
+  "weekRange": null
 }

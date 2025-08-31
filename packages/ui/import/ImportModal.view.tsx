@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Upload, 
-  FileText, 
-  ArrowUpDown, 
-  Calendar, 
-  Eye, 
-  CheckCircle, 
-  ArrowRight, 
+import {
+  Upload,
+  FileText,
+  ArrowUpDown,
+  Calendar,
+  Eye,
+  CheckCircle,
+  ArrowRight,
   ArrowLeft,
   Plus
 } from 'lucide-react';
@@ -27,11 +27,11 @@ type ImportType = 'modules' | 'assignments';
 type ImportStep = 1 | 2 | 3 | 4 | 5;
 
 interface ImportResult {
-  preview?: { 
-    valid?: unknown[]; 
-    errors?: unknown[]; 
+  preview?: {
+    valid?: unknown[];
+    errors?: unknown[];
     duplicates?: Array<{ reason: string; duplicateKey: string }>;
-    missingModules?: string[] 
+    missingModules?: string[]
   };
   successCount?: number;
   total?: number;
@@ -54,13 +54,13 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [missingModules, setMissingModules] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Term mapping state
   const [needsTermMapping, setNeedsTermMapping] = useState(false);
   const [modulesNeedingTerms, setModulesNeedingTerms] = useState<string[]>([]);
   const [terms, setTerms] = useState<Term[]>([]);
   const [selectedTermId, setSelectedTermId] = useState<string | null>(null);
-  
+
   // Manual module creation state
   const [showManualCreate, setShowManualCreate] = useState(false);
   const [manualModule, setManualModule] = useState({
@@ -71,10 +71,10 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
     department: ''
   });
   const [creatingModule, setCreatingModule] = useState(false);
-  const [newTermDraft, setNewTermDraft] = useState<{ title: string; startDate: string; endDate: string }>({ 
-    title: '', 
-    startDate: '', 
-    endDate: '' 
+  const [newTermDraft, setNewTermDraft] = useState<{ title: string; startDate: string; endDate: string }>({
+    title: '',
+    startDate: '',
+    endDate: ''
   });
   const [termMode, setTermMode] = useState<'existing' | 'create'>('existing');
 
@@ -105,29 +105,29 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   // Auto-detect import type based on CSV headers
   const detectImportType = (headers: string[]): ImportType => {
     const lowerHeaders = headers.map(h => h.toLowerCase());
-    
+
     // Check for assignment-specific fields
-    const hasAssignmentFields = lowerHeaders.some(h => 
-      h.includes('due_date') || h.includes('grade') || h.includes('weight') || 
+    const hasAssignmentFields = lowerHeaders.some(h =>
+      h.includes('due_date') || h.includes('grade') || h.includes('weight') ||
       h.includes('module_code') || h.includes('effort_estimate')
     );
-    
+
     // Check for module-specific fields
-    const hasModuleFields = lowerHeaders.some(h => 
+    const hasModuleFields = lowerHeaders.some(h =>
       h.includes('credit') || h.includes('department') || h.includes('faculty') ||
       h.includes('prerequisite')
     );
-    
+
     // If we find assignment-specific fields and no module-specific fields, it's likely assignments
     if (hasAssignmentFields && !hasModuleFields) {
       return 'assignments';
     }
-    
+
     // If we find module-specific fields, it's likely modules
     if (hasModuleFields) {
       return 'modules';
     }
-    
+
     // Default to assignments if unclear
     return 'assignments';
   };
@@ -135,11 +135,11 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   // Smart mapping suggestions based on header names - using camelCase to match API
   const getSmartMapping = (headers: string[]): Record<string, string> => {
     const smartMap: Record<string, string> = {};
-    
+
     headers.forEach(header => {
       const lowerHeader = header.toLowerCase().replace(/[_\s-]/g, '');
       const originalLower = header.toLowerCase(); // Keep underscores for exact matching
-      
+
       // Exact matches for common CSV headers
       if (originalLower === 'module_code') {
         smartMap[header] = 'moduleCode';
@@ -178,7 +178,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
         smartMap[header] = 'description';
       }
     });
-    
+
     return smartMap;
   };
 
@@ -234,15 +234,15 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
       const data = await res.json();
       setHeaders(data.headers);
       setRaw(text);
-      
+
       // Auto-detect import type based on headers
       const detectedType = detectImportType(data.headers);
       setImportType(detectedType);
-      
+
       // Apply smart mapping
       const smartMapping = getSmartMapping(data.headers);
       setMapping(smartMapping);
-      
+
       setStep(2);
     } catch (error) {
       console.error('Failed to parse file:', error);
@@ -296,11 +296,11 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
       const res = await fetch('/api/import/ingest', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ 
-          importType, 
-          raw, 
-          mapping: fieldMap, 
-          termId: selectedTermId 
+        body: JSON.stringify({
+          importType,
+          raw,
+          mapping: fieldMap,
+          termId: selectedTermId
         })
       });
       const data = await res.json();
@@ -315,7 +315,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
 
   const handleCreateTerm = async () => {
     if (!newTermDraft.title || !newTermDraft.startDate || !newTermDraft.endDate) return;
-    
+
     setLoading(true);
     try {
       const res = await fetch('/api/terms', {
@@ -381,7 +381,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   // Manual module creation function
   const handleCreateModule = async () => {
     if (!manualModule.code.trim()) return;
-    
+
     setCreatingModule(true);
     try {
       const response = await fetch('/api/modules', {
@@ -396,12 +396,12 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
           status: 'ACTIVE'
         })
       });
-      
+
       //const result = await response.json();
       if (response.ok) {
         // Remove the created module from missing modules list
         setMissingModules(prev => prev.filter(code => code !== manualModule.code.trim()));
-        
+
         // Reset the form
         setManualModule({
           code: '',
@@ -410,7 +410,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
           targetMark: 75,
           department: ''
         });
-        
+
         // If this was the last missing module, refresh the preview
         if (missingModules.length === 1) {
           handlePreview();
@@ -429,12 +429,13 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
   ];
 
   return (
-    <Modal 
-      isOpen={isOpen} 
-      onClose={handleClose} 
-      title="Import Academic Data" 
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Import Academic Data"
       size="xl"
       showCloseButton={step !== 5}
+      data-testid="import-modal"
     >
       <div className="space-y-6">
         {/* Progress Steps */}
@@ -443,13 +444,13 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
             const StepIcon = stepIcons[s as ImportStep];
             const isActive = s === step;
             const isCompleted = s < step;
-            
+
             return (
               <div key={s} className="flex items-center">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200 ${
-                  isActive 
-                    ? 'bg-primary-600 border-primary-600 text-white' 
-                    : isCompleted 
+                  isActive
+                    ? 'bg-primary-600 border-primary-600 text-white'
+                    : isCompleted
                     ? 'bg-green-600 border-green-600 text-white'
                     : 'bg-white border-slate-300 text-slate-400'
                 }`}>
@@ -504,7 +505,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                       fullWidth
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       CSV File
@@ -654,7 +655,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                       />
                       <span className="font-medium text-slate-700">Use existing term</span>
                     </label>
-                    
+
                     {termMode === 'existing' && (
                       <div className="ml-6">
                         <Select
@@ -669,7 +670,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="space-y-4">
                     <label className="flex items-center gap-3">
                       <input
@@ -680,7 +681,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                       />
                       <span className="font-medium text-slate-700">Create new term</span>
                     </label>
-                    
+
                     {termMode === 'create' && (
                       <div className="ml-6 space-y-4">
                         <Input
@@ -740,7 +741,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                   </CardHeader>
                 </Card>
               )}
-              
+
               {result.preview?.errors && result.preview.errors.length > 0 && (
                 <Card>
                   <CardHeader gradient="red">
@@ -767,7 +768,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                   </CardBody>
                 </Card>
               )}
-              
+
               {result.preview?.duplicates && result.preview.duplicates.length > 0 && (
                 <Card>
                   <CardHeader gradient="orange">
@@ -794,7 +795,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                   </CardBody>
                 </Card>
               )}
-              
+
               {missingModules.length > 0 && (
                 <>
                   <Card>
@@ -827,7 +828,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                           </span>
                         ))}
                       </div>
-                      
+
                       {showManualCreate && (
                         <div className="border-t border-orange-200 pt-4">
                           <h5 className="font-medium text-slate-900 mb-3">Create Module Manually</h5>
@@ -843,7 +844,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                                 className="text-sm"
                               />
                             </div>
-                            
+
                             <div>
                               <label className="block text-sm font-medium text-slate-700 mb-1">
                                 Module Title
@@ -855,7 +856,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                                 className="text-sm"
                               />
                             </div>
-                            
+
                             <div>
                               <label className="block text-sm font-medium text-slate-700 mb-1">
                                 Credit Hours
@@ -867,7 +868,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                                 className="text-sm"
                               />
                             </div>
-                            
+
                             <div>
                               <label className="block text-sm font-medium text-slate-700 mb-1">
                                 Target Mark (%)
@@ -879,7 +880,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                                 className="text-sm"
                               />
                             </div>
-                            
+
                             <div className="md:col-span-2">
                               <label className="block text-sm font-medium text-slate-700 mb-1">
                                 Department
@@ -892,7 +893,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                               />
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
                             <div className="text-sm text-slate-600">
                               💡 Tip: Fill in the module code from the missing list above
@@ -966,7 +967,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
               </Button>
             )}
           </div>
-          
+
           <div className="flex items-center gap-3">
             {step < 5 && (
               <Button
@@ -979,7 +980,7 @@ export function ImportModal({ isOpen, onClose, onComplete }: ImportModalProps) {
                 {step < 4 && <ArrowRight className="h-4 w-4" />}
               </Button>
             )}
-            
+
             {step === 5 && (
               <Button
                 onClick={handleClose}

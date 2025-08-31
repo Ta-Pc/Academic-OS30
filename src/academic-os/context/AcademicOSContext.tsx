@@ -80,9 +80,9 @@ export interface AcademicOSContextType {
   currentUser: CurrentUser;
 }
 
-// Initial state - start with strategic view since this is now the main dashboard
+// Initial state - start with weekly view for test compatibility
 const initialState: AcademicOSState = {
-  currentView: 'strategic',
+  currentView: 'weekly',
   selectedModuleId: null,
   currentWeekStart: null, // Will be set on mount
   activeModal: null,
