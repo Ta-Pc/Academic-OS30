@@ -965,12 +965,6 @@ export async function POST(req: NextRequest)
 
 #### **Responsive Design**
 
-##### **Breakpoint Strategy**
-- **Mobile First**: Base styles for small screens
-- **Tablet Optimization**: md: breakpoints for module grids
-- **Desktop Enhancement**: xl: breakpoints for sidebar layouts
-- **Ultra-wide Support**: 2xl: breakpoints for extended grids
-
 ##### **Layout Patterns**
 - **Grid Systems**: CSS Grid for module cards, assignment tables
 - **Flexbox Layouts**: Navigation, modal dialogs, form elements
